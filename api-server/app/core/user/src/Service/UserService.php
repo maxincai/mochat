@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\User\Service;
 
 use Hyperf\Database\Model\Builder;
@@ -184,5 +185,18 @@ class UserService extends AbstractService implements UserContract
         $res || $res = collect([]);
 
         return $res->toArray();
+    }
+
+    /**
+     * 修改账户状态 - 根据手机号.
+     * @param string $phone
+     * @param int $status 账户状态
+     * @return int 修改条数
+     */
+    public function updateUserStatusByPhone(string $phone, int $status): int
+    {
+        return $this->model::query()
+            ->where('phone', $phone)
+            ->update(['status' => $status]);
     }
 }

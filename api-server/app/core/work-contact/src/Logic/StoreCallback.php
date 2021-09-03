@@ -13,6 +13,7 @@ namespace MoChat\App\WorkContact\Logic;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
+use League\Flysystem\Filesystem;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Corp\Logic\AppTrait;
 use MoChat\App\Medium\Constants\Type as MediumType;

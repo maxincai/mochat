@@ -78,17 +78,15 @@ class StoreLogic
         if (count($employees) !== count($employeeIds)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS);
         }
-
         ## 入库
         Db::beginTransaction();
         try {
-            $batchContent = $this->handleContent($params['content']);
             $batchId      = $this->roomMessageBatchSend->createRoomMessageBatchSend([
                 'corp_id'       => $corpId,
                 'user_id'       => $user['id'],
                 'user_name'     => $user['name'] ?: $user['phone'],
                 'batch_title'   => $params['batchTitle'],
-                'content'       => json_encode($batchContent, JSON_UNESCAPED_UNICODE),
+                'content'       => json_encode($params['content'], JSON_UNESCAPED_UNICODE),
                 'send_way'      => $params['sendWay'],
                 'definite_time' => $params['definiteTime'],
                 'created_at'    => date('Y-m-d H:i:s'),
@@ -102,7 +100,7 @@ class StoreLogic
                 $rooms = $this->workRoom->getWorkRoomsByOwnerId($employee['id'], ['id', 'name', 'wx_chat_id', 'create_time']);
                 $roomTotal += count($rooms);
                 ## 扩展多条消息
-                foreach ($batchContent as $content) {
+                foreach ($params['content'] as $content) {
                     ## 客户群
                     $roomTotal = 0;
                     foreach ($rooms as $room) {
@@ -142,46 +140,9 @@ class StoreLogic
             throw new CommonException(ErrorCode::SERVER_ERROR, '客户群消息群发创建失败');
         }
 
-        if ($params['sendWay'] == 1) {
+        if ((int)$params['sendWay'] === 1) {
             make(StoreApply::class)->handle($batchId);
         }
-
         return true;
-    }
-
-    /**
-     * 处理图片.
-     */
-    private function handleContent(array $content): array
-    {
-        if (count($content) == 0) {
-            throw new CommonException(ErrorCode::INVALID_PARAMS, '消息内容不能为空');
-        }
-        foreach ($content as $key => $item) {
-            if (empty($item['msgType'])) {
-                continue;
-            }
-            switch ($item['msgType']) {
-                case 'image':
-                    $pic                        = explode('?', $item['pic_url']);
-                    $content[$key]['local_url'] = $this->handlePic($pic[0]);
-                    break;
-                case 'miniprogram':
-                    $pic                        = explode('?', $item['pic_media_id']);
-                    $content[$key]['local_url'] = $this->handlePic($pic[0]);
-                    break;
-            }
-        }
-        return $content;
-    }
-
-    private function handlePic(string $pic): string
-    {
-        ## 图片本地保存
-        $filesystem   = make(Filesystem::class);
-        $pathFileName = 'image/roomMessageBatchSend/' . strval(microtime(true) * 10000) . '_' . uniqid() . '.jpg';
-        $stream       = file_get_contents($pic, true);
-        $filesystem->write($pathFileName, $stream);
-        return $pathFileName;
     }
 }

@@ -60,7 +60,7 @@ class ShowLogic
             'creator'          => $batch['userName'],
             'createdAt'        => $batch['createdAt'],
             'seedRooms'        => $rooms,
-            'content'          => $batch['content'],
+            'content'          => $this->handleData($batch['content']   ),
             'sendTime'         => $batch['sendTime'],
             'sendContactTotal' => $batch['sendContactTotal'],
             'sendRoomTotal'    => $batch['sendRoomTotal'],
@@ -69,5 +69,21 @@ class ShowLogic
             'notSendTotal'     => $batch['notSendTotal'],
             'notReceivedTotal' => $batch['notReceivedTotal'],
         ];
+    }
+
+    protected function handleData($content): array
+    {
+        if (!empty($content)) {
+            if ($content[0]['msgType'] === 'image') {
+                $content[0]['image']['pic_url'] = file_full_url($content[0]['image']['pic_url']);
+            }
+            if ($content[0]['msgType'] === 'link') {
+                $content[0]['link']['pic_url'] = file_full_url($content[0]['link']['pic_url']);
+            }
+            if ($content[0]['msgType'] === 'miniprogram') {
+                $content[0]['miniprogram']['pic_url'] = file_full_url($content[0]['miniprogram']['pic_url']);
+            }
+        }
+        return $content;
     }
 }

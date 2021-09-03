@@ -47,7 +47,10 @@ class Dashboard extends AbstractAction
      */
     public function handle(): array
     {
-        $params['corp_id'] = user()['corpIds'][0];
+        $params['corpId'] = user()['corpIds'][0];
+        $params['employeeId'] = $this->request->input('employeeId', []);
+        $params['startTime'] = $this->request->input('startTime', '');
+        $params['endTime'] = $this->request->input('endTime', '');
         return $this->dashboardLogic->handle($params);
     }
 

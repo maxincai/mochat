@@ -68,9 +68,9 @@ class IndexLogic
                 $todayText    = date('Y/m/d', $i);
                 $tomorrowText = date('Y/m/d', $i + 86400);
 
-                $res[$todayText]['total'] = $this->workContactEmployeeService->countWorkContactEmployeesByEmployeeTime([$params['employeeId']], $tomorrowText);
-                $res[$todayText]['add']   = $this->workContactEmployeeService->countWorkContactEmployeesByEmployeeIdTime([$params['employeeId']], $todayText, $tomorrowText);
-                $res[$todayText]['loss']  = $this->workContactEmployeeService->countWorkContactEmployeesLossByEmployeeIdTime([$params['employeeId']], $todayText, $tomorrowText);
+                $res[$todayText]['total'] = $this->workContactEmployeeService->countWorkContactEmployeesByEmployeeTime($params['employeeId'], $tomorrowText);
+                $res[$todayText]['add']   = $this->workContactEmployeeService->countWorkContactEmployeesByEmployeeIdTime($params['employeeId'], $todayText, $tomorrowText);
+                $res[$todayText]['loss']  = $this->workContactEmployeeService->countWorkContactEmployeesLossByEmployeeIdTime($params['employeeId'], $todayText, $tomorrowText);
                 $res[$todayText]['net']   = $res[$todayText]['add'] - $res[$todayText]['loss'];
             }
         } else {

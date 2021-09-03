@@ -75,14 +75,13 @@ class PasswordUpdate extends AbstractAction
         if (empty($userInfo)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '当前账户不存在，不可操作');
         }
-
         ## 旧密码验证
         $guard = $this->authManager->guard('jwt');
         /** @var JWTManager $jwt */
         $jwt      = $guard->getJwtManager();
         $checkRes = $jwt->getEncrypter()->check($oldPassword, $userInfo['password']);
         if (! $checkRes) {
-            throw new CommonException(ErrorCode::INVALID_PARAMS, '旧密码错误，不可操作');
+            throw new CommonException(ErrorCode::INVALID_PARAMS, '密码错误，不可操作');
         }
         ## 生成新密码
         $newPassword = $jwt->getEncrypter()->signature($newPassword);

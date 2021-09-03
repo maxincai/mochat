@@ -56,7 +56,7 @@ class SettingEdit extends AbstractAction
      */
     public function handle(): array
     {
-        return (new RecycleContactLogic())->handle(ContactBatchAddConfig::find(2)->toArray());
+//        return (new RecycleContactLogic())->handle(ContactBatchAddConfig::find(2)->toArray());
         $corpId = user()['corpIds'][0];
 
         $result = $this->contactBatchAddConfigService->getContactBatchAddConfigByCorpId($corpId, [

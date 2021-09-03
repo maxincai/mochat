@@ -109,10 +109,15 @@ class Show extends AbstractAction
         $push              = $this->roomCalendarPushService->getRoomCalendarPushByRoomCalendarId($id, ['id', 'room_calendar_id', 'name', 'day', 'push_content']);
 
         foreach ($push as $key => $val) {
-            $pushContent = json_decode($val['pushContent'], true);
+            $pushContent = json_decode($val['pushContent'], true, 512, JSON_THROW_ON_ERROR);
             foreach ($pushContent as $k => $v) {
-                if ($v['type'] == 'image') {
+                if ($v['type'] === 'image') {
+                    $pushContent[$k]['path'] = $v['pic'];
                     $pushContent[$k]['pic'] = file_full_url($v['pic']);
+                }
+                if ($v['type'] === 'link') {
+                    $pushContent[$k]['path'] = file_full_url($v['link_cover']);
+                    $pushContent[$k]['link_cover'] = $v['link_cover'];
                 }
             }
             $push[$key]['pushContent'] = $pushContent;

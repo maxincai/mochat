@@ -31,8 +31,8 @@ export function dashboard (params) {
 export function contactDel (params) {
   return request({
     url: '/contactBatchAdd/destroy',
-    method: 'GET',
-    params
+    method: 'delete',
+    data: params
   })
 }
 
@@ -42,6 +42,14 @@ export function importData (params) {
     url: '/contactBatchAdd/importIndex',
     method: 'GET',
     params
+  })
+}
+// 删除导入记录
+export function importDestroyApi (params) {
+  return request({
+    url: '/contactBatchAdd/importDestroy',
+    method: 'delete',
+    data: params
   })
 }
 
@@ -69,5 +77,21 @@ export function updateSetting (params) {
     url: '/contactBatchAdd/settingUpdate',
     method: 'POST',
     data: params
+  })
+}
+// 成员下拉框
+export function department (params) {
+  return request({
+    url: '/workDepartment/index',
+    method: 'get',
+    params: params
+  })
+}
+// 提醒 /contactBatchAdd/remind
+export function remindApi (params) {
+  return request({
+    url: '/contactBatchAdd/remind',
+    method: 'get',
+    params: params
   })
 }

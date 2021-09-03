@@ -8,13 +8,17 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\RoomMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
+use MoChat\App\WorkAgent\QueueService\MessageRemind;
+use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
 use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendEmployeeContract;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendContract;
+use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendEmployeeContract;
 
 class RemindLogic
 {
@@ -26,9 +30,15 @@ class RemindLogic
 
     /**
      * @Inject
-     * @var ContactMessageBatchSendEmployeeContract
+     * @var RoomMessageBatchSendEmployeeContract
      */
-    private $contactMessageBatchSendEmployee;
+    private $roomMessageBatchSendEmployee;
+
+    /**
+     * @Inject
+     * @var WorkEmployeeContract
+     */
+    private $workEmployee;
 
     /**
      * @param array $params 请求参数
@@ -36,16 +46,37 @@ class RemindLogic
      */
     public function handle(array $params, int $userId): bool
     {
-        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int) $params['batchId']);
-        if (! $batch) {
+        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int)$params['batchId']);
+        if (!$batch) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未找到记录');
         }
         if ($batch['userId'] != $userId) {
             throw new CommonException(ErrorCode::ACCESS_DENIED, '无操作权限');
         }
-//        $employees = $this->roomMessageBatchSend->get((int) $params['batchId'], (array) $params['batchEmployIds']);
-        // 发送提醒消息
-
+        $sendTime = $batch['createdAt'];
+        if (!empty($params['batchEmployId'])) {
+            $employee = $this->workEmployee->getWorkEmployeeById((int)$params['batchEmployId'], ['wx_user_id']);
+            $this->sendMessage($sendTime, $batch['corpId'], $employee['wxUserId']);
+            return true;
+        }
+        $employees = $this->roomMessageBatchSendEmployee->getRoomMessageBatchSendEmployeesByBatchId((int)$params['batchId'], [], ['wx_user_id']);
+        foreach ($employees as $item){
+            $this->sendMessage($sendTime, $batch['corpId'], $item['wxUserId']);
+        }
         return true;
+    }
+
+    protected function sendMessage($sendTime, $corpId, $wxUserId)
+    {
+        $text = "【任务提醒】有新的任务啦！\n" .
+            "任务类型：群发任务\n" .
+            "创建时间：{$sendTime}\n" .
+            "可前往【客户群】中确认发送，记得及时完成哦\n";
+        $messageRemind = make(MessageRemind::class);
+        $messageRemind->sendToEmployee(
+            $corpId,
+            $wxUserId,
+            'text',
+            $text);
     }
 }

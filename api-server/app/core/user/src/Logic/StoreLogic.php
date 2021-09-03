@@ -88,7 +88,7 @@ class StoreLogic
         $guard = $this->authManager->guard('jwt');
         /** @var JWTManager $jwt */
         $jwt                  = $guard->getJwtManager();
-        $params['password']   = $jwt->getEncrypter()->signature('123456');
+        $params['password']   = $jwt->getEncrypter()->signature($params['password']);
         $params['created_at'] = date('Y-m-d H:i:s');
 
         return $params;

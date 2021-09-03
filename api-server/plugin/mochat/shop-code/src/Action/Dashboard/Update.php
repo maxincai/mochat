@@ -94,6 +94,14 @@ class Update extends AbstractAction
         $this->validated($params, 'update');
         ## 处理参数
         $data = $this->handleParam($params);
+        ## 处理重复
+        if (!empty($data['address'])) {
+            $info = $this->shopCodeService->getShopCodeByNameAddress($user['corpIds'][0], $data['address'], (int)$params['id'], ['id']);
+            if (!empty($info)){
+                throw new CommonException(ErrorCode::INVALID_PARAMS, '地址重复，不可操作');
+            }
+        }
+
         ## 创建标签
         return $this->updateShopCode((int) $params['id'], $user, $data);
     }

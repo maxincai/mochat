@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ShopCode\Contract;
 
 interface ShopCodeContract
@@ -101,4 +102,14 @@ interface ShopCodeContract
      * @param array|string[] $columns
      */
     public function getShopCodeByCorpIdTypeStatusProvinceName(int $corpId, int $type, int $status, string $province, string $city, string $name, array $columns = ['*']): array;
+
+    /**
+     * 查询一条
+     * @param int $corpId
+     * @param string $address
+     * @param int $id
+     * @param array|string[] $columns
+     * @return array
+     */
+    public function getShopCodeByNameAddress(int $corpId, string $address, int $id = 0, array $columns = ['*']): array;
 }

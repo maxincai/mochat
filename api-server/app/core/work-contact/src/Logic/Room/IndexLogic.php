@@ -15,6 +15,7 @@ use MoChat\App\WorkContact\Constants\Room\JoinScene as WorkContactRoomJoinScene;
 use MoChat\App\WorkContact\Constants\Room\Status as WorkContactRoomStatus;
 use MoChat\App\WorkContact\Constants\Room\Type as WorkContactRoomType;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
+use MoChat\App\WorkContact\Contract\WorkContactEmployeeContract;
 use MoChat\App\WorkContact\Contract\WorkContactRoomContract;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\App\WorkRoom\Contract\WorkRoomContract;
@@ -51,6 +52,12 @@ class IndexLogic
      * @var WorkContactRoomContract
      */
     protected $workContactRoomService;
+
+    /**
+     * @Inject
+     * @var WorkContactEmployeeContract
+     */
+    protected $workContactEmployee;
 
     /**
      * 企业通讯录成员列表.
@@ -225,7 +232,12 @@ class IndexLogic
             $otherRoomIdArr              = array_diff(array_column($workContactRooms, 'roomId'), [$contactRoom['roomId']]);
             $rooms                       = $this->workRoomService->getWorkRoomsById(array_values($otherRoomIdArr), ['name']);
             empty($rooms) || $otherRooms = array_column($rooms, 'name');
-
+            $id = $baseInfo['id'] ?? 0;
+            $contactEmployeeId = 0;
+            if ($contactRoom['type'] === 2){
+                $contactEmployee = $this->workContactEmployee->getWorkContactEmployeeByCorpIdContactId($id,user()['corpIds'][0],['employee_id']);
+                $contactEmployeeId = empty($contactEmployee) ? 0:$contactEmployee['employeeId'];
+            }
             $list[] = [
                 'workContactRoomId' => $contactRoom['id'],
                 'name'              => isset($baseInfo['name']) ? $baseInfo['name'] : '',
@@ -236,6 +248,10 @@ class IndexLogic
                 'otherRooms'        => $otherRooms,
                 'joinScene'         => $contactRoom['joinScene'],
                 'joinSceneText'     => WorkContactRoomJoinScene::getMessage($contactRoom['joinScene']),
+                'type'              => $contactRoom['type'],
+                'contactId'         => $contactRoom['type'] === 2 ? $id : 0,
+                'employeeId'        => $contactRoom['type'] === 1 ? $id : 0,
+                'contactEmployeeId' => $contactEmployeeId,
             ];
         }
 

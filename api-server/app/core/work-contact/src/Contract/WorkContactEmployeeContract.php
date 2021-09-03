@@ -307,4 +307,12 @@ interface WorkContactEmployeeContract
      * @return array 返回值
      */
     public function getWorkContactEmployeeByCorpIdContactId(int $contactId, int $corpId, array $columns = ['*']): array;
+
+    /**
+     * 查询多条
+     * @param int $employeeId
+     * @param array $filterParams
+     * @return array
+     */
+    public function getWorkContactsByEmployeeIdFilterParams(int $employeeId, array $filterParams):array;
 }

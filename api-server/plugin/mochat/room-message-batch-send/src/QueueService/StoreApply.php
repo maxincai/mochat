@@ -39,6 +39,7 @@ class StoreApply
      */
     public function handle(int $batchId): void
     {
+        $this->container->get(StdoutLoggerInterface::class)->error('测试输出-id'.$batchId);
         Db::beginTransaction();
         try {
             $batch = $this->container->get(RoomMessageBatchSendContract::class)->getRoomMessageBatchSendLockById($batchId);
@@ -54,7 +55,9 @@ class StoreApply
                 $content['chat_type'] = 'group';
                 $content['sender']    = $employee['wxUserId'];
                 ## 推送消息
+                $this->container->get(StdoutLoggerInterface::class)->error('测试输出-推送消息'.json_encode($content));
                 $batchResult = $app->submit($content);
+                $this->container->get(StdoutLoggerInterface::class)->error('测试输出-推送结果'.json_encode($batchResult));
                 ## 更新状态
                 $roomMessageBatchSendEmployee->updateRoomMessageBatchSendEmployeeById($employee['id'], [
                     'errCode' => $batchResult['errcode'],

@@ -8,8 +8,10 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ShopCode\Service;
 
+use Hyperf\Database\Model\Builder;
 use MoChat\Framework\Service\AbstractService;
 use MoChat\Plugin\ShopCode\Contract\ShopCodeContract;
 use MoChat\Plugin\ShopCode\Model\ShopCode;
@@ -119,7 +121,7 @@ class ShopCodeService extends AbstractService implements ShopCodeContract
                 ->get($columns);
         }
 
-        if (! empty($province)) {
+        if (!empty($province)) {
             $res = $this->model::query()
                 ->where('corp_id', $corpId)
                 ->where('type', $type)
@@ -201,6 +203,30 @@ class ShopCodeService extends AbstractService implements ShopCodeContract
             ->where('name', 'like', "%{$name}%")
             ->first($columns);
 
+        $res || $res = collect([]);
+
+        return $res->toArray();
+    }
+
+    /**
+     * 查询一条
+     * @param int $corpId
+     * @param string $address
+     * @param int $id
+     * @param array|string[] $columns
+     * @return array
+     */
+    public function getShopCodeByNameAddress(int $corpId, string $address, int $id = 0, array $columns = ['*']): array
+    {
+        $res = $this->model::query()
+            ->where('corp_id', $corpId)
+            ->when(!empty($address), function (Builder $query) use ($address) {
+                return $query->where('address', 'like', '%' . $address . '%');
+            })
+            ->when($id > 0, function (Builder $query) use ($id) {
+                return $query->where('id', '<>', $id);
+            })
+            ->first($columns);
         $res || $res = collect([]);
 
         return $res->toArray();

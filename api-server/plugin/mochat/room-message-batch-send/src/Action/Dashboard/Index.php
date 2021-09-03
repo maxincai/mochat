@@ -12,6 +12,10 @@ namespace MoChat\Plugin\RoomMessageBatchSend\Action\Dashboard;
 
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\Middleware;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
@@ -42,6 +46,10 @@ class Index extends AbstractAction
     }
 
     /**
+     * @Middlewares({
+     *     @Middleware(DashboardAuthMiddleware::class),
+     *     @Middleware(PermissionMiddleware::class)
+     * })
      * @RequestMapping(path="/dashboard/roomMessageBatchSend/index", methods="GET")
      */
     public function handle(): array

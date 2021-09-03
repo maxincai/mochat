@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ContactMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -29,8 +30,8 @@ class ShowLogic
      */
     public function handle(array $params, int $userId): array
     {
-        $batch = $this->contactMessageBatchSend->getContactMessageBatchSendById((int) $params['batchId']);
-        if (! $batch) {
+        $batch = $this->contactMessageBatchSend->getContactMessageBatchSendById((int)$params['batchId']);
+        if (!$batch) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未找到记录');
         }
         if ($batch['userId'] != $userId) {
@@ -38,21 +39,37 @@ class ShowLogic
         }
 
         return [
-            'id'                 => $batch['id'],
-            'creator'            => $batch['userName'],
-            'createdAt'          => $batch['createdAt'],
-            'content'            => $batch['content'],
-            'sendTime'           => $batch['sendTime'],
-            'filterParams'       => $batch['filterParams'],
+            'id' => $batch['id'],
+            'creator' => $batch['userName'],
+            'createdAt' => $batch['createdAt'],
+            'content' => $this->handleData($batch['content']),
+            'sendTime' => $batch['sendTime'],
+            'filterParams' => $batch['filterParams'],
             'filterParamsDetail' => $batch['filterParamsDetail'],
-            'sendEmployeeTotal'  => $batch['sendEmployeeTotal'],
-            'sendContactTotal'   => $batch['sendContactTotal'],
-            'sendTotal'          => $batch['sendTotal'],
-            'receivedTotal'      => $batch['receivedTotal'],
-            'notSendTotal'       => $batch['notSendTotal'],
-            'notReceivedTotal'   => $batch['notReceivedTotal'],
-            'receiveLimitTotal'  => $batch['receiveLimitTotal'],
-            'notFriendTotal'     => $batch['notFriendTotal'],
+            'sendEmployeeTotal' => $batch['sendEmployeeTotal'],
+            'sendContactTotal' => $batch['sendContactTotal'],
+            'sendTotal' => $batch['sendTotal'],
+            'receivedTotal' => $batch['receivedTotal'],
+            'notSendTotal' => $batch['notSendTotal'],
+            'notReceivedTotal' => $batch['notReceivedTotal'],
+            'receiveLimitTotal' => $batch['receiveLimitTotal'],
+            'notFriendTotal' => $batch['notFriendTotal'],
         ];
+    }
+
+    protected function handleData($content): array
+    {
+        if (!empty($content)) {
+            if ($content[0]['msgType'] === 'image') {
+                $content[0]['image']['pic_url'] = file_full_url($content[0]['image']['pic_url']);
+            }
+            if ($content[0]['msgType'] === 'link') {
+                $content[0]['link']['pic_url'] = file_full_url($content[0]['link']['pic_url']);
+            }
+            if ($content[0]['msgType'] === 'miniprogram') {
+                $content[0]['miniprogram']['pic_url'] = file_full_url($content[0]['miniprogram']['pic_url']);
+            }
+        }
+        return $content;
     }
 }

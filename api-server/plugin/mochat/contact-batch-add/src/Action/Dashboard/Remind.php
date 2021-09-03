@@ -10,14 +10,20 @@ declare(strict_types=1);
  */
 namespace MoChat\Plugin\ContactBatchAdd\Action\Dashboard;
 
+use Hyperf\DbConnection\Db;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
 use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
+use MoChat\App\Utils\Url;
+use MoChat\App\WorkAgent\QueueService\MessageRemind;
+use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
+use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddImportContract;
 
 /**
  * 导入客户-勾选客户提醒.
@@ -30,7 +36,19 @@ class Remind extends AbstractAction
     use ValidateSceneTrait;
 
     /**
-     * @RequestMapping(path="/dashboard/contactBatchAdd/remind", methods="post")
+     * @Inject
+     * @var ContactBatchAddImportContract
+     */
+    protected $contactBatchAddImportService;
+
+    /**
+     * @Inject
+     * @var WorkEmployeeContract
+     */
+    protected $workEmployee;
+
+    /**
+     * @RequestMapping(path="/dashboard/contactBatchAdd/remind", methods="get")
      * @Middlewares({
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
@@ -39,6 +57,24 @@ class Remind extends AbstractAction
      */
     public function handle(): array
     {
+        $params = $this->request->all();
+        //校验参数
+        $this->validated($params);
+        $count = $this->contactBatchAddImportService->countContactBatchAddImportByRecordIdEmployee((int)$params['recordId'], (int)$params['employeeId']);
+
+        $employee = $this->workEmployee->getWorkEmployeeById((int)$params['employeeId']);
+        $url = Url::getSidebarBaseUrl() . '/batchAddFriend?employeeId=' . $params['employeeId'] . '&batchId=' . $params['recordId'];
+        $text = "【管理员提醒】您有客户未添加哦！\n" .
+            "提醒事项：添加客户\n" .
+            "客户数量：{$count}名\n" .
+            "记得及时添加哦\n" .
+            "<a href='{$url}'>点击查看详情</a>";
+        $messageRemind = make(MessageRemind::class);
+        $messageRemind->sendToEmployee(
+            (int)$employee['corpId'],
+            $employee['wxUserId'],
+            'text',
+            $text);
         return [];
     }
 
@@ -49,7 +85,10 @@ class Remind extends AbstractAction
      */
     protected function rules(): array
     {
-        return [];
+        return [
+            'employeeId'         => 'required',
+            'recordId'         => 'required',
+        ];
     }
 
     /**
@@ -58,6 +97,9 @@ class Remind extends AbstractAction
      */
     protected function messages(): array
     {
-        return [];
+        return [
+            'employeeId.required'         => '客户id 必传',
+            'recordId.required'         => '批次号 必传',
+        ];
     }
 }

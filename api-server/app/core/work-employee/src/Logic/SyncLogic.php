@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MoChat\App\WorkEmployee\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\DbConnection\Db;
 use MoChat\App\Corp\Constants\WorkUpdateTime\Type;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Corp\Contract\WorkUpdateTimeContract;
@@ -21,6 +22,8 @@ use MoChat\App\WorkEmployee\Constants\ContactAuth;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeDepartmentContract;
 use MoChat\Framework\WeWork\WeWork;
+use Qbhy\HyperfAuth\AuthManager;
+use Qbhy\SimpleJwt\JWTManager;
 
 /**
  * 成员管理-同步.
@@ -69,6 +72,11 @@ class SyncLogic
      */
     protected $workUpdateTimeService;
 
+    /**
+     * @var AuthManager
+     */
+    protected $authManager;
+
     public function handle(array $corpIds): bool
     {
         $this->logger = make(StdoutLoggerInterface::class);
@@ -81,6 +89,7 @@ class SyncLogic
         $this->workDepartmentService = make(WorkDepartmentContract::class);
         $this->workEmployeeDepartmentService = make(WorkEmployeeDepartmentContract::class);
         $this->workUpdateTimeService = make(WorkUpdateTimeContract::class);
+        $this->authManager = make(AuthManager::class);
         //处理成员
         $this->dealEmployee($corpIds);
         //同步时间
@@ -121,6 +130,8 @@ class SyncLogic
                 if (!empty($userList['errcode']) || empty($userList['userlist'])) {
                     continue;
                 }
+                // 处理员工子账户信息
+                $this->createEmployeeAccount($corpId, $userList['userlist'], $departments);
                 $this->handleSyncData(
                     $corpId,
                     $userList,
@@ -483,6 +494,65 @@ class SyncLogic
             }
         }
         return $createEmployeeData;
+    }
+
+    /**
+     * 创建员工子账号
+     * @param int $corpId
+     * @param array $userList
+     * @return bool
+     */
+    protected function createEmployeeAccount(int $corpId, array $userList, array $departments)
+    {
+        if (empty($userList)) {
+            return true;
+        }
+        $this->userService = make(UserContract::class);
+        $this->corpService = make(CorpContract::class);
+        ## 生成初始密码
+        $guard = $this->authManager->guard('jwt');
+        /** @var JWTManager $jwt */
+        $jwt = $guard->getJwtManager();
+        $password = $jwt->getEncrypter()->signature(substr(md5(mt_rand(0, 32) . '0905' . md5((string)mt_rand(0, 32)) . '0123'), 10, 6));
+        // 租户id
+        $tenantId = $this->corpService->getCorpById($corpId, ['tenant_id']);
+        if (!empty($tenantId)) {
+            $createEmployeeAccountData = array_chunk($userList, 100);
+            foreach ($createEmployeeAccountData as $user) {
+                //子账号信息
+                $data = [];
+                foreach ($user as $item) {
+                    $phone = $item['mobile'] ?? '';
+                    if (empty($phone)) continue;
+                    //查询账号是否已存在
+                    $userInfo = $this->userService->getUserByPhone($phone, ['id']);
+                    if (empty($userInfo)) {
+                        $data[] = [
+                            'phone' => $phone,
+                            'password' => $password,
+                            'name' => $item['name'] ?? '',
+                            'gender' => $item['gender'] ?? 0,
+                            'department' => !empty($departments[$item['main_department']]['id']) ? $departments[$item['main_department']]['id'] : 0,
+                            'position' => $item['position'] ?? '',
+                            'tenant_id' => $tenantId['tenantId'],
+                            'created_at' => date('Y-m-d H:i:s'),
+                        ];
+                    }
+                }
+                if (!empty($data)) {
+                    //开启事务
+                    Db::beginTransaction();
+                    try {
+                        //创建子账户
+                        $this->userService->createUsers($data);
+                        Db::commit();
+                    } catch (\Throwable $e) {
+                        Db::rollBack();
+                        $this->logger->error(sprintf('%s [%s] %s', 'EmployeeStoreHandler->process成员新增子账户异常', date('Y-m-d H:i:s'), $e->getMessage()));
+                    }
+                }
+            }
+        }
     }
 
     /**

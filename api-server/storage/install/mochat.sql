@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS mc_business_log
     `operation_id` int DEFAULT 0 NOT NULL COMMENT '操作人id（mc_work_employee.id）',
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     `updated_at` timestamp NULL on update CURRENT_TIMESTAMP
-) COMMENT '业务日志表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '业务日志表';
 
 CREATE TABLE IF NOT EXISTS mc_channel_code
 (
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS mc_channel_code
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '渠道码表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '渠道码表';
 
 CREATE TABLE IF NOT EXISTS mc_channel_code_group
 (
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS mc_channel_code_group
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '渠道码-分组表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '渠道码-分组表';
 
 CREATE TABLE IF NOT EXISTS mc_chat_tool
 (
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS mc_chat_tool
     updated_at timestamp NULL,
     deleted_at timestamp NULL,
     status tinyint DEFAULT 1 NULL COMMENT '状态 0否 1是'
-) COMMENT '企业侧边工具栏';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '企业侧边工具栏';
 
 CREATE TABLE IF NOT EXISTS mc_contact_employee_process
 (
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS mc_contact_employee_process
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '通讯录-客户-跟进记录(中间表) ';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '通讯录-客户-跟进记录(中间表) ';
 
 CREATE TABLE IF NOT EXISTS mc_contact_employee_track
 (
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS mc_contact_employee_track
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '通讯录 - 客户 - 轨迹互动';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '通讯录 - 客户 - 轨迹互动';
 
 CREATE TABLE IF NOT EXISTS mc_contact_field
 (
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS mc_contact_field
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户高级属性';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户高级属性';
 
 CREATE TABLE IF NOT EXISTS mc_contact_field_pivot
 (
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS mc_contact_field_pivot
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '(客户-高级属性-中间表)用户画像';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(客户-高级属性-中间表)用户画像';
 
 CREATE TABLE IF NOT EXISTS mc_contact_process
 (
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS mc_contact_process
     created_at timestamp NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户跟进状态';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户跟进状态';
 
 CREATE TABLE IF NOT EXISTS mc_corp
 (
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS mc_corp
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '企业';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '企业';
 
 CREATE TABLE IF NOT EXISTS mc_greeting
 (
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS mc_greeting
     created_at timestamp NULL COMMENT '创建时间',
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '更新时间',
     deleted_at timestamp NULL COMMENT '删除时间'
-) COMMENT '欢迎语';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '欢迎语';
 
 CREATE TABLE IF NOT EXISTS mc_medium
 (
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS mc_medium
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '素材库 ';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '素材库 ';
 
 CREATE TABLE IF NOT EXISTS mc_medium_group
 (
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS mc_medium_group
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '素材库-分组';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '素材库-分组';
 
 CREATE TABLE IF NOT EXISTS mc_migrations
 (
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS mc_plugin
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '插件表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '插件表';
 
 CREATE TABLE IF NOT EXISTS mc_rbac_menu
 (
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS mc_rbac_menu
     created_at timestamp NULL COMMENT '创建时间',
     updated_at timestamp NULL on update CURRENT_TIMESTAMP comment '更新时间',
     deleted_at timestamp NULL COMMENT '删除时间'
-) COMMENT '菜单表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '菜单表';
 
 CREATE TABLE IF NOT EXISTS mc_rbac_role
 (
@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS mc_rbac_role
     created_at timestamp NULL COMMENT '创建时间',
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '更新时间',
     deleted_at timestamp NULL COMMENT '删除时间'
-) COMMENT '角色表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '角色表';
 
 CREATE TABLE IF NOT EXISTS mc_rbac_role_menu
 (
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS mc_rbac_role_menu
     menu_id int DEFAULT 0 NOT NULL COMMENT '菜单ID【mc_rbac_menu.id】',
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
     updated_at timestamp NULL COMMENT '更新时间'
-) COMMENT '角色-权限对应表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '角色-权限对应表';
 
 CREATE TABLE IF NOT EXISTS mc_rbac_user_role
 (
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS mc_rbac_user_role
     created_at timestamp NULL COMMENT '创建时间',
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '更新时间',
     deleted_at timestamp NULL COMMENT '删除时间'
-) COMMENT '用户角色关联表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '用户角色关联表';
 
 CREATE TABLE IF NOT EXISTS mc_sensitive_word
 (
@@ -280,7 +280,7 @@ CREATE TABLE IF NOT EXISTS mc_sensitive_word
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '智能风控-敏感词词库表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '智能风控-敏感词词库表';
 
 CREATE TABLE IF NOT EXISTS mc_sensitive_word_group
 (
@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS mc_sensitive_word_group
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '智能风控-分组表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '智能风控-分组表';
 
 CREATE TABLE IF NOT EXISTS mc_sensitive_word_monitor
 (
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS mc_sensitive_word_monitor
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '智能风控-敏感词监控表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '智能风控-敏感词监控表';
 
 CREATE TABLE IF NOT EXISTS mc_sys_log
 (
@@ -331,7 +331,7 @@ CREATE TABLE IF NOT EXISTS mc_sys_log
     created_at timestamp NULL COMMENT '创建时间',
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '更新时间',
     deleted_at timestamp NULL COMMENT '删除时间'
-) COMMENT '系统日志';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '系统日志';
 
 CREATE TABLE IF NOT EXISTS mc_tenant
 (
@@ -347,7 +347,7 @@ CREATE TABLE IF NOT EXISTS mc_tenant
     deleted_at timestamp NULL COMMENT '删除时间',
     copyright varchar(255) DEFAULT '' NOT NULL COMMENT '租户版权',
     server_ips json DEFAULT NULL COMMENT '服务器IPs'
-) COMMENT '租户表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '租户表';
 
 CREATE TABLE IF NOT EXISTS mc_user
 (
@@ -366,7 +366,7 @@ CREATE TABLE IF NOT EXISTS mc_user
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL,
     isSuperAdmin tinyint(1) default 0 NULL COMMENT '是否为超级管理员 - 0否1是'
-) COMMENT '(子账户)系统管理员';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(子账户)系统管理员';
 
 CREATE TABLE IF NOT EXISTS mc_work_agent
 (
@@ -386,7 +386,7 @@ CREATE TABLE IF NOT EXISTS mc_work_agent
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp NULL,
     deleted_at timestamp NULL
-) COMMENT '企业应用表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '企业应用表';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact
 (
@@ -411,7 +411,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '联系人表（客户列表）';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '联系人表（客户列表）';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact_employee
 (
@@ -459,7 +459,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact_employee
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '通讯录 - 客户 中间表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '通讯录 - 客户 中间表';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact_room
 (
@@ -483,7 +483,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact_room
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户 - 客户群 关联表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户 - 客户群 关联表';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact_tag
 (
@@ -497,7 +497,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact_tag
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户标签';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户标签';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact_tag_group
 (
@@ -510,7 +510,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact_tag_group
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户标签 - 分组';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户标签 - 分组';
 
 CREATE TABLE IF NOT EXISTS mc_work_contact_tag_pivot
 (
@@ -523,7 +523,7 @@ CREATE TABLE IF NOT EXISTS mc_work_contact_tag_pivot
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户-标签关联表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户-标签关联表';
 
 CREATE TABLE IF NOT EXISTS mc_work_department
 (
@@ -540,7 +540,7 @@ CREATE TABLE IF NOT EXISTS mc_work_department
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '(通讯录)部门管理';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(通讯录)部门管理';
 
 CREATE TABLE IF NOT EXISTS mc_work_employee
 (
@@ -572,7 +572,7 @@ CREATE TABLE IF NOT EXISTS mc_work_employee
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '企业通讯录';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '企业通讯录';
 
 CREATE TABLE IF NOT EXISTS mc_work_employee_department
 (
@@ -585,7 +585,7 @@ CREATE TABLE IF NOT EXISTS mc_work_employee_department
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '(通讯录 - 通讯录部门)中间表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(通讯录 - 通讯录部门)中间表';
 
 CREATE TABLE IF NOT EXISTS mc_work_employee_statistic
 (
@@ -604,7 +604,7 @@ CREATE TABLE IF NOT EXISTS mc_work_employee_statistic
     created_at timestamp NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '成员统计表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '成员统计表';
 
 CREATE TABLE IF NOT EXISTS mc_work_employee_tag
 (
@@ -616,7 +616,7 @@ CREATE TABLE IF NOT EXISTS mc_work_employee_tag
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     deleted_at timestamp NULL
-) COMMENT '(通讯录)标签';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(通讯录)标签';
 
 CREATE TABLE IF NOT EXISTS mc_work_employee_tag_pivot
 (
@@ -626,7 +626,7 @@ CREATE TABLE IF NOT EXISTS mc_work_employee_tag_pivot
     tag_id int(11) UNSIGNED NOT NULL COMMENT 'wx标签ID',
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL on update CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
-) COMMENT '(通讯录 - 标签)中间表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '(通讯录 - 标签)中间表';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_1
 (
@@ -651,7 +651,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_1
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_10
 (
@@ -676,7 +676,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_10
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_2
 (
@@ -701,7 +701,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_2
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_3
 (
@@ -726,7 +726,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_3
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_4
 (
@@ -751,7 +751,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_4
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_5
 (
@@ -776,7 +776,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_5
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_6
 (
@@ -801,7 +801,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_6
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_7
 (
@@ -826,7 +826,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_7
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_8
 (
@@ -851,7 +851,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_8
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_9
 (
@@ -876,7 +876,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_9
     status tinyint(1) NOT NULL DEFAULT 0 COMMENT '关键词打标签查询状态（0：未查询，1：已查询）',
     constraint msgid
         unique (msg_id)
-) COMMENT '会话内容存档';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_config
 (
@@ -893,7 +893,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_config
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '会话内容存档 - 配置';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档 - 配置';
 
 CREATE TABLE IF NOT EXISTS mc_work_message_index
 (
@@ -906,7 +906,7 @@ CREATE TABLE IF NOT EXISTS mc_work_message_index
     updated_at timestamp NULL,
     from_id int NOT NULL COMMENT '发送方ID(员工ID)',
     flag varchar(30) default '' NULL
-) COMMENT '会话内容存档-信息检索';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '会话内容存档-信息检索';
 
 CREATE TABLE IF NOT EXISTS mc_work_room
 (
@@ -924,7 +924,7 @@ CREATE TABLE IF NOT EXISTS mc_work_room
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户群表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户群表';
 
 CREATE TABLE IF NOT EXISTS mc_work_room_auto_pull
 (
@@ -942,7 +942,7 @@ CREATE TABLE IF NOT EXISTS mc_work_room_auto_pull
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '自动拉群表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '自动拉群表';
 
 CREATE TABLE IF NOT EXISTS mc_work_room_group
 (
@@ -953,7 +953,7 @@ CREATE TABLE IF NOT EXISTS mc_work_room_group
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp NULL on update CURRENT_TIMESTAMP,
     deleted_at timestamp NULL
-) COMMENT '客户群分组管理表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '客户群分组管理表';
 
 CREATE TABLE IF NOT EXISTS mc_work_update_time
 (
@@ -965,7 +965,7 @@ CREATE TABLE IF NOT EXISTS mc_work_update_time
     error_msg json DEFAULT NULL COMMENT '错误信息',
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
-) COMMENT '同步时间表';
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '同步时间表';
 
 CREATE TABLE IF NOT EXISTS `mc_corp_day_data`  (
  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -975,7 +975,7 @@ CREATE TABLE IF NOT EXISTS `mc_corp_day_data`  (
  `add_into_room_num` int(10) NOT NULL DEFAULT 0 COMMENT '新增入群数',
  `loss_contact_num` int(10) NOT NULL DEFAULT 0 COMMENT '流失客户数',
  `quit_room_num` int(10) NOT NULL DEFAULT 0 COMMENT '退群数',
- `date` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '日期',
+ `date` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '日期',
  `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
  `updated_at` timestamp(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0),
  PRIMARY KEY (`id`)
@@ -1816,6 +1816,186 @@ CREATE TABLE IF NOT EXISTS `mc_work_unassigned` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE = utf8mb4_unicode_ci  ROW_FORMAT=DYNAMIC COMMENT='离职成员-客户存储表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_batch_add_allot` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `import_id` int(11) NOT NULL DEFAULT '0' COMMENT '客户账号表ID',
+  `employee_id` int(11) NOT NULL DEFAULT '0' COMMENT '跟进员工ID',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态 0回收 1分配',
+  `operate_id` int(11) NOT NULL DEFAULT '0' COMMENT '操作人ID（如果有）',
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `employee_id_type_index` (`employee_id`,`type`) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '统计索引'
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='批量新增客户分配记录表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_batch_add_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `corp_id` int(11) NOT NULL DEFAULT '0' COMMENT '企业ID',
+  `pending_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '待处理客户提醒开关 0关 1开',
+  `pending_time_out` int(11) NOT NULL DEFAULT '0' COMMENT '待处理客户提醒超时天数',
+  `pending_reminder_time` time NOT NULL DEFAULT '00:00:00' COMMENT '待处理客户提醒时间',
+  `pending_leader_id` int(11) NOT NULL DEFAULT '0' COMMENT '通知管理员ID',
+  `undone_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '成员未添加客户提醒开关 0关 1开',
+  `undone_time_out` int(11) NOT NULL DEFAULT '0' COMMENT '成员未添加客户提醒超时天数',
+  `undone_reminder_time` time NOT NULL DEFAULT '00:00:00' COMMENT '成员未添加客户提醒时间',
+  `recycle_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '回收客户开关 0关 1开',
+  `recycle_time_out` int(11) NOT NULL DEFAULT '0' COMMENT '客户超过天数回收',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='批量新增客户配置表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_batch_add_import` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `corp_id` int(11) NOT NULL DEFAULT '0' COMMENT '企业ID（冗余）',
+  `record_id` int(11) NOT NULL DEFAULT '0' COMMENT '导入记录ID',
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '客户手机号',
+  `upload_at` timestamp NULL DEFAULT NULL COMMENT '导入时间',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '添加状态 0待分配 1待添加 2待通过 3已添加',
+  `add_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '添加时间',
+  `employee_id` int(11) NOT NULL DEFAULT '0' COMMENT '分配员工',
+  `allot_num` int(11) NOT NULL DEFAULT '0' COMMENT '分配次数',
+  `remark` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '备注',
+  `tags` json NOT NULL COMMENT '添加成功后标签',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `employee_id,status_index` (`employee_id`,`status`) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '统计索引'
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='批量新增客户账号表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_batch_add_import_record` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `corp_id` int(11) NOT NULL DEFAULT '0' COMMENT '企业ID',
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '导入任务名称',
+  `upload_at` timestamp NULL DEFAULT NULL COMMENT '上传时间',
+  `allot_employee` json NOT NULL COMMENT '分配客服',
+  `tags` json NOT NULL COMMENT '客户标签',
+  `import_num` int(11) NOT NULL DEFAULT '0' COMMENT '导入客户数量',
+  `add_num` int(11) NOT NULL DEFAULT '0' COMMENT '已添加客户数',
+  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '上传文件名',
+  `file_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '上传文件地址',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='批量新增客户导入记录表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_message_batch_send` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `corp_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '企业表ID （mc_corp.id）',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID【mc_user.id】',
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名称【mc_user.name】',
+  `filter_params` json DEFAULT NULL COMMENT '筛选客户参数',
+  `filter_params_detail` json DEFAULT NULL COMMENT '筛选客户参数显示详情',
+  `content` json NOT NULL COMMENT '群发消息内容',
+  `send_way` tinyint(4) NOT NULL DEFAULT '1' COMMENT '发送方式（1-立即发送，2-定时发送）',
+  `definite_time` timestamp NULL DEFAULT NULL COMMENT '定时发送时间',
+  `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
+  `send_employee_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送成员数量',
+  `send_contact_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送客户数量',
+  `send_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已发送数量',
+  `not_send_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '未发送数量',
+  `received_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已送达数量',
+  `not_received_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '未送达数量',
+  `receive_limit_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户接收已达上限',
+  `not_friend_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '因不是好友发送失败',
+  `send_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送）',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户消息群发表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_message_batch_send_employee` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `batch_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户消息群发id （mc_contact_message_batch_send.id)',
+  `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
+  `wx_user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信userId （mc_work_employee.wx_user_id)',
+  `send_contact_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送客户数量',
+  `content` json NOT NULL COMMENT '群发消息内容',
+  `err_code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '返回码',
+  `err_msg` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '对返回码的文本描述内容',
+  `msg_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业群发消息的id，可用于获取群发消息发送结果',
+  `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
+  `last_sync_time` timestamp NULL DEFAULT NULL COMMENT '最后一次同步结果时间',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送, 2-发送失败）',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户消息群发成员表';
+
+CREATE TABLE IF NOT EXISTS `mc_contact_message_batch_send_result` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `batch_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户消息群发id （mc_contact_message_batch_send.id)',
+  `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
+  `contact_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户表id（work_contact.id）',
+  `external_user_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '外部联系人userid',
+  `user_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业服务人员的userid',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '发送状态 0-未发送 1-已发送 2-因客户不是好友导致发送失败 3-因客户已经收到其他群发消息导致发送失败',
+  `send_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送时间，发送状态为1时返回',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户消息群发结果表';
+
+CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `corp_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '企业表ID （mc_corp.id）',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID【mc_user.id】',
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名称【mc_user.name】',
+  `batch_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '群发名称',
+  `content` json NOT NULL COMMENT '群发消息内容',
+  `send_way` tinyint(4) NOT NULL DEFAULT '1' COMMENT '发送方式（1-立即发送，2-定时发送）',
+  `definite_time` timestamp NULL DEFAULT NULL COMMENT '定时发送时间',
+  `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
+  `send_room_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送成员数量',
+  `send_contact_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送客户数量',
+  `send_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已发送数量',
+  `not_send_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '未发送数量',
+  `received_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已送达数量',
+  `not_received_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '未送达数量',
+  `send_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送）',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户群消息群发表';
+
+CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send_employee` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `batch_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户群消息群发id （mc_contact_message_batch_send.id)',
+  `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
+  `wx_user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信userId （mc_work_employee.wx_user_id)',
+  `send_room_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送群数量',
+  `content` json NOT NULL COMMENT '群发消息内容',
+  `err_code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '返回码',
+  `err_msg` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '对返回码的文本描述内容',
+  `msg_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业群发消息的id，可用于获取群发消息发送结果',
+  `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
+  `last_sync_time` timestamp NULL DEFAULT NULL COMMENT '最后一次同步结果时间',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送, 2-发送失败）',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户群消息群发成员表';
+
+CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send_result` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `batch_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户群消息群发id （mc_contact_message_batch_send.id)',
+  `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
+  `room_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户群id（work_room.id）',
+  `room_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '客户群名称（work_room.name）',
+  `room_employee_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '客户群成员数量',
+  `room_create_time` timestamp NULL DEFAULT NULL COMMENT '群聊创建时间',
+  `chat_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '外部客户群id，群发消息到客户不吐出该字段',
+  `user_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业服务人员的userid',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '发送状态 0-未发送 1-已发送 2-因客户不是好友导致发送失败 3-因客户已经收到其他群发消息导致发送失败',
+  `send_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送时间，发送状态为1时返回',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户群消息群发结果表';
 
 ## 高级属性
 INSERT INTO mc_contact_field (id, name, label, type, options, `order`, status, is_sys, created_at, updated_at, deleted_at) VALUES (1, 'phone', '手机号', 9, '[]', 0, 1, 1, '2020-12-29 19:39:45', NULL, NULL);

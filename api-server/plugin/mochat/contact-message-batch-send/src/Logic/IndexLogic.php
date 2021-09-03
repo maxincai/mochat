@@ -74,8 +74,26 @@ class IndexLogic
         ## 处理分页数据
         $data['page']['total']     = $res['total'];
         $data['page']['totalPage'] = $res['last_page'];
-        $data['list']              = $res['data'];
+        $data['list']              = $this->handleData($res['data']);
 
+        return $data;
+    }
+
+    protected function handleData($data):array
+    {
+        foreach ($data as $k=>$v){
+            if (!empty($v['content'])){
+                if ($v['content'][0]['msgType'] === 'image'){
+                    $data[$k]['content'][0]['image']['pic_url'] = file_full_url($v['content'][0]['image']['pic_url']);
+                }
+                if ($v['content'][0]['msgType'] === 'link'){
+                    $data[$k]['content'][0]['link']['pic_url'] = file_full_url($v['content'][0]['link']['pic_url']);
+                }
+                if ($v['content'][0]['msgType'] === 'miniprogram'){
+                    $data[$k]['content'][0]['miniprogram']['pic_url'] = file_full_url($v['content'][0]['miniprogram']['pic_url']);
+                }
+            }
+        }
         return $data;
     }
 }

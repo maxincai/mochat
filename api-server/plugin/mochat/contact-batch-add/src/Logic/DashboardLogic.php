@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ContactBatchAdd\Logic;
 
 use Hyperf\DbConnection\Db;
@@ -15,6 +16,7 @@ use Hyperf\Di\Annotation\Inject;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddAllotContract;
 use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddImportContract;
+use function Composer\Autoload\includeFile;
 
 /**
  * 导入客户-统计数据.
@@ -43,29 +45,36 @@ class DashboardLogic
 
     public function handle(array $params): array
     {
-        $corpId = $params['corp_id'];
+        $corpId = $params['corpId'];
 
         return [
-            'employees' => $this->handleEmployees($corpId),
+            'employees' => $this->handleEmployees($params),
             'dashboard' => $this->getDashboard($corpId),
         ];
     }
 
     /**
-     * @param int $corpId 企业ID
+     * @param int $params 企业ID
      * @return array 响应数组
      */
-    private function handleEmployees(int $corpId): array
+    private function handleEmployees(array $params): array
     {
-        $employee    = $this->workEmployeeService->getWorkEmployeeList(['corp_id' => $corpId], ['id', 'name'], ['orderByRaw' => 'id desc']);
-        $co          = collect($employee['data']);
-        $employeeIds = $co->pluck('id')->toArray();
-
+        $employee = $this->workEmployeeService->getWorkEmployeeList(['corp_id' => $params['corpId']], ['id', 'name'], ['orderByRaw' => 'id desc']);
+        $co = collect($employee['data']);
+        $employeeIds = empty($params['employeeId']) ? $co->pluck('id')->toArray() : $params['employeeId'];
         $data = $this->contactBatchAddImportService->getContactBatchAddImportOptionWhereGroup([
             ['employee_id', 'in', $employeeIds],
         ], ['employee_id', 'status'], [
             'employee_id', 'status', Db::raw('count(1) as num'),
         ]);
+        if (!empty($params['startTime'])) {
+            $data = $this->contactBatchAddImportService->getContactBatchAddImportOptionWhereGroup([
+                ['employee_id', 'in', $employeeIds],['created_at', '>',$params['startTime']], ['created_at', '<', $params['endTime']],
+            ], ['employee_id', 'status'], [
+                'employee_id', 'status', Db::raw('count(1) as num'),
+            ]);
+        }
+
         $coData = collect($data);
 
         $allot = $this->contactBatchAddAllotService->getContactBatchAddAllotOptionWhereGroup([
@@ -76,9 +85,13 @@ class DashboardLogic
         ]);
         $coAllot = collect($allot);
 
-        foreach ($employee['data'] as &$item) {
+        foreach ($employee['data'] as $k => &$item) {
             ## 分配客户数
             $item['allotNum'] = $coData->where('employeeId', $item['id'])->sum('num');
+            if ($item['allotNum'] === 0) {
+                unset($employee['data'][$k]);
+                continue;
+            }
             ## 待添加客户数
             $item['toAddNum'] = $coData->where('employeeId', $item['id'])->where('status', 1)->sum('num');
             ## 待通过客户数
@@ -91,28 +104,22 @@ class DashboardLogic
             $item['completion'] = intval($item['passedNum'] / ($item['allotNum'] ?: 1) * 10000) / 100;
         }
         unset($item);
+        $employee['data'] = array_merge($employee['data']);
         return $employee;
     }
 
     private function getDashboard($corpId)
     {
-        $data = $this->contactBatchAddImportService->getContactBatchAddImportOptionWhereGroup([
-            ['corp_id', '=', $corpId],
-        ], ['employee_id', 'status'], [
-            'employee_id', 'status', Db::raw('count(1) as num'),
-        ]);
-        $coData = collect($data);
-
         ## 导入总客户数
-        $result['contactNum'] = $coData->count();
+        $result['contactNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 4);
         ## 待分配客户数
-        $result['pendingNum'] = $coData->where('status', '=', 0)->count();
+        $result['pendingNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 0);
         ## 待添加客户数
-        $result['toAddNum'] = $coData->where('status', '=', 1)->count();
+        $result['toAddNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 1);
         ## 待通过客户数
-        $result['pendingNum'] = $coData->where('status', '=', 2)->count();
+        $result['toPendingNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 2);
         ## 已添加客户数
-        $result['passedNum'] = $coData->where('status', '=', 3)->count();
+        $result['passedNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 3);
         ## 完成率
         $result['completion'] = intval($result['passedNum'] / ($result['contactNum'] ?: 1) * 10000) / 100;
         return $result;

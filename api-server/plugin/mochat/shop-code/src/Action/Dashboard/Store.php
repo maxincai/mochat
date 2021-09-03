@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ShopCode\Action\Dashboard;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -69,7 +70,7 @@ class Store extends AbstractAction
 
     public function __construct(RequestInterface $request, ContainerInterface $container)
     {
-        $this->request   = $request;
+        $this->request = $request;
         $this->container = $container;
     }
 
@@ -85,7 +86,7 @@ class Store extends AbstractAction
     {
         $user = user();
         ## 判断用户绑定企业信息
-        if (! isset($user['corpIds']) || count($user['corpIds']) != 1) {
+        if (!isset($user['corpIds']) || count($user['corpIds']) != 1) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未选择登录企业，不可操作');
         }
 
@@ -94,63 +95,45 @@ class Store extends AbstractAction
         $this->validated($params, 'store');
         ## 处理参数
         $params = $this->handleParam($user, $params);
+        ## 处理重复
+        if (!empty($params['address'])) {
+            $info = $this->shopCodeService->getShopCodeByNameAddress($user['corpIds'][0],$params['address'], 0, ['id']);
+            if (!empty($info)){
+                throw new CommonException(ErrorCode::INVALID_PARAMS, '地址重复，不可操作');
+            }
+        }
         ## 创建标签
         return $this->createShopCode($user, $params);
-    }
-
-    /**
-     * 验证规则.
-     *
-     * @return array 响应数据
-     */
-    protected function rules(): array
-    {
-        return [
-            'type'   => 'required',
-            'status' => 'required',
-        ];
-    }
-
-    /**
-     * 验证错误提示.
-     * @return array 响应数据
-     */
-    protected function messages(): array
-    {
-        return [
-            'type.required'   => 'type 必传',
-            'status.required' => '开启状态 必传',
-        ];
     }
 
     /**
      * 处理参数.
      * @param array $user 用户信息
      * @param array $params 接受参数
-     * @throws \JsonException
      * @return array 响应数组
+     * @throws \JsonException
      */
     private function handleParam(array $user, array $params): array
     {
         ## 基本信息
         return [
-            'name'           => isset($params['name']) ? $params['name'] : '',
-            'type'           => $params['type'],
-            'employee'       => (isset($params['employee']) && ! empty($params['employee'])) ? json_encode($params['employee'], JSON_THROW_ON_ERROR) : '{}',
-            'qw_code'        => isset($params['qwCode']) ? json_encode($params['qwCode'], JSON_THROW_ON_ERROR) : '{}',
-            'address'        => isset($params['address']) ? $params['address'] : '',
+            'name' => isset($params['name']) ? $params['name'] : '',
+            'type' => $params['type'],
+            'employee' => (isset($params['employee']) && !empty($params['employee'])) ? json_encode($params['employee'], JSON_THROW_ON_ERROR) : '{}',
+            'qw_code' => isset($params['qwCode']) ? json_encode($params['qwCode'], JSON_THROW_ON_ERROR) : '{}',
+            'address' => isset($params['address']) ? $params['address'] : '',
             'search_keyword' => isset($params['searchKeyword']) ? $params['searchKeyword'] : '',
-            'country'        => isset($params['country']) ? $params['country'] : '',
-            'province'       => isset($params['province']) ? $params['province'] : '',
-            'city'           => isset($params['city']) ? $params['city'] : '',
-            'district'       => isset($params['district']) ? $params['district'] : '',
-            'lat'            => isset($params['lat']) ? $params['lat'] : '',
-            'lng'            => isset($params['lng']) ? $params['lng'] : '',
-            'status'         => $params['status'],
-            'tenant_id'      => isset($params['tenant_id']) ? $params['tenant_id'] : 0,
-            'corp_id'        => $user['corpIds'][0],
+            'country' => isset($params['country']) ? $params['country'] : '',
+            'province' => isset($params['province']) ? $params['province'] : '',
+            'city' => isset($params['city']) ? $params['city'] : '',
+            'district' => isset($params['district']) ? $params['district'] : '',
+            'lat' => isset($params['lat']) ? $params['lat'] : '',
+            'lng' => isset($params['lng']) ? $params['lng'] : '',
+            'status' => $params['status'],
+            'tenant_id' => isset($params['tenant_id']) ? $params['tenant_id'] : 0,
+            'corp_id' => $user['corpIds'][0],
             'create_user_id' => $user['id'],
-            'created_at'     => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -166,7 +149,7 @@ class Store extends AbstractAction
         try {
             ## 创建活动
             $id = $this->shopCodeService->createShopCode($params);
-            if ((int) $params['type'] === 1) {
+            if ((int)$params['type'] === 1) {
                 $employee = json_decode($params['employee'], true, 512, JSON_THROW_ON_ERROR);
                 $this->handleQrcode($user, $employee['wxUserId'], $id);
             }
@@ -178,5 +161,30 @@ class Store extends AbstractAction
             throw new CommonException(ErrorCode::SERVER_ERROR, $e->getMessage()); //'活动创建失败'
         }
         return [$id];
+    }
+
+    /**
+     * 验证规则.
+     *
+     * @return array 响应数据
+     */
+    protected function rules(): array
+    {
+        return [
+            'type' => 'required',
+            'status' => 'required',
+        ];
+    }
+
+    /**
+     * 验证错误提示.
+     * @return array 响应数据
+     */
+    protected function messages(): array
+    {
+        return [
+            'type.required' => 'type 必传',
+            'status.required' => '开启状态 必传',
+        ];
     }
 }

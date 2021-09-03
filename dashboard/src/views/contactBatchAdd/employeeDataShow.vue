@@ -77,7 +77,7 @@
   display: flex;
   justify-content: flex-start;
   padding: 15px 0px;
-  widows: 49%;
+  width: 49%;
   align-items: center;
   img {
     margin-left: 15px;

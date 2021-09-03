@@ -2,7 +2,7 @@
   <div class="index_module">
     <a-row class="search" type="flex" justify="space-between">
       <a-button @click="handleAdd" type="primary">新建群发</a-button>
-      <a-input-search placeholder="请输入群发名称" @search="onSearch" />
+      <a-input-search placeholder="请输入群发名称" @search="onSearch" v-model="searchTable" />
     </a-row>
     <a-table
       class="index_table"
@@ -12,34 +12,42 @@
       :data-source="dataList"
       @change="tableChange"
     >
-      <span slot="content" slot-scope="text,record">
-        <div v-for="(v,i) in record.content" :key="i">
-          <div v-if="v.msgType === 'text'">
-            {{ v.content }}
-          </div>
-          <div v-if="v.msgType === 'link'">
-            <span class="type-text">[链接]</span>
-            {{ v.title }}
-          </div>
-          <div v-if="v.msgType === 'image'">
-            <img class="table-pic" :src="v.pic_url">
-          </div>
-          <div v-if="v.msgType === 'miniprogram'">
-            <div class="applets">
-              <div class="title">
-                {{ v.title }}
+      <div slot="content" slot-scope="text,record">
+        <div v-for="(item,index) in record.content" :key="index">
+          <div>群发消息1：{{ item.text.content }}</div>
+          <div style="margin-top: 10px;">群发消息2：</div>
+          <div style="margin-left: 15px;margin-top: 10px;">
+            <div v-if="item.msgType=='image'">
+              <img :src="item.image.pic_url" alt="" style="width: 70px;height: 70px;">
+            </div>
+            <div v-if="item.msgType=='link'">
+              <div>{{ item.link.url }}</div>
+              <div style="display: flex;">
+                <div>
+                  <div>{{ item.link.title }}</div>
+                  <div>{{ item.link.desc }}</div>
+                </div>
+                <img :src="item.link.pic_url" alt="" style="width: 70px;height: 70px;">
               </div>
-              <div class="image">
-                <img :src="v.pic_media_id">
-              </div>
-              <div class="applets-logo">
-                <img src="../../assets/link.jpg">
-                小程序
+            </div>
+            <div v-if="item.msgType=='miniprogram'">
+              <div class="applets">
+                <div class="title">
+                  {{ item.miniprogram.title }}
+                </div>
+                <div class="image">
+                  <img :src="item.miniprogram.pic_url">
+                </div>
+                <div class="applets-logo">
+                  <img src="https://www.hualigs.cn/image/607ea04022f74.jpg">
+                  小程序
+                </div>
               </div>
             </div>
           </div>
+          <!--          -->
         </div>
-      </span>
+      </div>
       <span slot="action" slot-scope="text,record">
         <a @click="handleRemind(record)">提醒发送</a>
         <a-divider type="vertical" />
@@ -59,7 +67,7 @@ const columns = [
   },
   {
     title: '发送时间',
-    dataIndex: 'createdAt'
+    dataIndex: 'definiteTime'
   },
   {
     title: '群发内容',
@@ -90,6 +98,7 @@ const columns = [
 export default {
   data () {
     return {
+      searchTable: '',
       dataList: [],
       columns,
       pagination: {
@@ -106,8 +115,11 @@ export default {
     })
   },
   methods: {
-    onSearch (value) {
-      this.pagination.current = 1
+    onSearch () {
+      this.selectList({
+        page: 1,
+        perPage: 100
+      })
     },
     tableChange (e) {
       console.log(JSON.stringify(e))
@@ -120,7 +132,8 @@ export default {
     selectList (e) {
       index({
         page: e.page,
-        perPage: e.perPage
+        perPage: e.perPage,
+        batchTitle: this.searchTable
       }).then(data => {
         data = data.data
         data.list.forEach(element => {
@@ -161,13 +174,11 @@ export default {
   }
 }
 </script>
-
 <style lang="less">
 .index_module {
   background-color: #fff;
   padding: 0px 15px;
 }
-
 .search {
   padding: 15px 0px;
 
@@ -175,7 +186,6 @@ export default {
     width: 200px;
   }
 }
-
 .applets {
   max-width: 183px;
   background: #fff;

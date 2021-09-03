@@ -366,6 +366,27 @@ export const routeList = {
     component: () => import('@/views/workFission/dataShow'),
     meta: { title: '数据详情' }
   },
+  // 客户群发
+  '/contactMessageBatchSend/index': {
+    path: '/contactMessageBatchSend/index',
+    name: 'contactMessageBatchSendIndex',
+    component: () => import('@/views/contactMessageBatchSend/index'),
+    meta: { title: '客户群发' }
+  },
+  '/contactMessageBatchSend/store': {
+    path: '/contactMessageBatchSend/store',
+    name: 'contactMessageBatchSendStore',
+    hidden: true,
+    component: () => import('@/views/contactMessageBatchSend/store'),
+    meta: { title: '新建群发' }
+  },
+  '/contactMessageBatchSend/show': {
+    path: '/contactMessageBatchSend/show',
+    name: 'contactMessageBatchSendShow',
+    hidden: true,
+    component: () => import('@/views/contactMessageBatchSend/show'),
+    meta: { title: '群发详情' }
+  },
   // 个人SOP
   '/contactSop/index': {
     path: '/contactSop/index',
@@ -453,7 +474,7 @@ export const routeList = {
   '/roomClockIn/index': {
     path: '/roomClockIn/index',
     name: '/roomClockInIndex',
-    component: () => import('@/views/roomClockIn/index.vue'),
+    component: () => import('@/views/roomClockIn/index'),
     meta: { title: '群打卡' }
   },
   '/roomClockIn/create': {
@@ -468,7 +489,7 @@ export const routeList = {
     name: '/roomClockInEdit',
     hidden: true,
     component: () => import('@/views/roomClockIn/edit'),
-    meta: { title: '创建' }
+    meta: { title: '修改' }
   },
   '/roomClockIn/show': {
     path: '/roomClockIn/show',
@@ -643,6 +664,14 @@ export const routeList = {
     hidden: true,
     component: () => import('@/views/roomMessageBatchSend/show'),
     meta: { title: '群发详情' }
+  },
+  // 群详情
+  '/roomMessageBatchSend/groupDetails': {
+    path: '/roomMessageBatchSend/groupDetails',
+    name: 'roomMessageBatchSend/groupDetails',
+    hidden: true,
+    component: () => import('@/views/roomMessageBatchSend/groupDetails'),
+    meta: { title: '群详情' }
   },
   // 批量加好友
   '/contactBatchAdd/index': {

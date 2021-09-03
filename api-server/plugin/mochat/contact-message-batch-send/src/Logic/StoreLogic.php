@@ -95,8 +95,8 @@ class StoreLogic
      */
     public function handle(array $params, array $user): bool
     {
-        $corpId      = $user['corpIds'][0];
-        $employeeIds = (array) $params['employeeIds'];
+        $corpId = $user['corpIds'][0];
+        $employeeIds = (array)$params['employeeIds'];
 
         ## 获取用户成员
         $employees = $this->workEmployee->getWorkEmployeesByIdCorpIdStatus($corpId, $employeeIds, 1, ['id', 'wx_user_id']);
@@ -104,14 +104,14 @@ class StoreLogic
             throw new CommonException(ErrorCode::INVALID_PARAMS);
         }
 
-        $filterParams = empty($params['filterParams']) ? [] : (array) $params['filterParams'];
-
+        $filterParams = empty($params['filterParams']) ? [] : (array)$params['filterParams'];
+        $this->workContactEmployee->getWorkContactsByEmployeeIdFilterParams(13, $filterParams);
         $filterParamsDetail = [
-            'gender'          => $filterParams['gender'] ?? '',
-            'addTimeStart'    => $filterParams['addTimeStart'] ?? '',
-            'addTimeEnd'      => $filterParams['addTimeEnd'] ?? '',
-            'rooms'           => [],
-            'tags'            => [],
+            'gender' => $filterParams['gender'] ?? '',
+            'addTimeStart' => $filterParams['addTimeStart'] ?? '',
+            'addTimeEnd' => $filterParams['addTimeEnd'] ?? '',
+            'rooms' => [],
+            'tags' => [],
             'excludeContacts' => [],
         ];
 
@@ -119,7 +119,7 @@ class StoreLogic
             $filterParamsDetail['gender'] = $filterParams['gender'];
         }
 
-        if (! empty($filterParams['addTimeStart'])) {
+        if (!empty($filterParams['addTimeStart'])) {
             $filterParamsDetail['addTimeStart'] = $filterParams['addTimeStart'];
         }
 
@@ -127,38 +127,37 @@ class StoreLogic
             $filterParamsDetail['addTimeEnd'] = $filterParams['addTimeEnd'];
         }
 
-        if (! empty($filterParams['rooms'])) {
+        if (!empty($filterParams['rooms'])) {
             $filterParamsDetail['rooms'] = $this->workRoom->getWorkRoomsById($filterParams['rooms'], ['id', 'name']);
         }
-        if (! empty($filterParams['tags'])) {
+        if (!empty($filterParams['tags'])) {
             $filterParamsDetail['tags'] = $this->workContactTag->getWorkContactTagsById($filterParams['tags'], ['id', 'name']);
         }
-        if (! empty($filterParams['excludeContacts'])) {
+        if (!empty($filterParams['excludeContacts'])) {
             $filterParamsDetail['excludeContacts'] = $this->workContact->getWorkContactsById($filterParams['excludeContacts'], ['id', 'name']);
         }
-
         ## 入库
         Db::beginTransaction();
         try {
             $batchContent = $params['content'];
-            $batchId      = $this->contactMessageBatchSend->createContactMessageBatchSend([
-                'corp_id'              => $corpId,
-                'user_id'              => $user['id'],
-                'user_name'            => $user['name'] ?: $user['phone'],
-                'filter_params'        => json_encode($filterParams, JSON_UNESCAPED_UNICODE),
+            $batchId = $this->contactMessageBatchSend->createContactMessageBatchSend([
+                'corp_id' => $corpId,
+                'user_id' => $user['id'],
+                'user_name' => $user['name'] ?: $user['phone'],
+                'filter_params' => json_encode($filterParams, JSON_UNESCAPED_UNICODE),
                 'filter_params_detail' => json_encode($filterParamsDetail, JSON_UNESCAPED_UNICODE),
-                'content'              => json_encode($batchContent, JSON_UNESCAPED_UNICODE),
-                'send_way'             => $params['sendWay'],
-                'definite_time'        => $params['definiteTime'],
-                'created_at'           => date('Y-m-d H:i:s'),
+                'content' => json_encode($batchContent, JSON_UNESCAPED_UNICODE),
+                'send_way' => $params['sendWay'],
+                'definite_time' => $params['definiteTime'],
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
 
             $employeeTotal = 0;
-            $contactTotal  = 0;
+            $contactTotal = 0;
             foreach ($employees as $employee) {
                 ++$employeeTotal;
                 ## 获取成员客户
-                $contacts = $this->getWorkContactsByEmployeeFilterParams($employee['id'], $filterParams);
+                $contacts = $this->workContactEmployee->getWorkContactsByEmployeeIdFilterParams($employee['id'], $filterParams);
                 $contactTotal += count($contacts);
                 ## 扩展多条消息
                 foreach ($batchContent as $content) {
@@ -166,29 +165,29 @@ class StoreLogic
                     $contactTotal = 0;
                     foreach ($contacts as $contact) {
                         $this->contactMessageBatchSendResult->createContactMessageBatchSendResult([
-                            'batch_id'         => $batchId,
-                            'employee_id'      => $employee['id'],
-                            'contact_id'       => $contact['id'],
+                            'batch_id' => $batchId,
+                            'employee_id' => $employee['id'],
+                            'contact_id' => $contact['id'],
                             'external_user_id' => $contact['wxExternalUserid'],
-                            'created_at'       => date('Y-m-d H:i:s'),
+                            'created_at' => date('Y-m-d H:i:s'),
                         ]);
                         ++$contactTotal;
                     }
                     ## 成员
                     $this->contactMessageBatchSendEmployee->createContactMessageBatchSendEmployee([
-                        'batch_id'           => $batchId,
-                        'employee_id'        => $employee['id'],
-                        'wx_user_id'         => $employee['wxUserId'],
+                        'batch_id' => $batchId,
+                        'employee_id' => $employee['id'],
+                        'wx_user_id' => $employee['wxUserId'],
                         'send_contact_total' => $contactTotal,
-                        'content'            => json_encode($content, JSON_UNESCAPED_UNICODE),
-                        'created_at'         => date('Y-m-d H:i:s'),
-                        'last_sync_time'     => date('Y-m-d H:i:s'),
+                        'content' => json_encode($content, JSON_UNESCAPED_UNICODE),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'last_sync_time' => date('Y-m-d H:i:s'),
                     ]);
                 }
             }
             $this->contactMessageBatchSend->updateContactMessageBatchSendById($batchId, [
                 'sendEmployeeTotal' => $employeeTotal,
-                'sendContactTotal'  => $contactTotal,
+                'sendContactTotal' => $contactTotal,
             ]);
             Db::commit();
         } catch (\Throwable $e) {
@@ -197,46 +196,10 @@ class StoreLogic
             $this->logger->error($e->getTraceAsString());
             throw new CommonException(ErrorCode::SERVER_ERROR, '客户消息创建失败');
         }
-
-        if ($params['sendWay'] == 1) {
+        if ((int)$params['sendWay'] === 1) {
             make(StoreApply::class)->handle($batchId);
         }
-
         return true;
     }
 
-    /**
-     * 获取过滤后的多条
-     * @param array $params 过滤参数
-     * @return array 响应数组
-     */
-    protected function getWorkContactsByEmployeeFilterParams(int $employeeId, array $params)
-    {
-        $gender          = $params['gender'] ?? null;
-        $rooms           = $params['rooms'] ?? [];
-        $addTimeStart    = $params['addTimeStart'] ?? null;
-        $addTimeEnd      = $params['addTimeEnd'] ?? null;
-        $tags            = $params['tags'] ?? [];
-        $excludeContacts = $params['excludeContacts'] ?? [];
-
-        ## 查询条件
-        $where = [];
-        if ($gender !== null) {
-            $where[] = ['gender', '=', $gender];
-        }
-
-        ## 获取成员所有客户
-        $contactIds = $this->workContactEmployee->getWorkContactEmployeeContactIdsByEmployeeId($employeeId, $addTimeStart, $addTimeEnd);
-
-        if (! empty($excludeContacts)) {
-            $contactIds = array_diff($contactIds, (array) $excludeContacts);
-        }
-
-        if (! empty($rooms)) {
-            $roomContactIds = $this->workContactRoom->getWorkContactRoomsContactIdsByRoomIds((array) $rooms);
-            $contactIds     = array_intersect($contactIds, $roomContactIds);
-        }
-
-        return $this->workContact->getWorkContactsByIdsTagIds($contactIds, (array) $tags);
-    }
 }
