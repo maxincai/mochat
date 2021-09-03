@@ -13,8 +13,10 @@ namespace MoChat\App\Utils;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use MoChat\App\Corp\Logic\AppTrait;
+use MoChat\App\Corp\Utils\WeWorkFactory;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
+use Psr\SimpleCache\CacheInterface;
 
 class Media
 {
@@ -31,6 +33,18 @@ class Media
      * @var \League\Flysystem\Filesystem
      */
     protected $filesystem;
+
+    /**
+     * @Inject()
+     * @var CacheInterface
+     */
+    protected $cache;
+
+    /**
+     * @Inject()
+     * @var WeWorkFactory
+     */
+    protected $weWorkFactory;
 
     /**
      * 上传临时图片媒体素材
@@ -100,8 +114,14 @@ class Media
      */
     public function upload($corpId, string $type, string $path): string
     {
+        $mediaId = $this->cache->get($this->getCacheKey($corpId, $path));
+        if (!empty($mediaId)) {
+            return $mediaId;
+        }
+
         try {
-            $mediaService = $this->wxApp($corpId, 'user')->media;
+            $weWorkUserApp = $this->weWorkFactory->getUserApp($corpId);
+            $mediaService = $weWorkUserApp->media;
             $fileContent = $this->filesystem->read($path);
             $tempFile = tempnam(sys_get_temp_dir(), 'Media');
             file_put_contents($tempFile, $fileContent, FILE_USE_INCLUDE_PATH);
@@ -109,6 +129,7 @@ class Media
             if ($wxMediaRes['errcode'] != 0) {
                 throw new CommonException(ErrorCode::INVALID_PARAMS, sprintf('请求数据：%s 响应结果：%s', $path, json_encode($wxMediaRes)));
             }
+            $this->cache->set($this->getCacheKey($corpId, $path), $wxMediaRes['media_id'], 60 * 60 * 24 * 3 - 300);
             return $wxMediaRes['media_id'];
         } catch (\Throwable $e) {
             ## 记录错误日志
@@ -118,5 +139,10 @@ class Media
         } finally {
             isset($tempFile) && file_exists($tempFile) && unlink($tempFile);
         }
+    }
+
+    protected function getCacheKey($corpId, string $path)
+    {
+        return sprintf("mochat:mediaId:%s:%s", (string) $corpId, md5($path));
     }
 }
