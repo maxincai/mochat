@@ -1,3 +1,7 @@
+import { Toast } from 'vant'
+import store from '@/store'
+import { agentConfig } from '@/utils/wxCodeAuth'
+
 // 设置 cookie
 export function setCookie (name, value, time = 7200) {
   //  设置过期时间为
@@ -175,4 +179,92 @@ function decodeTransform (input) {
     }
   }
   return output
+}
+
+function oldRouteRedirect (to, from, next) {
+  if (to.path !== '/') {
+    return
+  }
+
+  let location = {}
+
+  const { agentId, pageFlag } = to.query
+
+  if (!pageFlag) {
+    return
+  }
+
+  let routePath = ''
+  if (pageFlag === 'customer') {
+    routePath = 'contact'
+  } else if (pageFlag === 'mediumGroup') {
+    routePath = 'medium'
+  } else {
+    routePath = pageFlag
+  }
+  location = { path: `/${routePath}`, query: { agentId: agentId } }
+  next(location)
+}
+
+/**
+ * 检查登录状态
+ *
+ * @param to
+ * @param from
+ * @param next
+ * @returns {boolean}
+ */
+export async function checkLogin (to, from, next) {
+  if (from.fullPath === '/') {
+    return false
+  }
+
+  oldRouteRedirect(to, from, next)
+
+  let agentId = from.query.agentId
+
+  if (!agentId) {
+    agentId = getCookie('agentId')
+  }
+
+  if (!agentId) {
+    Toast({ position: 'top', message: '应用id不能为空' })
+    return false
+  }
+
+  const token = getCookie('token')
+  if (!token) {
+    const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
+    window.location.href = apiBaseUrl + '/sidebar/agent/auth?agentId=' + agentId + '&target=' + encodeURIComponent(from.fullPath)
+    return false
+  }
+
+  return true
+}
+
+export function navShow (to) {
+  let show
+  if (to.path === '/medium' || to.path === '/contact') {
+    show = true
+  } else {
+    show = false
+  }
+  store.commit('SET_NAV_SHOW', show)
+}
+
+export async function initConfig(to, from, next) {
+  let agentId = from.query.agentId
+
+  if (!agentId) {
+    agentId = getCookie('agentId')
+  }
+
+  if (!agentId) {
+    return;
+  }
+
+  const fullPath = from.fullPath
+  // 从企业微信3.0.24及以后版本（可通过企业微信UA判断版本号），无须先调用wx.config，可直接wx.agentConfig.
+  // await wxConfig(fullPath)
+  await agentConfig(fullPath, agentId)
 }

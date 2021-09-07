@@ -27,7 +27,7 @@ use MoChat\Plugin\ContactBatchAdd\Logic\DashboardLogic;
  * Class Index.
  * @Controller
  */
-class Dashboard extends AbstractAction
+class EmployeeDataShow extends AbstractAction
 {
     use ValidateSceneTrait;
 
@@ -38,7 +38,7 @@ class Dashboard extends AbstractAction
     protected $dashboardLogic;
 
     /**
-     * @RequestMapping(path="/dashboard/contactBatchAdd/dashboard", methods="get")
+     * @RequestMapping(path="/dashboard/contactBatchAdd/employeeDataShow", methods="get")
      * @Middlewares({
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)

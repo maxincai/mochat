@@ -49,7 +49,7 @@ class DashboardLogic
 
         return [
             'employees' => $this->handleEmployees($params),
-            'dashboard' => $this->getDashboard($corpId),
+            'employeeDataShow' => $this->getDashboard($corpId),
         ];
     }
 

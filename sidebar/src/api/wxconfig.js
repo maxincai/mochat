@@ -16,10 +16,11 @@ export function getAgentInfo (params) {
   })
 }
 
-export function getUserInfo (params) {
+export function getJssdkConfig (params) {
   return request({
-    url: '/user/loginShow',
+    url: '/agent/jssdkConfig',
     method: 'get',
     params: params
   })
 }
+

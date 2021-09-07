@@ -38,9 +38,7 @@ import pushRule from '@/views/roomSop/pushRule'
 import setCalendar from '@/views/roomSop/setCalendar'
 import roomQuality from '@/views/roomSop/roomQuality'
 // eslint-disable-next-line no-unused-vars
-import { wxConfig, agentConfig, getCurExternalChat } from '@/utils/wxCodeAuth'
-// eslint-disable-next-line no-unused-vars
-import { getCookie } from 'utils'
+import { getCurExternalChat, getContext } from '@/utils/wxCodeAuth'
 // eslint-disable-next-line no-unused-vars
 import { roomManageApi } from '@/api/room'
 export default {
@@ -51,15 +49,20 @@ export default {
   },
   data () {
     return {
-      setGroupName: {}
+      setGroupName: {
+        top: [],
+        calendar: [],
+        quality: []
+      }
     }
   },
-  created () {
-    this.corpId = getCookie('corpId')
-    this.agentId = getCookie('agentId')
-    this.uriPath = this.$route.fullPath
-    wxConfig(this.corpId, this.uriPath)
-    agentConfig(this.corpId, this.uriPath, this.agentId)
+  async created () {
+    const entry = await getContext()
+    if (entry !== 'group_chat_tools') {
+      this.$toast({ position: 'top', message: '请从群聊会话的工具栏进入' })
+      return
+    }
+
     this.getGroupId()
     // this.getGroupSetData()
   },
@@ -85,32 +88,28 @@ export default {
     // 获取群聊
     async getGroupId () {
       this.groupId = await getCurExternalChat()
-      // this.groupId = 'wrWGBlCwAA6nGx6UWrp6w0mdoWMkbjgg'
-      console.log(this.groupId)
       this.getGroupSetData()
     },
     // 获取群聊设置信息
     getGroupSetData () {
       const params = {
-        corpId: this.corpId,
         roomId: this.groupId
       }
       roomManageApi(params).then((res) => {
-        console.log(res)
         this.setGroupName = res.data
       })
     },
     // 设置群sop
     setGroupSop () {
-      this.$refs.pushRule.showPopup(this.corpId, this.groupId, this.setGroupName.sop[0])
+      this.$refs.pushRule.showPopup(this.groupId, this.setGroupName.sop)
     },
     // 设置群日历
     clickSetCalendar () {
-      this.$refs.setCalendar.showPopup(this.corpId, this.groupId)
+      this.$refs.setCalendar.showPopup(this.groupId)
     },
     //  设置群聊质检
     setGroupInfo () {
-      this.$refs.roomQuality.showPopup(this.corpId, this.groupId)
+      this.$refs.roomQuality.showPopup(this.groupId)
     }
   }
 }

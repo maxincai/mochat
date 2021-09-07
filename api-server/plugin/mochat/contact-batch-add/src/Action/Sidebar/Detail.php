@@ -48,12 +48,12 @@ class ContactBatchAddDetail extends AbstractAction
      * @Middlewares({
      *     @Middleware(SidebarAuthMiddleware::class)
      * })
-     * @RequestMapping(path="/sidebar/contactBatchAddDetail", methods="get")
+     * @RequestMapping(path="/sidebar/contactBatchAdd/detail", methods="get")
      */
     public function handle(): array
     {
         //接收参数
-        $params['employeeId'] = (int)$this->request->input('employeeId', 0);
+        $params['employeeId'] = (int)user()['id'];
         $params['batchId'] = (int)$this->request->input('batchId');
         $params['status'] = (int)$this->request->input('status', 4);
         //校验参数

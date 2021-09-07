@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import store from '@/store'
+// import store from '@/store'
 import routes from './routes'
 import { Toast } from 'vant'
 // eslint-disable-next-line no-unused-vars
-import { getStorage, removeStorage } from '@/utils'
+import { checkLogin, navShow, initConfig } from '@/utils'
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -12,30 +12,14 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   try {
-    if (from.path == '/codeAuth') {
-      removeStorage('contactWxUserId')
-      await store.dispatch('GET_USER_INFO')
-
-      if (to.path === '/contact' || to.path === '/contact/remark' || to.path === '/contact/settingTag' || to.path === '/contact/editDetail'
-      ) {
-        await store.dispatch('GET_CUSTOMER_INFO')
-      }
-    } else if (to.path !== '/' && to.path !== '/codeAuth') {
-      const contactWxUserId = getStorage('contactWxUserId')
-      if (contactWxUserId) {
-        store.commit('SET_CUSTOMER_WX_USER_ID', contactWxUserId)
-      }
-      const { userInfo, contactInfo } = store.state.app
-      if (Object.keys(userInfo).length == 0) {
-        await store.dispatch('GET_USER_INFO')
-      }
-      if (Object.keys(contactInfo).length == 0) {
-        if (to.path === '/contact' || to.path === '/contact/remark' || to.path === '/contact/settingTag' || to.path === '/contact/editDetail'
-        ) {
-          await store.dispatch('GET_CUSTOMER_INFO')
-        }
-      }
+    if (from.path !== '/codeAuth' || from.path !== '/auth') {
+      await checkLogin(to, from, next)
     }
+
+    if (to.matched.some(record => record.meta.initConfig)) {
+      await initConfig(to, from, next)
+    }
+
     next()
   } catch (e) {
     Toast({ position: 'top', message: '获取用户信息失败' })
@@ -44,13 +28,8 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-router.afterEach((to, from) => {
-  let show
-  if (to.path == '/medium' || to.path == '/contact') {
-    show = true
-  } else {
-    show = false
-  }
-  store.commit('SET_NAV_SHOW', show)
+router.afterEach(async (to, from) => {
+
+  navShow(to)
 })
 export default router

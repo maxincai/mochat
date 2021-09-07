@@ -2,11 +2,7 @@
   <div class="batch_page" :style="{minHeight:(clientHeight-20)+'px'}">
     <div ref="element">
       <div class="batch_tip">
-        <div>管理员{{ employeeName }}培你分配了{{ list.length }}个好友,快去复制电话号码添加客户吧，管理员在后台可查看添加状态哦~</div>
-        <div style="margin-top: 10px;">
-          查看如何快速添加客户
-          <a style="color: #7CC2F6">点击查看</a>
-        </div>
+        <div>管理员 {{ employeeName }} 给你分配了 {{ list.length }} 个好友,快去复制电话号码添加客户吧，管理员在后台可查看添加状态哦~</div>
       </div>
       <div class="table_tip">
         <div class="client_num">共{{ list.length }}个客户</div>
@@ -47,11 +43,9 @@
 </template>
 <script>
 // eslint-disable-next-line no-unused-vars
-import { contactBatchAddDetailApi } from '@/api/batchAddFriend'
+import { contactBatchAddDetailApi } from '@/api/contactBatchAdd'
+import { navigateToAddCustomer } from '@/utils/wxCodeAuth'
 // eslint-disable-next-line no-unused-vars
-import { wxConfig, agentConfig, openUserProfile } from '@/utils/wxCodeAuth'
-// eslint-disable-next-line no-unused-vars
-import { getCookie } from 'utils'
 import { Toast, Empty } from 'vant'
 export default {
   components: {
@@ -95,18 +89,9 @@ export default {
   created () {
     this.clientHeight = document.documentElement.clientHeight
     this.tableAskData.batchId = this.$route.query.batchId
-    this.tableAskData.employeeId = this.$route.query.employeeId
-    this.setConfigData()
     this.getTableData()
   },
   methods: {
-    setConfigData () {
-      const corpId = getCookie('corpId')
-      const agentId = getCookie('agentId')
-      const uriPath = this.$route.fullPath
-      wxConfig(corpId, uriPath)
-      agentConfig(corpId, uriPath, agentId)
-    },
     // 复制按钮
     copyBtn (item) {
       const inputElement = this.$refs.copyInput
@@ -114,6 +99,7 @@ export default {
       inputElement.select()
       document.execCommand('Copy')
       Toast('复制成功')
+      this.navigateToAddContact()
     },
     // 获取表格数据
     getTableData () {
@@ -124,6 +110,9 @@ export default {
     },
     switchGroup () {
       this.getTableData()
+    },
+    navigateToAddContact() {
+      navigateToAddCustomer()
     }
   }
 }
