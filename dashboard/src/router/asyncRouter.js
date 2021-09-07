@@ -112,6 +112,14 @@ export const routeList = {
     component: () => import('@/views/workRoom/statistics'),
     meta: { title: '群统计' }
   },
+  // 群详情
+  '/workRoom/detail': {
+    path: '/workRoom/detail',
+    name: 'workRoomDetail',
+    hidden: true,
+    component: () => import('@/views/workRoom/detail'),
+    meta: { title: '群详情' }
+  },
   '/workRoomAutoPull/index': {
     path: '/workRoomAutoPull/index',
     name: 'workRoomAutoPull',
@@ -665,14 +673,6 @@ export const routeList = {
     component: () => import('@/views/roomMessageBatchSend/show'),
     meta: { title: '群发详情' }
   },
-  // 群详情
-  '/roomMessageBatchSend/groupDetails': {
-    path: '/roomMessageBatchSend/groupDetails',
-    name: 'roomMessageBatchSend/groupDetails',
-    hidden: true,
-    component: () => import('@/views/roomMessageBatchSend/groupDetails'),
-    meta: { title: '群详情' }
-  },
   // 批量加好友
   '/contactBatchAdd/index': {
     path: '/contactBatchAdd/index',
@@ -701,11 +701,11 @@ export const routeList = {
     component: () => import('@/views/contactBatchAdd/dataShow'),
     meta: { title: '数据统计' }
   },
-  '/contactBatchAdd/employeeDataShow': {
-    path: '/contactBatchAdd/employeeDataShow',
-    name: '/contactBatchAdd/employeeDataShow',
+  '/contactBatchAdd/dataStatistic': {
+    path: '/contactBatchAdd/dataStatistic',
+    name: '/contactBatchAdd/dataStatistic',
     hidden: true,
-    component: () => import('@/views/contactBatchAdd/employeeDataShow'),
+    component: () => import('@/views/contactBatchAdd/dataStatistic'),
     meta: { title: '数据统计详情' }
   },
   // 无限拉群

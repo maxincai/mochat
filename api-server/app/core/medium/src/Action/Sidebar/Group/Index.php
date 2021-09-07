@@ -8,12 +8,12 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\Medium\Action\Sidebar\Group;
 
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Medium\Contract\MediumGroupContract;
-use MoChat\App\User\Logic\Traits\UserTrait;
 use MoChat\Framework\Action\AbstractAction;
 use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
@@ -25,8 +25,6 @@ use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
  */
 class Index extends AbstractAction
 {
-    use UserTrait;
-
     /**
      * @Middlewares({
      *     @Middleware(SidebarAuthMiddleware::class)
@@ -36,10 +34,10 @@ class Index extends AbstractAction
     public function handle(): array
     {
         ## 企业ID
-        $corpId = $this->corpId();
+        $corpId = (int) user()['corpId'];
 
         $client = $this->container->get(MediumGroupContract::class);
-        $data   = $client->getMediumGroupsByCorpId($corpId, ['id', 'name']);
+        $data = $client->getMediumGroupsByCorpId($corpId, ['id', 'name']);
 
         array_unshift($data, ['id' => 0, 'name' => '未分组']);
         return $data;

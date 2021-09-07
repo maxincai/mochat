@@ -101,7 +101,7 @@ class SetRoom extends AbstractAction
             }
         }
         ## 群聊信息
-        $room                 = $this->workRoomService->getWorkRoomsByCorpIdWxChatId($params['corpId'], $params['roomId'], ['id', 'wx_chat_id', 'name', 'owner_id', 'room_max']);
+        $room                 = $this->workRoomService->getWorkRoomByCorpIdWxChatId($params['corpId'], $params['roomId'], ['id', 'wx_chat_id', 'name', 'owner_id', 'room_max']);
         $rooms[count($rooms)] = $room;
         ## 设置群聊
         $this->roomCalendarService->updateRoomCalendarById($params['id'], ['rooms' => json_encode($rooms, JSON_THROW_ON_ERROR)]);

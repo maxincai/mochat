@@ -92,11 +92,25 @@ return [
             'driver'   => Qbhy\HyperfAuth\Guard\SessionGuard::class,
             'provider' => 'users',
         ],
+        'sidebar' => [
+            'driver'   => Qbhy\HyperfAuth\Guard\JwtGuard::class,
+            'provider' => 'employee',
+            'cache' => function () {
+                return make(\Qbhy\HyperfAuth\HyperfRedisCache::class);
+            },
+            'secret' => env('SIDEBAR_JWT_SECRET', 'Br3LXhp&Ysha1zRDh'),
+            'ttl' => (int) env('SIDEBAR_JWT_TTL', 60 * 60 * 24 * 7),
+        ],
     ],
     'providers' => [
         'users' => [
             'driver' => \Qbhy\HyperfAuth\Provider\EloquentProvider::class,
             'model'  => \MoChat\App\User\Model\User::class, //  需要实现 Qbhy\HyperfAuth\Authenticatable 接口
+        ],
+
+        'employee' => [
+            'driver' => \Qbhy\HyperfAuth\Provider\EloquentProvider::class,
+            'model'  => \MoChat\App\WorkEmployee\Model\WorkEmployee::class, //  需要实现 Qbhy\HyperfAuth\Authenticatable 接口
         ],
     ],
 ];

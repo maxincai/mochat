@@ -12,9 +12,9 @@ namespace MoChat\App\Medium\Task;
 
 use Hyperf\Crontab\Annotation\Crontab;
 use Hyperf\Di\Annotation\Inject;
+use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Medium\Contract\MediumContract;
-use MoChat\App\Medium\Logic\Medium;
-use MoChat\App\WorkMessage\Contract\WorkMessageConfigContract;
+use MoChat\App\Medium\Queue\MediaIdUpdateQueue;
 
 /**
  * @Crontab(name="mediaIdUpdate", rule="*\/5 * * * *", callback="execute", singleton=true, memo="素材库media_id更新")
@@ -22,10 +22,10 @@ use MoChat\App\WorkMessage\Contract\WorkMessageConfigContract;
 class MediaIdUpdate
 {
     /**
-     * @Inject
-     * @var WorkMessageConfigContract
+     * @Inject()
+     * @var CorpContract
      */
-    private $corConfigClient;
+    private $corpService;
 
     /**
      * @Inject
@@ -34,22 +34,23 @@ class MediaIdUpdate
     private $mediaService;
 
     /**
-     * @Inject
-     * @var Medium
+     * @Inject()
+     * @var MediaIdUpdateQueue
      */
-    private $mediaLogic;
+    private $mediaIdUpdateQueue;
 
     public function execute(): void
     {
         // 循环企业
-        $corpConfig = $this->corConfigClient->getWorkMessageConfigsByDoneStatus(['id', 'corp_id']);
+        $corpConfig = $this->corpService->getCorps(['id']);
 
         foreach ($corpConfig as $corp) {
-            $mediumIds = $this->mediaService->getMediaByUpdatingMediaId($corp['corpId'], ['id']);
+            $mediumIds = $this->mediaService->getMediaByUpdatingMediaId((int) $corp['id'], ['id']);
             if (empty($mediumIds)) {
                 continue;
             }
-            $this->mediaLogic->getWxMediumId(array_column($mediumIds, 'id'), $corp['corpId']);
+
+            $this->mediaIdUpdateQueue->handle((int) $corp['id'], array_column($mediumIds, 'id'));
         }
     }
 }

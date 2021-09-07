@@ -216,7 +216,7 @@ class WorkRoomService extends AbstractService implements WorkRoomContract
      * @param array|string[] $columns 查询字段
      * @return array 数组
      */
-    public function getWorkRoomsByCorpIdWxChatId(int $corpId, string $wxChatIds, array $columns = ['*']): array
+    public function getWorkRoomByCorpIdWxChatId(int $corpId, string $wxChatIds, array $columns = ['*']): array
     {
         $res = $this->model::query()
             ->where('corp_id', $corpId)

@@ -15,6 +15,7 @@ use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
 use MoChat\App\Utils\Url;
+use MoChat\App\WorkAgent\Contract\WorkAgentContract;
 use MoChat\App\WorkAgent\QueueService\MessageRemind;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Constants\ErrorCode;
@@ -94,7 +95,7 @@ class ImportStoreLogic
             $contactArr = $this->handleContact($record, $contact, $corpId);
             ## 数据入表 包括日志
             $this->insertData($contactArr, $user);
-            $this->sendMessage($recordId);
+            $this->sendMessage($recordId, $corpId);
             DB::commit();
             return [
                 'number' => count($contactArr),
@@ -159,13 +160,16 @@ class ImportStoreLogic
         $this->contactBatchAddAllotService->createContactBatchAddAllots($allotArr);
     }
 
-    private function sendMessage($recordId)
+    private function sendMessage(int $recordId, int $corpId)
     {
         $list = $this->contactBatchAddImportService->countContactBatchAddImportByRecordId($recordId, ['employee_id', Db::raw('COUNT(0) AS `count`')]);
         $messageRemind = make(MessageRemind::class);
+        $workAgentService = make(WorkAgentContract::class);
+        $agent = $workAgentService->getWorkAgentRemindByCorpId((int)$corpId, ['id']);
+
         foreach ($list as $item) {
             $employee = $this->workEmployee->getWorkEmployeeById($item['employeeId']);
-            $url = Url::getSidebarBaseUrl() . '/batchAddFriend?employeeId=' . $item['employeeId'] . '&batchId=' . $recordId;
+            $url = Url::getSidebarBaseUrl() . '/contactBatchAdd?agentId='.$agent['id'].'&batchId=' . $recordId;
             $text = "【管理员提醒】您有客户未添加哦！\n" .
                 "提醒事项：添加客户\n" .
                 "客户数量：{$item['count']}名\n" .

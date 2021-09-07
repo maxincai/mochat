@@ -196,7 +196,7 @@
                   <a-tag color="red" v-if="item.status==0">群主未发送</a-tag>
                   <a-tag color="gray" v-if="item.status==2||item.status==3">发送失败</a-tag>
                 </div>
-                <a style="margin-top: 15px;" @click="$router.push({ path: '/roomMessageBatchSend/groupDetails?workRoomId=' + item.roomId })">群详情</a>
+                <a style="margin-top: 15px;" @click="$router.push({ path: '/workRoom/detail?workRoomId=' + item.roomId })">群详情</a>
               </div>
               <a-divider />
             </div>
@@ -338,7 +338,7 @@ export default {
     },
     // 群详情
     detailsRow (record) {
-      this.$router.push({ path: '/roomMessageBatchSend/groupDetails?workRoomId=' + record.roomId })
+      this.$router.push({ path: '/workRoom/detail?workRoomId=' + record.roomId })
     },
     // 提醒发送
     remindBtn (record) {

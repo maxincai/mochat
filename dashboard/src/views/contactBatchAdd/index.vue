@@ -68,32 +68,32 @@
               <div class="child_title">总览</div>
               <a-row class="total_module" type="flex" :gutter="20" justify="space-between">
                 <a-col class="item item_hr" :span="4">
-                  <span>{{ dashboard.contactNum }}</span>
+                  <span>{{ dataStatistic.contactNum }}</span>
                   <p>导入总客户数</p>
                   <a @click="customerDataDetails(4)">详情</a>
                 </a-col>
                 <a-col class="item" :span="4">
-                  <span>{{ dashboard.pendingNum }}</span>
+                  <span>{{ dataStatistic.pendingNum }}</span>
                   <p>待分配客户数</p>
                   <a @click="customerDataDetails(0)">详情</a>
                 </a-col>
                 <a-col class="item item_hr" :span="4">
-                  <span>{{ dashboard.toAddNum }}</span>
+                  <span>{{ dataStatistic.toAddNum }}</span>
                   <p>待添加客户数</p>
                   <a @click="customerDataDetails(1)">详情</a>
                 </a-col>
                 <a-col class="item item_hr" :span="4">
-                  <span>{{ dashboard.toPendingNum }}</span>
+                  <span>{{ dataStatistic.toPendingNum }}</span>
                   <p>待通过客户数</p>
                   <a @click="customerDataDetails(2)">详情</a>
                 </a-col>
                 <a-col class="item item_hr" :span="4">
-                  <span>{{ dashboard.passedNum }}</span>
+                  <span>{{ dataStatistic.passedNum }}</span>
                   <p>已添加总客户数</p>
                   <a @click="customerDataDetails(3)">详情</a>
                 </a-col>
                 <a-col class="item" :span="4">
-                  <span>{{ dashboard.completion }}%</span>
+                  <span>{{ dataStatistic.completion }}%</span>
                   <p>添加完成率</p>
                 </a-col>
               </a-row>
@@ -215,7 +215,7 @@
       <div class="text">
         请下载模板后输入手机号上传，可批量复制手机号至模板内，若输入内容有重复手机号或空行将会自动过滤
       </div>
-      <div class="download-template">点击下载<a @click="downloadExcel">Excel模板</a></div>
+      <div class="download-template">点击下载<a :href="downloadExcelUrl" target="_blank">Excel模板</a></div>
       <a-form-model
         class="upload-form"
         ref="ruleForm"
@@ -292,7 +292,7 @@ import addlableIndex from '@/components/addlabel/index'
 import selectMember from '@/components/Select/member'
 import MaUpload from '@/components/MaUpload'
 // eslint-disable-next-line no-unused-vars
-import { contactList, dashboard, department, getSetting, importContact, updateSetting, contactDel, allot, remindApi } from '@/api/contactBatchAdd'
+import { contactList, dataStatistic, department, getSetting, importContact, updateSetting, contactDel, allot, remindApi } from '@/api/contactBatchAdd'
 import storage from 'store'
 
 export default {
@@ -407,7 +407,7 @@ export default {
       //  员工数据
       employeeData: [],
       //  数据统计--仪表盘统计数据
-      dashboard: {},
+      dataStatistic: {},
       xlsName: '',
       //  导入客户数据
       leadClientData: {
@@ -460,7 +460,8 @@ export default {
       // 筛选成员
       screenMember: [],
       // 筛选时间
-      screenTime: []
+      screenTime: [],
+      downloadExcelUrl: process.env.VUE_APP_API_BASE_URL + '/static/Excel%E6%89%B9%E9%87%8F%E6%B7%BB%E5%8A%A0%E5%A5%BD%E5%8F%8B%E6%A8%A1%E6%9D%BF.xlsx'
     }
   },
   created () {
@@ -507,9 +508,6 @@ export default {
       // this.leadClientData.allotEmployee  setSelect
       // this.$refs.selectMember.show(this.leadClientData.allotEmployee)
       this.$refs.selectMember.setSelect(this.leadClientData.allotEmployee)
-    },
-    downloadExcel () {
-      window.location.href = 'http://mc-api.zonrn.cn/static/image/Excel%E6%89%B9%E9%87%8F%E6%B7%BB%E5%8A%A0%E5%A5%BD%E5%8F%8B%E6%A8%A1%E6%9D%BF.xlsx'
     },
     // 取消分配
     cancelAssignment () {
@@ -613,12 +611,12 @@ export default {
     },
     // 数据统计
     getStatisticsData () {
-      dashboard({
+      dataStatistic({
         employeeId: this.screenMember,
         startTime: this.screenTime[0],
         endTime: this.screenTime[1]
       }).then((res) => {
-        this.dashboard = res.data.dashboard
+        this.dataStatistic = res.data.dataStatistic
         this.tableData.data = res.data.employees.data
       })
     },

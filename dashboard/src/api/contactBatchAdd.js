@@ -19,9 +19,9 @@ export function allot (params) {
 }
 
 // 数据统计
-export function dashboard (params) {
+export function dataStatistic (params) {
   return request({
-    url: '/contactBatchAdd/dashboard',
+    url: '/contactBatchAdd/dataStatistic',
     method: 'GET',
     params
   })

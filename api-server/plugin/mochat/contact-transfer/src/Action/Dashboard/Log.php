@@ -50,7 +50,7 @@ class Log extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/log", methods="GET")
+     * @RequestMapping(path="/dashboard/contactTransfer/log", methods="GET")
      */
     public function handle(): array
     {

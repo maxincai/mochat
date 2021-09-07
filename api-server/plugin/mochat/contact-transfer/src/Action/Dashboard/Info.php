@@ -49,7 +49,7 @@ class Info extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/info", methods="GET")
+     * @RequestMapping(path="/dashboard/contactTransfer/info", methods="GET")
      */
     public function handle(): array
     {

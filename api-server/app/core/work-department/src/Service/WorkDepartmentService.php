@@ -16,6 +16,8 @@ use MoChat\Framework\Service\AbstractService;
 
 class WorkDepartmentService extends AbstractService implements WorkDepartmentContract
 {
+    private const MAX_LIMIT = 1000;
+
     /**
      * @var WorkDepartment
      */
@@ -114,7 +116,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
      */
     public function getWorkDepartmentsByCorpId(int $corpId, array $columns = ['*']): array
     {
-        $res = $this->model::query()->where('corp_id', $corpId)->get($columns);
+        $res = $this->model::query()->where('corp_id', $corpId)->limit(self::MAX_LIMIT)->get($columns);
 
         if (empty($res)) {
             return [];
@@ -136,6 +138,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
             ->whereIn('corp_id', $corpId)
             ->where('name', 'like', "%{$name}%")
             ->orderBy('order', 'desc')
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -155,6 +158,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
     {
         $res = $this->model::query()
             ->whereIn('corp_id', $corpIds)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -194,7 +198,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
             $res = $res->whereIn('id', $where['id']);
         }
 
-        $res = $res->orderBy('id', 'desc');
+        $res = $res->limit(self::MAX_LIMIT)->orderBy('id', 'desc');
         $res = $res->get($columns);
 
         if (empty($res)) {
@@ -227,7 +231,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
             }
         }
 
-        $res = $res->get($columns);
+        $res = $res->limit(self::MAX_LIMIT)->get($columns);
 
         if (empty($res)) {
             return [];
@@ -250,7 +254,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
             }
         }
 
-        $res = $res->get($columns);
+        $res = $res->limit(self::MAX_LIMIT)->get($columns);
         if (empty($res)) {
             return [];
         }
@@ -268,6 +272,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
     {
         $res = $this->model::query()
             ->where('parent_id', $parentId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {

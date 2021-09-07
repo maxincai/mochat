@@ -19,7 +19,7 @@ use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
-use MoChat\Plugin\ContactBatchAdd\Logic\DashboardLogic;
+use MoChat\Plugin\ContactBatchAdd\Logic\DataStatisticLogic;
 
 /**
  * 导入客户-统计数据.
@@ -27,18 +27,18 @@ use MoChat\Plugin\ContactBatchAdd\Logic\DashboardLogic;
  * Class Index.
  * @Controller
  */
-class EmployeeDataShow extends AbstractAction
+class DataStatistic extends AbstractAction
 {
     use ValidateSceneTrait;
 
     /**
      * @Inject
-     * @var DashboardLogic
+     * @var DataStatisticLogic
      */
-    protected $dashboardLogic;
+    protected $dataStatisticLogic;
 
     /**
-     * @RequestMapping(path="/dashboard/contactBatchAdd/employeeDataShow", methods="get")
+     * @RequestMapping(path="/dashboard/contactBatchAdd/dataStatistic", methods="get")
      * @Middlewares({
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
@@ -51,7 +51,7 @@ class EmployeeDataShow extends AbstractAction
         $params['employeeId'] = $this->request->input('employeeId', []);
         $params['startTime'] = $this->request->input('startTime', '');
         $params['endTime'] = $this->request->input('endTime', '');
-        return $this->dashboardLogic->handle($params);
+        return $this->dataStatisticLogic->handle($params);
     }
 
     /**

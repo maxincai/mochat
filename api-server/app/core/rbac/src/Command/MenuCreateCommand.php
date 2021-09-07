@@ -41,7 +41,15 @@ class MenuCreateCommand extends HyperfCommand
     public function handle()
     {
         $menuData = $this->getMenuData();
+
+        if (empty($menuData)) {
+            $this->error("菜单配置为空");
+            return;
+        }
+
         foreach ($menuData as $menu) {
+            $menu['operate_name'] = '系统';
+            $menu['created_at'] = date('Y-m-d H:i:s');
             $table = Db::table('rbac_menu');
             $lastId = $table->insertGetId($menu);
             $path = $menu['path'] . '-#'. $lastId . '#';

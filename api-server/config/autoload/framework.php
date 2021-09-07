@@ -32,6 +32,7 @@ return [
         '/dashboard/officialAccount/authEventCallback',
         '/dashboard/{appId}/officialAccount/messageEventCallback',
         '/operation/officialAccount/authRedirect',
+        '/sidebar/agent/auth'
     ],
 
     // 会话内容存档

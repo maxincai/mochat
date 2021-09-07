@@ -50,7 +50,7 @@ class Room extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/room", methods="GET")
+     * @RequestMapping(path="/dashboard/contactTransfer/room", methods="GET")
      */
     public function handle(): array
     {

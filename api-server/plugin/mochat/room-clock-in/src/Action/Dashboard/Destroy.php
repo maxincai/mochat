@@ -44,7 +44,7 @@ class Destroy extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/clock/destroy", methods="DELETE")
+     * @RequestMapping(path="/dashboard/roomClockIn/destroy", methods="DELETE")
      */
     public function handle(): array
     {

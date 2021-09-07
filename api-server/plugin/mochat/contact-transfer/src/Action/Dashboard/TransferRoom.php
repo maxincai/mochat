@@ -71,7 +71,7 @@ class TransferRoom extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/room", methods="POST")
+     * @RequestMapping(path="/dashboard/contactTransfer/room", methods="POST")
      */
     public function handle(): array
     {
@@ -103,7 +103,7 @@ class TransferRoom extends AbstractAction
                     'corp_id'              => $params['corpId'],
                     'status'               => 1,
                     'type'                 => 2,
-                    'name'                 => $this->workRoomService->getWorkRoomsByCorpIdWxChatId($params['corpId'], $param)['name'],
+                    'name'                 => $this->workRoomService->getWorkRoomByCorpIdWxChatId($params['corpId'], $param)['name'],
                     'contact_id'           => $param,
                     'takeover_employee_id' => $params['takeoverUserId'],
                 ]);

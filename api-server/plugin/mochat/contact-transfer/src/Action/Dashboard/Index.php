@@ -50,7 +50,7 @@ class Index extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/index", methods="POST")
+     * @RequestMapping(path="/dashboard/contactTransfer/index", methods="POST")
      */
     public function handle(): array
     {

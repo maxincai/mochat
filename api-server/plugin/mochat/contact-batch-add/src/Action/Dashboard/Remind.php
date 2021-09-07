@@ -19,6 +19,7 @@ use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\App\Utils\Url;
+use MoChat\App\WorkAgent\Contract\WorkAgentContract;
 use MoChat\App\WorkAgent\QueueService\MessageRemind;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Action\AbstractAction;
@@ -58,12 +59,16 @@ class Remind extends AbstractAction
     public function handle(): array
     {
         $params = $this->request->all();
+        $corpId = user()['corpIds'][0];
+
         //校验参数
         $this->validated($params);
         $count = $this->contactBatchAddImportService->countContactBatchAddImportByRecordIdEmployee((int)$params['recordId'], (int)$params['employeeId']);
+        $workAgentService = make(WorkAgentContract::class);
+        $agent = $workAgentService->getWorkAgentRemindByCorpId((int)$corpId, ['id']);
 
         $employee = $this->workEmployee->getWorkEmployeeById((int)$params['employeeId']);
-        $url = Url::getSidebarBaseUrl() . '/batchAddFriend?employeeId=' . $params['employeeId'] . '&batchId=' . $params['recordId'];
+        $url = Url::getSidebarBaseUrl() . '/contactBatchAdd?agentId='.$agent['id'].'&batchId=' . $params['recordId'];
         $text = "【管理员提醒】您有客户未添加哦！\n" .
             "提醒事项：添加客户\n" .
             "客户数量：{$count}名\n" .

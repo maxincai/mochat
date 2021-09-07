@@ -136,7 +136,7 @@ class LogLogic
             }
 
             if ($params['mode'] == 2) {
-                $room     = $this->workRoomService->getWorkRoomsByCorpIdWxChatId($params['corpId'], $re['contactId']);
+                $room     = $this->workRoomService->getWorkRoomByCorpIdWxChatId($params['corpId'], $re['contactId']);
                 $roomNum  = $this->workContactRoomService->countWorkContactRoomsByRoomIdContact($room['id']);
                 $result[] = [
                     'roomId'     => $room['id'],

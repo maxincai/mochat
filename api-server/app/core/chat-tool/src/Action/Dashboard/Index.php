@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\ChatTool\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
@@ -90,7 +91,7 @@ class Index extends AbstractAction
      */
     public function handle(): array
     {
-        $corpId = (int) user('corpIds')[0];
+        $corpId = (int)user('corpIds')[0];
 
         ## 应用信息
         $agents = $this->workAgentService->getWorkAgentByCorpIdClose($corpId, ['id', 'corp_id', 'name', 'square_logo_url']);
@@ -101,13 +102,20 @@ class Index extends AbstractAction
         ## 侧边栏信息
         $chatTools = $this->chatToolService->getChatToolsByStatus(Status::STATUS_YES, ['id', 'page_name', 'page_flag']);
 
-        $domain       = Url::getSidebarBaseUrl();
+        $domain = Url::getSidebarBaseUrl();
         $newChatTools = static function ($agentId) use ($chatTools, $domain) {
             return array_map(static function ($item) use ($domain, $agentId) {
-                $item['pageUrl'] = $domain . '?' . http_build_query([
-                    'agentId'  => $agentId,
-                    'pageFlag' => $item['pageFlag'],
-                ]);
+                if ($item['pageFlag'] === 'customer') {
+                    $item['pageFlag'] = 'contact';
+                }
+
+                if ($item['pageFlag'] === 'mediumGroup') {
+                    $item['pageFlag'] = 'medium';
+                }
+
+                $item['pageUrl'] = $domain . "/{$item['pageFlag']}?" . http_build_query([
+                        'agentId' => $agentId
+                    ]);
                 return $item;
             }, $chatTools);
         };
@@ -118,7 +126,7 @@ class Index extends AbstractAction
         }, $agents);
 
         return [
-            'agents'       => $newAgents,
+            'agents' => $newAgents,
             'whiteDomains' => [Url::getSidebarBaseUrl(), Url::getApiBaseUrl()],
         ];
     }

@@ -41,15 +41,13 @@ class Update extends AbstractAction
      *     @Middleware(SidebarAuthMiddleware::class)
      * })
      * @RequestMapping(path="/sidebar/workContact/update", methods="PUT")
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @return array
      */
     public function handle()
     {
         //接收参数
         $params['contactId']   = $this->request->input('contactId');
-        $params['employeeId']  = $this->request->input('employeeId');
+        $params['employeeId']  = user()['id'];
         $params['remark']      = $this->request->input('remark');
         $params['tag']         = $this->request->input('tag');
         $params['description'] = $this->request->input('description');

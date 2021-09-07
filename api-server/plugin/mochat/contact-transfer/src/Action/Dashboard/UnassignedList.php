@@ -50,7 +50,7 @@ class UnassignedList extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/transfer/unassignedList", methods="GET")
+     * @RequestMapping(path="/dashboard/contactTransfer/unassignedList", methods="GET")
      */
     public function handle(): array
     {

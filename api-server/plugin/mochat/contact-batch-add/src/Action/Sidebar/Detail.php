@@ -28,7 +28,7 @@ use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddImportContract;
  * Class ContactBatchAddDetail
  * @Controller
  */
-class ContactBatchAddDetail extends AbstractAction
+class Detail extends AbstractAction
 {
     use ValidateSceneTrait;
 

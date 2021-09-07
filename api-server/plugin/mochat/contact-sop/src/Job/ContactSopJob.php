@@ -41,7 +41,7 @@ class ContactSopJob extends Job
         $nowTime   = date('H:i', $timestamp);
         $nowDate   = date('Y-m-d', $timestamp);
 
-        $url  = Url::getSidebarBaseUrl() . '/?agentId='.$agent['id'].'&pageFlag=contactSop&id=' . $this->params['contactSopLogId'];
+        $url  = Url::getSidebarBaseUrl() . '/contactSop?agentId='.$agent['id'].'&id=' . $this->params['contactSopLogId'];
         $text = "【个人SOP】\n" .
             "提醒时间: 今天{$nowTime}({$nowDate})\n" .
             "跟进客户: {$this->params['contactName']}\n" .

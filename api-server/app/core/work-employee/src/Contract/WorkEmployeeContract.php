@@ -293,4 +293,9 @@ interface WorkEmployeeContract
      * 查询单条 - 根据微信成员UserId.
      */
     public function getWorkEmployeeByWxUserIdCorpId(string $wxUserId, int $corpId, array $columns = ['*']): array;
+
+    /**
+     * 查询单条 - 根据微信成员UserId.
+     */
+    public function getWorkEmployeeAuthByWxUserIdCorpId(string $wxUserId, int $corpId, array $columns = ['*']);
 }

@@ -8,14 +8,15 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\Rbac\Middleware;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Utils\Context;
 use MoChat\App\Common\Constants\AppErrCode;
+use MoChat\App\Common\Exception\CommonException;
 use MoChat\App\User\Logic\Traits\UserTrait;
 use MoChat\App\Utils\Rbac\Rbac;
-use MoChat\Framework\Exception\CommonException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,12 +42,12 @@ class PermissionMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $route   = $request->getUri()->getPath();
-        $user    = user();
+        $route = $request->getUri()->getPath();
+        $user = user();
         $linkUrl = $route . '#' . strtolower($request->getMethod());
 
         ## 权限拦截
-        if ($user['isSuperAdmin'] === 0 && ! $this->rbac->userCan($user['id'], $linkUrl)) {
+        if ($user['isSuperAdmin'] === 0 && !$this->rbac->userCan($user['id'], $linkUrl)) {
             throw new CommonException(AppErrCode::PERMISSION_DENY);
         }
 
@@ -56,12 +57,12 @@ class PermissionMiddleware implements MiddlewareInterface
             $routePermission['dataPermission'] = 0;
         } else {
             ## 当前路由权限
-            $routePermission                                                                = $this->rbac->userPermissions($user['id'], $linkUrl, $user['corpIds'][0]);
+            $routePermission = $this->rbac->userPermissions($user['id'], $linkUrl, $user['corpIds'][0]);
             isset($routePermission['dataPermission']) || $routePermission['dataPermission'] = 2;
         }
 
         if ($routePermission['dataPermission'] === 1) {
-            $deptEmployeeIds                              = $this->deptEmployeeIds($user['workEmployeeId']);
+            $deptEmployeeIds = $this->deptEmployeeIds($user['workEmployeeId']);
             empty($deptEmployeeIds) && $deptEmployeeIds[] = $user['workEmployeeId'];
         } elseif ($routePermission['dataPermission'] === 2) {
             $deptEmployeeIds = [$user['workEmployeeId']];

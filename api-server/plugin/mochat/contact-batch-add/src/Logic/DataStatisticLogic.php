@@ -23,7 +23,7 @@ use function Composer\Autoload\includeFile;
  *
  * Class Dashboard
  */
-class DashboardLogic
+class DataStatisticLogic
 {
     /**
      * @Inject
@@ -49,7 +49,7 @@ class DashboardLogic
 
         return [
             'employees' => $this->handleEmployees($params),
-            'employeeDataShow' => $this->getDashboard($corpId),
+            'dataStatistic' => $this->getDataStatistic($corpId),
         ];
     }
 
@@ -108,7 +108,7 @@ class DashboardLogic
         return $employee;
     }
 
-    private function getDashboard($corpId)
+    private function getDataStatistic($corpId)
     {
         ## 导入总客户数
         $result['contactNum'] = $this->contactBatchAddImportService->countContactBatchAddImportByStatus($corpId, 4);

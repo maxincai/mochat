@@ -110,6 +110,8 @@ class SyncLogic
         $corpData = $this->getCorpData($corpIds);
         $createEmployeeData = $updateEmployeeDepartment = $createEmployeeDepartmentData = $userIds = $updateEmployee = $createData = $fileQueueData = $phones = [];
         foreach ($corpData as $corpId => $cdv) {
+            $tenantId = (int) $cdv['tenant_id'];
+            unset($cdv['tenant_id']);
             $employeeData = $departments = $userList = $employeeDepartment = $employee = [];
             //公司下的所有部门
             $departments = $this->getDepartmentIds($corpId);
@@ -148,7 +150,7 @@ class SyncLogic
             }
             if (!empty($createEmployeeData[$corpId])) {
                 //根据手机号查询子账户信息
-                $createData[$corpId] = $this->getUserData($phones, $createEmployeeData[$corpId]);
+                $createData[$corpId] = $this->getUserData($tenantId, $phones, $createEmployeeData[$corpId]);
             }
             if (!empty($createData[$corpId])) {
                 //外部联系人权限
@@ -458,10 +460,10 @@ class SyncLogic
      * 获取子账户信息.
      * @return array
      */
-    protected function getUserData(array $phones = [], array $employee = [])
+    protected function getUserData(int $tenantId, array $phones = [], array $employee = [])
     {
         $this->userService = make(UserContract::class);
-        $userData = $this->userService->getUsersByPhone($phones, ['id', 'phone']);
+        $userData = $this->userService->getUsersByPhone($phones, ['id', 'phone', 'tenant_id']);
         $user = [];
         if (!empty($userData)) {
             foreach ($userData as $uk => $uv) {
@@ -471,6 +473,11 @@ class SyncLogic
                 if (empty($ev['mobile'])) {
                     continue;
                 }
+
+                if ($tenantId !== (int)$uv['tenantId']) {
+                    continue;
+                }
+
                 $employee[$ek]['log_user_id'] = !empty($user[$ev['mobile']]) ? $user[$ev['mobile']] : 0;
             }
         }
@@ -627,12 +634,13 @@ class SyncLogic
     {
         $corp = [];
         $this->corpService = make(CorpContract::class);
-        $corpData = $this->corpService->getCorpsById($corpIds, ['wx_corpid', 'employee_secret', 'id']);
+        $corpData = $this->corpService->getCorpsById($corpIds, ['wx_corpid', 'employee_secret', 'id', 'tenant_id']);
         if (empty($corpData)) {
             return $corp;
         }
         foreach ($corpData as $cdk => $cdv) {
             $corp[$cdv['id']] = [
+                'tenant_id' => $cdv['tenantId'],
                 'corp_id' => $cdv['wxCorpid'],
                 'secret' => $cdv['employeeSecret'],
             ];

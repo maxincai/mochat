@@ -18,6 +18,8 @@ use MoChat\Framework\Service\AbstractService;
 
 class WorkEmployeeService extends AbstractService implements WorkEmployeeContract
 {
+    private const MAX_LIMIT = 1000;
+
     /**
      * @var WorkEmployee
      */
@@ -123,6 +125,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $res = $this->model::query()
             ->where('corp_id', $corpId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -143,6 +146,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->where('corp_id', $corpId)
             ->where('status', $status)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -163,6 +167,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->where('corp_id', $corpId)
             ->where('name', 'like', "%{$name}%")
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -185,6 +190,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
             ->where('corp_id', $corpId)
             ->where('name', 'like', "%{$name}%")
             ->where('status', $status)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -203,7 +209,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $res = $this->model::query()->whereIn('corp_id', $corpIds);
 
-        $res = $res->get($columns);
+        $res = $res->limit(self::MAX_LIMIT)->get($columns);
         if (empty($res)) {
             return [];
         }
@@ -222,6 +228,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->whereIn('id', $id)
             ->where('status', $status)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -240,7 +247,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $res = $this->model::query()->where('log_user_id', $logUserId);
 
-        $res = $res->get($columns);
+        $res = $res->limit(self::MAX_LIMIT)->get($columns);
         if (empty($res)) {
             return [];
         }
@@ -279,6 +286,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
             ->leftJoin('work_employee_department', 'work_employee.id', '=', 'work_employee_department.employee_id')
             ->leftJoin('work_department', 'work_department.id', '=', 'work_employee_department.department_id')
             ->where('work_employee.corp_id', $corpId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns)
             ->toArray();
     }
@@ -295,6 +303,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->whereIn('corp_id', $corpIds)
             ->whereIn('wx_user_id', $wxUserIds)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -333,6 +342,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->whereIn('corp_id', $corpIds)
             ->where('wx_user_id', '!=', '')
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -387,6 +397,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         return $this->model::query()
             ->where('corp_id', $corpId)
             ->where('wx_user_id', $wxUserId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns)
             ->toArray();
     }
@@ -401,6 +412,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $res = $this->model::query()
             ->where('log_user_id', $logUserId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -416,7 +428,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $data = $this->model::query()->whereIn('id', $ids);
         $name && $data->where('name', 'LIKE', '%' . $name . '%');
-        $data = $data->get($columns);
+        $data = $data->limit(self::MAX_LIMIT)->get($columns);
 
         if (empty($data)) {
             return [];
@@ -429,7 +441,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
      */
     public function getWorkEmployeesByMobile(string $phone, array $columns = ['*']): array
     {
-        $data = $this->model::query()->where('mobile', $phone)->get($columns);
+        $data = $this->model::query()->where('mobile', $phone)->limit(self::MAX_LIMIT)->get($columns);
 
         if (empty($data)) {
             return [];
@@ -455,6 +467,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     {
         $res = $this->model::query()
             ->whereIn('log_user_id', $logUserIds)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -473,6 +486,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         ## 根据角色id获取用户
         $userRoleRes = RbacUserRole::query()
             ->where('role_id', $where['roleId'])
+            ->limit(self::MAX_LIMIT)
             ->get(['user_id']);
         $userRole = $userRoleRes->toArray();
         if (empty($userRole)) {
@@ -504,6 +518,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         ## 根据角色id获取用户
         $userRoleRes = RbacUserRole::query()
             ->where('role_id', $where['roleId'])
+            ->limit(self::MAX_LIMIT)
             ->get(['user_id']);
         $userRole = $userRoleRes->toArray();
         if (empty($userRole)) {
@@ -546,6 +561,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
             ->where('corp_id', $corpId)
             ->whereIn('id', $id)
             ->where('status', $status)
+            ->limit(self::MAX_LIMIT)
             ->get($columns)
             ->toArray();
     }
@@ -558,6 +574,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         return $this->model::query()
             ->where('corp_id', $corpId)
             ->whereIn('wx_user_id', $wxUserId)
+            ->limit(self::MAX_LIMIT)
             ->get($columns)
             ->toArray();
     }
@@ -586,6 +603,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $res = $this->model::query()
             ->whereIn('id', $id)
             ->where('audit_status', $auditStatus)
+            ->limit(self::MAX_LIMIT)
             ->get($columns);
 
         if (empty($res)) {
@@ -626,5 +644,16 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
 
         $res || $res = collect([]);
         return $res->toArray();
+    }
+
+    /**
+     * 查询单条 - 根据微信成员UserId.
+     */
+    public function getWorkEmployeeAuthByWxUserIdCorpId(string $wxUserId, int $corpId, array $columns = ['*'])
+    {
+        return $this->model->newModelQuery()
+            ->where('wx_user_id', $wxUserId)
+            ->where('corp_id', $corpId)
+            ->first($columns);
     }
 }

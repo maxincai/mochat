@@ -46,7 +46,7 @@ class Show extends AbstractAction
     {
         //接收参数
         $params['contactId']  = $this->request->input('contactId');
-        $params['employeeId'] = $this->request->input('employeeId');
+        $params['employeeId'] = user()['id'];
         //校验参数
         $this->validated($params);
 
@@ -60,7 +60,7 @@ class Show extends AbstractAction
     {
         return [
             'contactId'  => 'required|integer|min:1|bail',
-            'employeeId' => 'required|integer|min:1|bail',
+//            'employeeId' => 'required|integer|min:1|bail',
         ];
     }
 
@@ -71,7 +71,7 @@ class Show extends AbstractAction
     {
         return [
             'contactId.required'  => '客户id必传',
-            'employeeId.required' => '员工id必传',
+//            'employeeId.required' => '员工id必传',
         ];
     }
 }

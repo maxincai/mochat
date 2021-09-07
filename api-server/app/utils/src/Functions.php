@@ -66,17 +66,23 @@ if (! function_exists('user')) {
      */
     function user(?string $field = null)
     {
-        /** @var \Qbhy\HyperfAuth\AuthManager $auth */
-        $auth = \Hyperf\Utils\ApplicationContext::getContainer()->get(\Qbhy\HyperfAuth\AuthManager::class);
+//        /** @var \Qbhy\HyperfAuth\AuthManager $auth */
+//        $auth = \Hyperf\Utils\ApplicationContext::getContainer()->get(\Qbhy\HyperfAuth\AuthManager::class);
+//
+//        /** @var \App\Model\User $userModel */
+//        $userModel = $auth->guard('jwt')->user();
+//
+//        if (! $userModel) {
+//            return [];
+//        }
+//        $resData  = $userModel->toArray();
+        $request  = \Hyperf\Utils\Context::get(\Psr\Http\Message\ServerRequestInterface::class);
+        $resData = $request->getAttribute('user');
 
-        /** @var \App\Model\User $userModel */
-        $userModel = $auth->guard('jwt')->user();
-
-        if (! $userModel) {
+        if (! $resData) {
             return [];
         }
-        $resData  = $userModel->toArray();
-        $request  = \Hyperf\Utils\Context::get(\Psr\Http\Message\ServerRequestInterface::class);
+
         $userData = $request->getAttributes();
         foreach ($userData as $key => $val) {
             if (strpos($key, '_user_') === 0) {
