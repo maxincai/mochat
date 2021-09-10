@@ -101,7 +101,6 @@ class SyncLogic
      * 处理成员信息.
      * @param $corpIds
      * @return bool
-     * @throws \League\Flysystem\FileExistsException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     protected function dealEmployee($corpIds)
@@ -208,7 +207,6 @@ class SyncLogic
      * @param $userIds
      * @param $phones
      * @param mixed $fileQueueData
-     * @throws \League\Flysystem\FileExistsException
      */
     protected function handleSyncData(
         $corpId,

@@ -8,28 +8,31 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-namespace MoChat\Plugin\ChannelCode\Logic;
+
+namespace MoChat\Plugin\ChannelCode\Listener;
 
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Event\Contract\ListenerInterface;
+use Hyperf\Event\Annotation\Listener;
 use MoChat\App\Medium\Contract\MediumContract;
-use MoChat\App\WorkContact\Contract\WorkContactTagContract;
-use MoChat\App\WorkRoom\Contract\WorkRoomContract;
+use MoChat\App\WorkContact\Contract\WorkContactContract;
+use MoChat\App\WorkContact\Event\AddContactEvent;
 use MoChat\Plugin\ChannelCode\Constants\Status as ChannelCodeStatus;
 use MoChat\Plugin\ChannelCode\Constants\WelcomeType;
 use MoChat\Plugin\ChannelCode\Contract\ChannelCodeContract;
 
 /**
- * 渠道码 - 新增客户回调.
+ * 发送欢迎语监听
  *
- * Class ContactCallBackLogic
+ * @Listener
  */
-class ContactCallBackLogic
+class SendWelcomeListener implements ListenerInterface
 {
     /**
-     * @Inject
-     * @var WorkRoomContract
+     * @Inject()
+     * @var WorkContactContract
      */
-    protected $workRoomService;
+    protected $workContactService;
 
     /**
      * 渠道码表.
@@ -39,49 +42,105 @@ class ContactCallBackLogic
     private $channelCodeService;
 
     /**
-     * 标签.
-     * @Inject
-     * @var WorkContactTagContract
-     */
-    private $workContactTagService;
-
-    /**
      * @Inject
      * @var MediumContract
      */
     private $mediumService;
 
-    /**
-     * @param int $channelCodeId 渠道码ID
-     * @return array 响应数组
-     */
-    public function getChannelCode(int $channelCodeId): array
+
+    public function listen(): array
     {
-        $data = [
-            'tags'    => [],
-            'content' => [],
+        return [
+            AddContactEvent::class
         ];
-        $channelCode = $this->channelCodeService->getChannelCodeById($channelCodeId, ['id', 'tags', 'welcome_message']);
+    }
+
+    /**
+     * @param AddContactEvent $event
+     */
+    public function process(object $event)
+    {
+        $contact = $event->message;
+
+        // 判断是否需要发送欢迎语
+        if (!$this->isNeedSendWelcome($contact)) {
+            return;
+        }
+
+        // 获取欢迎语
+        $welcomeContent = $this->getWelcome($contact);
+        if (empty($welcomeContent)) {
+            return;
+        }
+
+        // 发送欢迎语
+        $this->workContactService->sendWelcome((int)$contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
+    }
+
+    /**
+     * 判断是否需要发送欢迎语
+     *
+     * @param array $contact
+     * @return bool
+     */
+    private function isNeedSendWelcome(array $contact)
+    {
+        if (!isset($contact['state']) || empty($contact['state'])) {
+            return false;
+        }
+
+        if (!isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
+            return false;
+        }
+
+        $stateArr = explode('-', $contact['state']);
+        if ($stateArr[0] !== $this->getStateName()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 获取来源名称
+     *
+     * @return string
+     */
+    private function getStateName()
+    {
+        return 'channelCode';
+    }
+
+    /**
+     * 获取欢迎语
+     *
+     * @param array $contact 客户
+     *
+     * @return array[]
+     */
+    private function getWelcome(array $contact): array
+    {
+        $stateArr = explode('-', $contact['state']);
+        $channelCodeId = (int)$stateArr[1];
+
+        $data = [];
+        $channelCode = $this->channelCodeService->getChannelCodeById($channelCodeId, ['id', 'welcome_message']);
         if (empty($channelCode)) {
             return $data;
         }
-        ## 客户标签
-        if (! empty($channelCode['tags'])) {
-            $tagIds                          = array_filter(json_decode($channelCode['tags'], true));
-            $tagList                         = $this->workContactTagService->getWorkContactTagsById($tagIds, ['id', 'wx_contact_tag_id']);
-            empty($tagList) || $data['tags'] = array_column($tagList, 'wxContactTagId');
-        }
-        ## 欢迎语
-        if (! empty($channelCode['welcomeMessage'])) {
+
+        // 欢迎语
+        if (!empty($channelCode['welcomeMessage'])) {
             $welcomeMessage = json_decode($channelCode['welcomeMessage'], true);
-            if ($welcomeMessage['scanCodePush'] == ChannelCodeStatus::OPEN && ! empty($welcomeMessage['messageDetail'])) {
+            if ($welcomeMessage['scanCodePush'] == ChannelCodeStatus::OPEN && !empty($welcomeMessage['messageDetail'])) {
                 $data['content'] = $this->handleMessageDetail($welcomeMessage['messageDetail']);
             }
         }
         if (isset($data['content']['mediumId'])) {
-            $data['content']['medium'] = $this->getMedium((int) $data['content']['mediumId']);
+            $data['content']['medium'] = $this->getMedium((int)$data['content']['mediumId']);
             unset($data['content']['mediumId']);
         }
+
         return $data;
     }
 
@@ -91,75 +150,76 @@ class ContactCallBackLogic
      */
     private function handleMessageDetail(array $messageDetail): array
     {
-        $data          = [];
+        $data = [];
         $messageDetail = array_column($messageDetail, null, 'type');
-        ## 特殊欢迎语
+        // 特殊欢迎语
         if (isset($messageDetail[WelcomeType::SPECIAL_PERIOD])
-            && ! empty($messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'])
+            && !empty($messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'])
             && $messageDetail[WelcomeType::SPECIAL_PERIOD]['status'] == ChannelCodeStatus::OPEN
         ) {
-            $detail     = $messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'];
+            $detail = $messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'];
             $currentDay = date('Y-m-d');
             foreach ($detail as $val) {
                 if (empty($val['timeSlot'])) {
                     continue;
                 }
                 if (strtotime($currentDay) >= strtotime($val['startDate']) && strtotime($currentDay) <= strtotime($val['endDate'])) {
-                    ## 00:00 - 00:00 欢迎语
+                    // 00:00 - 00:00 欢迎语
                     $cycleCommon = [];
                     foreach ($val['timeSlot'] as $v) {
                         if (time() >= strtotime($v['startTime']) && time() <= strtotime($v['endTime'])) {
                             empty($v['welcomeContent']) || $data['text'] = $v['welcomeContent'];
-                            empty($v['mediumId']) || $data['mediumId']   = $v['mediumId'];
+                            empty($v['mediumId']) || $data['mediumId'] = $v['mediumId'];
                             return $data;
                         }
                         if ($v['startTime'] == '00:00' && $v['endTime'] == '00:00') {
                             $cycleCommon = $v;
                         }
                     }
-                    if (! empty($cycleCommon)) {
+                    if (!empty($cycleCommon)) {
                         empty($cycleCommon['welcomeContent']) || $data['text'] = $cycleCommon['welcomeContent'];
-                        empty($cycleCommon['mediumId']) || $data['mediumId']   = $cycleCommon['mediumId'];
+                        empty($cycleCommon['mediumId']) || $data['mediumId'] = $cycleCommon['mediumId'];
                         return $data;
                     }
                 }
             }
         }
-        ## 周期欢迎语
+
+        // 周期欢迎语
         if (isset($messageDetail[WelcomeType::PERIODIC])
-            && ! empty($messageDetail[WelcomeType::PERIODIC]['detail'])
+            && !empty($messageDetail[WelcomeType::PERIODIC]['detail'])
             && $messageDetail[WelcomeType::PERIODIC]['status'] == ChannelCodeStatus::OPEN
         ) {
-            $detail      = $messageDetail[WelcomeType::PERIODIC]['detail'];
+            $detail = $messageDetail[WelcomeType::PERIODIC]['detail'];
             $currentWeek = date('w', time());
             foreach ($detail as $val) {
-                if (empty($val['timeSlot']) || ! in_array($currentWeek, $val['chooseCycle'])) {
+                if (empty($val['timeSlot']) || !in_array($currentWeek, $val['chooseCycle'])) {
                     continue;
                 }
-                ## 00:00 - 00:00 欢迎语
+                // 00:00 - 00:00 欢迎语
                 $specialCommon = [];
                 foreach ($val['timeSlot'] as $v) {
                     if (time() >= strtotime($v['startTime']) && time() <= strtotime($v['endTime'])) {
                         empty($v['welcomeContent']) || $data['text'] = $v['welcomeContent'];
-                        empty($v['mediumId']) || $data['mediumId']   = $v['mediumId'];
+                        empty($v['mediumId']) || $data['mediumId'] = $v['mediumId'];
                         return $data;
                     }
                     if ($v['startTime'] == '00:00' && $v['endTime'] == '00:00') {
                         $specialCommon = $v;
                     }
                 }
-                if (! empty($specialCommon)) {
+                if (!empty($specialCommon)) {
                     empty($specialCommon['welcomeContent']) || $data['text'] = $specialCommon['welcomeContent'];
-                    empty($specialCommon['mediumId']) || $data['mediumId']   = $specialCommon['mediumId'];
+                    empty($specialCommon['mediumId']) || $data['mediumId'] = $specialCommon['mediumId'];
                     return $data;
                 }
             }
         }
-        ## 通用欢迎语
+        // 通用欢迎语
         if (isset($messageDetail[WelcomeType::GENERAL])) {
-            $detail                                           = $messageDetail[WelcomeType::GENERAL];
+            $detail = $messageDetail[WelcomeType::GENERAL];
             empty($detail['welcomeContent']) || $data['text'] = $detail['welcomeContent'];
-            empty($detail['mediumId']) || $data['mediumId']   = $detail['mediumId'];
+            empty($detail['mediumId']) || $data['mediumId'] = $detail['mediumId'];
             return $data;
         }
         return $data;
@@ -173,7 +233,7 @@ class ContactCallBackLogic
     {
         $medium = $this->mediumService->getMediumById($mediumId, ['id', 'type', 'content']);
         return empty($medium) ? [] : [
-            'mediumType'    => $medium['type'],
+            'mediumType' => $medium['type'],
             'mediumContent' => json_decode($medium['content'], true),
         ];
     }

@@ -17,6 +17,7 @@ use MoChat\Framework\Service\AbstractService;
 class WorkDepartmentService extends AbstractService implements WorkDepartmentContract
 {
     private const MAX_LIMIT = 1000;
+    private const BATCH_MAX_SIZE = 100;
 
     /**
      * @var WorkDepartment
@@ -74,7 +75,20 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
      */
     public function createWorkDepartments(array $data): bool
     {
-        return $this->model->createAll($data);
+        $maxSize = self::BATCH_MAX_SIZE;
+        if (count($data) <= $maxSize) {
+            return $this->model->createAll($data);
+        }
+
+        $chunkData = array_chunk($data, $maxSize);
+        $flag = true;
+        foreach ($chunkData as $newData) {
+            if (!$this->model->createAll($newData)) {
+                $flag = false;
+            }
+        }
+
+        return $flag;
     }
 
     /**
@@ -175,7 +189,19 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
      */
     public function updateWorkDepartmentByIds(array $data): int
     {
-        return $this->model->batchUpdateByIds($data);
+        $maxSize = self::BATCH_MAX_SIZE;
+        if (count($data) <= $maxSize) {
+            return $this->model->batchUpdateByIds($data);
+        }
+
+        $chunkData = array_chunk($data, $maxSize);
+        $rows = 0;
+
+        foreach ($chunkData as $newData) {
+            $rows += $this->model->batchUpdateByIds($newData);
+        }
+
+        return $rows;
     }
 
     /**

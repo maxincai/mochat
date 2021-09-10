@@ -16,6 +16,7 @@ use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkContact\Model\WorkContact;
 use MoChat\App\WorkContact\Model\WorkContactEmployee;
 use MoChat\App\WorkContact\Model\WorkContactTagPivot;
+use MoChat\App\WorkContact\QueueService\SendWelcome;
 use MoChat\App\WorkEmployee\Model\WorkEmployee;
 use MoChat\Framework\Service\AbstractService;
 use MoChat\Plugin\ShopCode\Model\ShopCode;
@@ -565,5 +566,20 @@ class WorkContactService extends AbstractService implements WorkContactContract
         }
 
         return $res->toArray();
+    }
+
+    /**
+     * 发送欢迎语
+     *
+     * @param int|string $corpId 企业id
+     * @param array $contact 客户信息
+     * @param string $welcomeCode 发送欢迎语的凭证
+     * @param array $content 欢迎语内容
+     *
+     * @return bool
+     */
+    public function sendWelcome($corpId, array $contact, string $welcomeCode, array $content): bool
+    {
+        return make(SendWelcome::class)->handle($corpId, $contact, $welcomeCode, $content);
     }
 }

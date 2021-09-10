@@ -25,9 +25,9 @@ use Psr\Container\ContainerInterface;
 use MoChat\App\WorkContact\Event\Tag\CreateTagRawEvent;
 
 /**
- * 添加企业客户事件
+ * 创建标签事件监听器
  *
- * @Listener(priority=9999)
+ * @Listener()
  */
 class CreateTagRawListener implements ListenerInterface
 {
