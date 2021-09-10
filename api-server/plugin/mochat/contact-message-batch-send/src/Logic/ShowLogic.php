@@ -59,16 +59,16 @@ class ShowLogic
 
     protected function handleData($content): array
     {
-        if (!empty($content)) {
-            if ($content[0]['msgType'] === 'image') {
-                $content[0]['image']['pic_url'] = file_full_url($content[0]['image']['pic_url']);
+        if (empty($content)) {
+            return $content;
+        }
+
+        foreach ($content as $key => $value) {
+            if ($value['msgType'] === 'text') {
+                continue;
             }
-            if ($content[0]['msgType'] === 'link') {
-                $content[0]['link']['pic_url'] = file_full_url($content[0]['link']['pic_url']);
-            }
-            if ($content[0]['msgType'] === 'miniprogram') {
-                $content[0]['miniprogram']['pic_url'] = file_full_url($content[0]['miniprogram']['pic_url']);
-            }
+
+            $content[$key]['pic_url'] = file_full_url($value['pic_url']);
         }
         return $content;
     }

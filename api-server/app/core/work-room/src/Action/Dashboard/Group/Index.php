@@ -54,7 +54,7 @@ class Index extends AbstractAction
         ## 组织查询条件
         $where            = [];
         $corpIds          = isset($user['corpIds']) ? $user['corpIds'] : [];
-        $where['corp_id'] = ['corp_id', 'IN', $corpIds];
+        $where['corp_id'] = ['corp_id', '=', $corpIds[0]];
         $options          = [
             'page'    => $page,
             'perPage' => $perPage,

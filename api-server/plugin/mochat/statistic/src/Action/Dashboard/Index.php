@@ -49,7 +49,7 @@ class Index extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/count/index", methods="GET")
+     * @RequestMapping(path="/dashboard/statistic/index", methods="GET")
      */
     public function handle(): array
     {

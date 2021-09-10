@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\ContactMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -33,13 +34,13 @@ class IndexLogic
             ['user_id', '=', $userId],
         ];
 
-        if (isset($params['batchTitle']) && ! empty($params['batchTitle'])) {
+        if (isset($params['batchTitle']) && !empty($params['batchTitle'])) {
             $where[] = ['batch_title', 'like', '%' . $params['batchTitle'] . '%'];
         }
 
         $options = [
-            'page'       => $params['page'],
-            'perPage'    => $params['perPage'],
+            'page' => $params['page'],
+            'perPage' => $params['perPage'],
             'orderByRaw' => 'id desc',
         ];
         ## 查询数据
@@ -61,8 +62,8 @@ class IndexLogic
         ## 组织响应数据
         $data = [
             'page' => [
-                'perPage'   => $params['perPage'],
-                'total'     => 0,
+                'perPage' => $params['perPage'],
+                'total' => 0,
                 'totalPage' => 0,
             ],
             'list' => [],
@@ -72,25 +73,31 @@ class IndexLogic
             return $data;
         }
         ## 处理分页数据
-        $data['page']['total']     = $res['total'];
+        $data['page']['total'] = $res['total'];
         $data['page']['totalPage'] = $res['last_page'];
-        $data['list']              = $this->handleData($res['data']);
+        $data['list'] = $this->handleData($res['data']);
 
         return $data;
     }
 
-    protected function handleData($data):array
+    protected function handleData($data): array
     {
-        foreach ($data as $k=>$v){
-            if (!empty($v['content'])){
-                if ($v['content'][0]['msgType'] === 'image'){
-                    $data[$k]['content'][0]['image']['pic_url'] = file_full_url($v['content'][0]['image']['pic_url']);
-                }
-                if ($v['content'][0]['msgType'] === 'link'){
-                    $data[$k]['content'][0]['link']['pic_url'] = file_full_url($v['content'][0]['link']['pic_url']);
-                }
-                if ($v['content'][0]['msgType'] === 'miniprogram'){
-                    $data[$k]['content'][0]['miniprogram']['pic_url'] = file_full_url($v['content'][0]['miniprogram']['pic_url']);
+        foreach ($data as $k => $v) {
+            if (!empty($v['content'])) {
+
+                foreach ($v['content'] as $key => $content) {
+                    if (!isset($content['msgType'])) {
+                        continue;
+                    }
+                    if ($content['msgType'] === 'image') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
+                    if ($content['msgType'] === 'link') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
+                    if ($content['msgType'] === 'miniprogram') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
                 }
             }
         }

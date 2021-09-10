@@ -50,7 +50,7 @@ class TopList extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/count/topList", methods="GET")
+     * @RequestMapping(path="/dashboard/statistic/topList", methods="GET")
      */
     public function handle(): array
     {

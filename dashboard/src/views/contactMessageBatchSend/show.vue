@@ -19,32 +19,31 @@
             <div class="item" style="display: flex;">
               <span>群发消息：</span>
               <div v-for="(item,index) in seatInfoData.content" :key="index" style="width: 570px;">
-                <div>群发消息1：{{ item.text.content }}</div>
-                <div style="margin-top: 10px;">群发消息2：</div>
+                <div v-if="item.msgType==='text'">群发消息1：{{ item.content }}</div>
+                <div style="margin-top: 10px;" v-if="item.msgType==='image' || item.msgType==='link' || item.msgType==='miniprogram'">群发消息2：</div>
                 <div style="margin-left: 15px;margin-top: 10px;">
-                  <div v-if="item.msgType=='image'">
-                    <img :src="item.image.pic_url" alt="" style="width: 70px;height: 70px;">
+                  <div v-if="item.msgType==='image'">
+                    <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
                   </div>
                   <div v-if="item.msgType=='link'">
-                    <div>{{ item.link.url }}</div>
+                    <div>{{ item.url }}</div>
                     <div style="display: flex;">
                       <div>
-                        <div>{{ item.link.title }}</div>
-                        <div>{{ item.link.desc }}</div>
+                        <div>{{ item.title }}</div>
+                        <div>{{ item.desc }}</div>
                       </div>
-                      <img :src="item.link.pic_url" alt="" style="width: 70px;height: 70px;">
+                      <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
                     </div>
                   </div>
                   <div v-if="item.msgType=='miniprogram'">
                     <div class="applets">
                       <div class="title">
-                        {{ item.miniprogram.title }}
+                        {{ item.title }}
                       </div>
                       <div class="image">
-                        <img :src="item.miniprogram.pic_url" style="width: 100px;">
+                        <img :src="item.pic_url" style="width: 100px;">
                       </div>
                       <div class="applets-logo">
-                        <img src="https://www.hualigs.cn/image/607ea04022f74.jpg">
                         小程序
                       </div>
                     </div>
@@ -115,7 +114,7 @@
             <a-col class="item" :span="8">
               <a-row class="total_module" type="flex" justify="space-between">
                 <a-col class="item item_hr" :span="12">
-                  <span style="font-size: 25px;">{{ seatInfoData.sendContactTotal }}</span><span>人</span>
+                  <span style="font-size: 25px;">{{ seatInfoData.receiveLimitTotal }}</span><span>人</span>
                   <p>客户接受已达上限</p>
                 </a-col>
                 <a-col class="item" :span="12">
@@ -162,11 +161,11 @@
       <a-col :span="12">
         <div class="child_module">
           <div class="child_title">客户详情</div>
-          <a-tabs @change="tabClientPanel">
+          <a-tabs @change="tabClientPanel" v-model="clientAskData.sendStatus">
             <a-tab-pane :key="1" tab="已送达"> </a-tab-pane>
-            <a-tab-pane :key="2" tab="未送达客户" force-render> </a-tab-pane>
+            <a-tab-pane :key="0" tab="未送达客户" force-render> </a-tab-pane>
             <a-tab-pane :key="3" tab="客户接收达上限" force-render> </a-tab-pane>
-            <a-tab-pane :key="4" tab="已不是好友客户" force-render> </a-tab-pane>
+            <a-tab-pane :key="2" tab="已不是好友客户" force-render> </a-tab-pane>
           </a-tabs>
           <div class="search_module">
             <div class="total_num"><a-icon type="user" /> <span class="text">共{{ clientTable.data.length }}人</span></div>
@@ -175,8 +174,8 @@
           <a-table :columns="clientTable.columns" :data-source="clientTable.data" style="margin-top: 10px;">
             <div slot="name" slot-scope="text, record">
               <div>
-                <img :src="record.employeeAvatar" alt="" style="width: 40px;height: 40px;border-radius: 50%;">
-                {{ record.contactNickName }}
+                <img :src="record.contactAvatar" alt="" style="width: 40px;height: 40px;border-radius: 50%;">
+                {{ record.contactName }}
               </div>
             </div>
             <div slot="status" slot-scope="text">
@@ -278,23 +277,27 @@ export default {
       showApi({ batchId }).then((res) => {
         console.log(res)
         this.seatInfoData = res.data
-        this.previewShow(this.seatInfoData.content[0])
+        this.previewShow(this.seatInfoData.content)
       })
     },
     // 预览样式
-    previewShow (data) {
-      console.log(data)
+    previewShow (content) {
+      console.log(content)
       this.$nextTick(() => {
-        this.$refs.preview.setText(data.text.content)
-        if (data.msgType == 'image') {
-          this.$refs.preview.setImage(data.image.pic_url)
-        }
-        if (data.msgType == 'link') {
-          this.$refs.preview.setLink(data.link.title, data.link.desc, data.link.pic_url)
-        }
-        if (data.msgType == 'miniprogram') {
-          this.$refs.preview.setApplets(data.miniprogram.title, data.miniprogram.pic_url)
-        }
+        content.forEach((value) => {
+          if (value.msgType == 'text') {
+            this.$refs.preview.setText(value.content)
+          }
+          if (value.msgType == 'image') {
+            this.$refs.preview.setImage(value.pic_url)
+          }
+          if (value.msgType == 'link') {
+            this.$refs.preview.setLink(value.title, value.desc, value.pic_url)
+          }
+          if (value.msgType == 'miniprogram') {
+            this.$refs.preview.setApplets(value.title, value.pic_url)
+          }
+        })
       })
     },
     // 提醒发送

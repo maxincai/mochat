@@ -42,7 +42,7 @@ class Index extends AbstractAction
     public function handle()
     {
         $res = $this->contactTagGroupService
-            ->getWorkContactTagGroupsByCorpId(user()['corpIds'], ['id', 'group_name']);
+            ->getWorkContactTagGroupsByCorpId([user()['corpId']], ['id', 'group_name']);
 
         if (empty($res)) {
             return [];

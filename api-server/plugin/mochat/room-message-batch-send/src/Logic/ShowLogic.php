@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\Plugin\RoomMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -43,8 +44,8 @@ class ShowLogic
      */
     public function handle(array $params, int $userId): array
     {
-        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int) $params['batchId']);
-        if (! $batch) {
+        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int)$params['batchId']);
+        if (!$batch) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未找到记录');
         }
         if ($batch['userId'] != $userId) {
@@ -52,37 +53,37 @@ class ShowLogic
         }
 
         $roomIds = $this->roomMessageBatchSendResult->getRoomMessageBatchSendResultRoomIdsByBatchIds($batch['id']);
-        $rooms   = $this->workRoom->getWorkRoomsById(array_slice($roomIds, 0, 10), ['id', 'name']);
+        $rooms = $this->workRoom->getWorkRoomsById(array_slice($roomIds, 0, 10), ['id', 'name']);
 
         return [
-            'id'               => $batch['id'],
-            'batchTitle'       => $batch['batchTitle'],
-            'creator'          => $batch['userName'],
-            'createdAt'        => $batch['createdAt'],
-            'seedRooms'        => $rooms,
-            'content'          => $this->handleData($batch['content']   ),
-            'sendTime'         => $batch['sendTime'],
-            'sendContactTotal' => $batch['sendContactTotal'],
-            'sendRoomTotal'    => $batch['sendRoomTotal'],
-            'sendTotal'        => $batch['sendTotal'],
-            'receivedTotal'    => $batch['receivedTotal'],
-            'notSendTotal'     => $batch['notSendTotal'],
+            'id' => $batch['id'],
+            'batchTitle' => $batch['batchTitle'],
+            'creator' => $batch['userName'],
+            'createdAt' => $batch['createdAt'],
+            'seedRooms' => $rooms,
+            'content' => $this->handleData($batch['content']),
+            'sendTime' => $batch['sendTime'],
+            'sendEmployeeTotal' => $batch['sendEmployeeTotal'],
+            'sendRoomTotal' => $batch['sendRoomTotal'],
+            'sendTotal' => $batch['sendTotal'],
+            'receivedTotal' => $batch['receivedTotal'],
+            'notSendTotal' => $batch['notSendTotal'],
             'notReceivedTotal' => $batch['notReceivedTotal'],
         ];
     }
 
     protected function handleData($content): array
     {
-        if (!empty($content)) {
-            if ($content[0]['msgType'] === 'image') {
-                $content[0]['image']['pic_url'] = file_full_url($content[0]['image']['pic_url']);
+        if (empty($content)) {
+            return $content;
+        }
+
+        foreach ($content as $key => $value) {
+            if ($value['msgType'] === 'text') {
+                continue;
             }
-            if ($content[0]['msgType'] === 'link') {
-                $content[0]['link']['pic_url'] = file_full_url($content[0]['link']['pic_url']);
-            }
-            if ($content[0]['msgType'] === 'miniprogram') {
-                $content[0]['miniprogram']['pic_url'] = file_full_url($content[0]['miniprogram']['pic_url']);
-            }
+
+            $content[$key]['pic_url'] = file_full_url($value['pic_url']);
         }
         return $content;
     }

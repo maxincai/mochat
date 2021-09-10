@@ -14,32 +14,31 @@
     >
       <div slot="content" slot-scope="text,record">
         <div v-for="(item,index) in record.content" :key="index">
-          <div>群发消息1：{{ item.text.content }}</div>
-          <div style="margin-top: 10px;">群发消息2：</div>
+          <div v-if="item.msgType==='text'">群发消息1：{{ item.content }}</div>
+          <div style="margin-top: 10px;" v-if="item.msgType==='image' || item.msgType==='link' || item.msgType==='miniprogram'">群发消息2：</div>
           <div style="margin-left: 15px;margin-top: 10px;">
             <div v-if="item.msgType=='image'">
-              <img :src="item.image.pic_url" alt="" style="width: 70px;height: 70px;">
+              <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
             </div>
             <div v-if="item.msgType=='link'">
-              <div>{{ item.link.url }}</div>
+              <div>{{ item.url }}</div>
               <div style="display: flex;">
                 <div>
-                  <div>{{ item.link.title }}</div>
-                  <div>{{ item.link.desc }}</div>
+                  <div>{{ item.title }}</div>
+                  <div>{{ item.desc }}</div>
                 </div>
-                <img :src="item.link.pic_url" alt="" style="width: 70px;height: 70px;">
+                <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
               </div>
             </div>
             <div v-if="item.msgType=='miniprogram'">
               <div class="applets">
                 <div class="title">
-                  {{ item.miniprogram.title }}
+                  {{ item.title }}
                 </div>
                 <div class="image">
-                  <img :src="item.miniprogram.pic_url">
+                  <img :src="item.pic_url">
                 </div>
                 <div class="applets-logo">
-                  <img src="https://www.hualigs.cn/image/607ea04022f74.jpg">
                   小程序
                 </div>
               </div>
@@ -49,16 +48,18 @@
         </div>
       </div>
       <span slot="action" slot-scope="text,record">
-        <a @click="handleRemind(record)">提醒发送</a>
-        <a-divider type="vertical" />
+        <a @click="handleRemind(record)" v-if="record.notReceivedTotal!=0">提醒发送</a>
+        <a-divider type="vertical" v-if="record.notReceivedTotal!=0"/>
         <a class="ant-dropdown-link" @click="handleJump(record)">详情 </a>
+        <a-divider type="vertical" />
+        <a @click="delRowTable(record)">删除</a>
       </span>
     </a-table>
   </div>
 </template>
 <script>
 
-import { index, remind } from '@/api/roomMessageBatchSend'
+import { index, remind, destroyApi } from '@/api/roomMessageBatchSend'
 
 const columns = [
   {
@@ -75,17 +76,21 @@ const columns = [
     scopedSlots: { customRender: 'content' }
   },
   {
-    title: '已发送成员',
+    title: '已发送群主',
     dataIndex: 'sendTotal'
   },
   {
-    title: '送达客户',
+    title: '送达群聊',
     dataIndex: 'receivedTotal'
   },
 
   {
-    title: '未发送成员',
+    title: '未发送群主',
     dataIndex: 'notSendTotal'
+  },
+  {
+    title: '未送达群聊',
+    dataIndex: 'notReceivedTotal'
   },
 
   {
@@ -168,9 +173,30 @@ export default {
       })
     },
     handleJump (item) {
-      this.$router.push('/roomMessageBatchSend/show?id=' + item.id)
+      this.$router.push('/roomMessageBatchSend/show?batchId=' + item.id)
+    },
+    // 删除
+    delRowTable (record) {
+      const that = this
+      this.$confirm({
+        title: '提示',
+        content: '是否删除',
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          destroyApi({
+            batchId: record.id
+          }).then((res) => {
+            that.$message.success('删除成功')
+            that.selectList({
+              page: that.pagination.current,
+              perPage: that.pagination.pageSize
+            })
+          })
+        }
+      })
     }
-
   }
 }
 </script>

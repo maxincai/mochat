@@ -80,7 +80,7 @@ class IndexLogic
         $where = [];
         ## 企业
         $corpIds = isset($user['corpIds']) ? $user['corpIds'] : [];
-        $where[] = ['corp_id', 'IN', $corpIds];
+        $where[] = ['corp_id', '=', $corpIds[0]];
         ## 数据权限-群主
         $ownerIdArr = empty($params['workRoomOwnerId']) ? [] : explode(',', $params['workRoomOwnerId']);
         if ($user['dataPermission'] == 0) {

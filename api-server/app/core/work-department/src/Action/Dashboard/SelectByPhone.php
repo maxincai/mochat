@@ -68,7 +68,8 @@ class SelectByPhone extends AbstractAction
         $type  = $this->request->input('type', 1);
 
         ## 根据手机号查询成员通讯录
-        $employeeList = $this->workEmployeeService->getWorkEmployeesByMobile($phone, ['id', 'corp_id']);
+        $corpId = (int)$user['corpIds'][0];
+        $employeeList = $this->workEmployeeService->getWorkEmployeesByMobile($corpId, $phone, ['id', 'corp_id']);
         if (empty($employeeList)) {
             return [];
         }

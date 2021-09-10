@@ -208,11 +208,12 @@ interface WorkEmployeeContract
 
     /**
      * 查询多条 - 根据手机号.
+     * @param int $corpId
      * @param string $phone ...
      * @param array|string[] $columns ...
      * @return array ...
      */
-    public function getWorkEmployeesByMobile(string $phone, array $columns = ['*']): array;
+    public function getWorkEmployeesByMobile(int $corpId, string $phone, array $columns = ['*']): array;
 
     /**
      * 批量修改 - 根据IDs.

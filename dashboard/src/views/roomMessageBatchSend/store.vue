@@ -333,82 +333,93 @@ export default {
     },
     onSubmit () {
       const dataJSon = JSON.parse(JSON.stringify(this.form))
-      const msgArray = {}
+      let msgArray = {}
+      const contentJSon = []
       this.employeeIdList = []
       // form.batchTitle
-      if (this.form.batchTitle == '') {
+      if (this.form.batchTitle === '') {
         this.$message.warning('群发名称不能为空')
         return
       }
       this.employees.forEach((item, index) => {
         this.employeeIdList[index] = item.employeeId
       })
-      if (this.employeeIdList == '') {
+      if (this.employeeIdList === '') {
         this.$message.warning('请选择群主')
         return
       }
-      if (this.form.textContent == '') {
-        this.$message.warning('请输入消息')
-        return
-      } else {
-        msgArray.text = {
+      if (this.form.textContent !== '') {
+        msgArray = {
           msgType: 'text',
           content: this.form.textContent
         }
+        contentJSon.push(msgArray)
       }
+
       if (this.msgType === '1') {
         delete dataJSon.content.image
         delete dataJSon.content.miniprogram
-        if (this.form.content.image.pic_url == '') {
+        if (this.form.textContent === '' && this.form.content.image.pic_url === '') {
           this.$message.warning('请上传图片')
           return
         }
-        msgArray.msgType = 'image'
-        msgArray.image = {
-          msgType: 'image',
-          media_id: new Date().getTime(),
-          pic_url: this.form.content.image.pic_url
+
+        if (this.form.content.image.pic_url !== '') {
+          msgArray = {
+            msgType: 'image',
+            media_id: new Date().getTime(),
+            pic_url: this.form.content.image.pic_url
+          }
+          contentJSon.push(msgArray)
         }
       } else if (this.msgType === '2') {
         if (
-          this.form.content.link.url.indexOf('http://') == -1 &&
-          this.form.content.link.url.indexOf('https://') == -1
+          this.form.textContent === '' &&
+          this.form.content.link.url.indexOf('http://') === -1 &&
+          this.form.content.link.url.indexOf('https://') === -1
         ) {
           this.$message.warning('链接地址输入不正确')
           return
         }
-        msgArray.msgType = 'link'
-        msgArray.link = {
-          msgType: 'link',
-          title: this.form.content.link.title,
-          pic_url: this.form.content.link.picture,
-          desc: this.form.content.link.desc,
-          url: this.form.content.link.url
+        if (this.form.content.link.url !== '') {
+          msgArray = {
+            msgType: 'link',
+            title: this.form.content.link.title,
+            pic_url: this.form.content.link.picture,
+            desc: this.form.content.link.desc,
+            url: this.form.content.link.url
+          }
+          contentJSon.push(msgArray)
         }
       } else if (this.msgType === '3') {
-        if (this.form.content.miniprogram.pic_media_id == '') {
-          this.$message.warning('请选择封面')
-          return
+        if (this.form.textContent === '') {
+          if (this.form.content.miniprogram.pic_media_id === '') {
+            this.$message.warning('请选择封面')
+            return
+          }
+          if (this.form.content.miniprogram.title === '') {
+            this.$message.warning('请填写标题')
+            return
+          }
+          if (this.form.content.miniprogram.appid === '') {
+            this.$message.warning('请输入appId')
+            return
+          }
+          if (this.form.content.miniprogram.page === '') {
+            this.$message.warning('请输入小程序路径')
+            return
+          }
         }
-        if (this.form.content.miniprogram.title == '') {
-          this.$message.warning('请填写标题')
-          return
-        }
-        if (this.form.content.miniprogram.appid == '') {
-          this.$message.warning('请输入appId')
-          return
-        }
-        if (this.form.content.miniprogram.page == '') {
-          this.$message.warning('请输入小程序路径')
-          return
-        }
-        msgArray.msgType = 'miniprogram'
-        msgArray.miniprogram = {
-          msgType: 'miniprogram',
-          title: this.form.content.miniprogram.title,
-          pic_media_id: this.form.content.miniprogram.pic_media_id,
-          appid: this.form.content.miniprogram.appid,
-          page: this.form.content.miniprogram.page
+
+        if (this.form.content.miniprogram.page !== '') {
+          msgArray = {
+            msgType: 'miniprogram',
+            title: this.form.content.miniprogram.title,
+            pic_media_id: this.form.content.miniprogram.pic_media_id,
+            appid: this.form.content.miniprogram.appid,
+            page: this.form.content.miniprogram.page
+          }
+          contentJSon.push(msgArray)
         }
       }
       if (this.form.sendWay == 2) {
@@ -420,11 +431,8 @@ export default {
         dataJSon.definiteTime = this.getDateTime()
       }
       dataJSon.employeeIds = this.employeeIdList
-      const contentJSon = []
-      contentJSon.push(msgArray)
-      console.log(msgArray)
       dataJSon.content = JSON.stringify(contentJSon)
-      console.log(dataJSon)
+
       addMessage(dataJSon).then(_ => {
         this.btnLoading = false
         this.$message.success('内容已提交')

@@ -137,8 +137,7 @@ export default {
         loginBtn: false,
         loginType: 0,
         smsSendBtn: false
-      },
-      background: require('../../assets/background.png')
+      }
     }
   },
   created () {

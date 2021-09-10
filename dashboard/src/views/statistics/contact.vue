@@ -86,7 +86,7 @@
 
 <script>
 import echarts from 'echarts'
-import { contactInfo } from '@/api/contactCount'
+import { contactInfo } from '@/api/statistic'
 import moment from 'moment'
 import selectMember from '@/components/Select/member'
 

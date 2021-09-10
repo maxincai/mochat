@@ -2,18 +2,26 @@ const routes = [
   {
     path: '/',
     name: 'index',
-    component: () => import(/* webpackChunkName: "auth" */ 'views/index')
-    // redirect: { name: 'codeAuth' }
+    component: () => import(/* webpackChunkName: "auth" */ 'views/index'),
+    meta: { initConfig: false }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import(/* webpackChunkName: "login" */ 'views/login'),
+    meta: { initConfig: false }
   },
   {
     path: '/codeAuth',
     name: 'codeAuth',
-    component: () => import(/* webpackChunkName: "auth" */ 'views/codeAuth')
+    component: () => import(/* webpackChunkName: "auth" */ 'views/codeAuth'),
+    meta: { initConfig: false }
   },
   {
     path: '/auth',
     name: 'auth',
-    component: () => import(/* webpackChunkName: "auth" */ 'views/auth')
+    component: () => import(/* webpackChunkName: "auth" */ 'views/auth'),
+    meta: { initConfig: false }
   },
   {
     path: '/contact',
@@ -42,15 +50,15 @@ const routes = [
   {
     path: '/medium',
     name: 'medium',
-    component: () => import(/* webpackChunkName: "medium" */ 'views/medium'),
+    component: () => import(/* webpackChunkName: "medium" */ 'views/medium/index'),
     meta: { initConfig: true }
   },
   {
     path: '/404',
     name: '404',
-    component: () => import(/* webpackChunkName: "404" */ 'views/error/404')
+    component: () => import(/* webpackChunkName: "404" */ 'views/error/404'),
+    meta: { initConfig: false }
   },
-  { path: '/:pathMatch(.*)', redirect: { name: '404' } },
   {
     path: '/contactSop',
     name: 'contactSop',
@@ -79,7 +87,8 @@ const routes = [
     name: 'room',
     component: () => import(/* webpackChunkName: "room" */ 'views/room/index'),
     meta: { initConfig: true }
-  }
+  },
+  { path: '/:pathMatch(.*)', redirect: { name: '404' } }
   // {
   //   path: '/pushRule',
   //   name: 'pushRule',

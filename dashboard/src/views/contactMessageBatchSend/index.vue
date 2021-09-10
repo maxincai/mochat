@@ -7,32 +7,31 @@
     <a-table :columns="table.columns" :data-source="table.data">
       <div slot="content" slot-scope="text">
         <div v-for="(item,index) in text" :key="index">
-          <div>群发消息1：{{ item.text.content }}</div>
-          <div style="margin-top: 10px;">群发消息2：</div>
+          <div v-if="item.msgType==='text'">群发消息1：{{ item.content }}</div>
+          <div style="margin-top: 10px;" v-if="item.msgType==='image' || item.msgType==='link' || item.msgType==='miniprogram'">群发消息2：</div>
           <div style="margin-left: 15px;margin-top: 10px;">
-            <div v-if="item.msgType=='image'">
-              <img :src="item.image.pic_url" alt="" style="width: 70px;height: 70px;">
+            <div v-if="item.msgType==='image'">
+              <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
             </div>
-            <div v-if="item.msgType=='link'">
-              <div>{{ item.link.url }}</div>
+            <div v-if="item.msgType==='link'">
+              <div>{{ item.url }}</div>
               <div style="display: flex;">
                 <div>
-                  <div>{{ item.link.title }}</div>
-                  <div>{{ item.link.desc }}</div>
+                  <div>{{ item.title }}</div>
+                  <div>{{ item.desc }}</div>
                 </div>
-                <img :src="item.link.pic_url" alt="" style="width: 70px;height: 70px;">
+                <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
               </div>
             </div>
-            <div v-if="item.msgType=='miniprogram'">
+            <div v-if="item.msgType==='miniprogram'">
               <div class="applets">
                 <div class="title">
-                  {{ item.miniprogram.title }}
+                  {{ item.title }}
                 </div>
                 <div class="image">
-                  <img :src="item.miniprogram.pic_url">
+                  <img :src="item.pic_url">
                 </div>
                 <div class="applets-logo">
-                  <img src="https://www.hualigs.cn/image/607ea04022f74.jpg">
                   小程序
                 </div>
               </div>
@@ -80,19 +79,19 @@ export default {
             key: 'definiteTime'
           },
           {
-            title: '已发送数量',
+            title: '已发送成员',
             key: 'sendTotal',
             dataIndex: 'sendTotal'
-          },
-          {
-            title: '未发送数量',
-            key: 'notSendTotal',
-            dataIndex: 'notSendTotal'
           },
           {
             title: '送达客户',
             key: 'receivedTotal',
             dataIndex: 'receivedTotal'
+          },
+          {
+            title: '未发送成员',
+            key: 'notSendTotal',
+            dataIndex: 'notSendTotal'
           },
           {
             title: '未送达客户',

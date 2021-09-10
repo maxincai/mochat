@@ -13,35 +13,34 @@
             <div class="item" style="flex-wrap: wrap;">
               <span>群发对象：</span>
               <div class="obj" v-for="(item,index) in info.seedRooms" :key="index">{{ item.name }}</div>
-              ;等{{ info.seedRooms.length }}个群聊
+              ;等{{ info.seedRooms.length !== 'undefined' ? info.seedRooms.length : 0 }}个群聊
             </div>
             <div v-for="(item,index) in info.content" :key="index">
-              <div class="item"><span>群发消息1：</span>{{ item.text.content }}</div>
-              <div class="item"><span>群发消息2：</span></div>
+              <div class="item" v-if="item.msgType==='text'"><span>群发消息1：</span>{{ item.content }}</div>
+              <div class="item" v-if="item.msgType==='image' || item.msgType==='link' || item.msgType==='miniprogram'"><span>群发消息2：</span></div>
               <div style="margin-left: 75px;margin-top: 10px;">
                 <div v-if="item.msgType=='image'">
-                  <img :src="item.image.pic_url" alt="" style="width: 70px;height: 70px;">
+                  <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
                 </div>
                 <div v-if="item.msgType=='link'">
-                  <div>{{ item.link.url }}</div>
+                  <div>{{ item.url }}</div>
                   <div style="display: flex;">
                     <div>
-                      <div>{{ item.link.title }}</div>
-                      <div>{{ item.link.desc }}</div>
+                      <div>{{ item.title }}</div>
+                      <div>{{ item.desc }}</div>
                     </div>
-                    <img :src="item.link.pic_url" alt="" style="width: 70px;height: 70px;">
+                    <img :src="item.pic_url" alt="" style="width: 70px;height: 70px;">
                   </div>
                 </div>
                 <div v-if="item.msgType=='miniprogram'">
                   <div class="applets">
                     <div class="title">
-                      {{ item.miniprogram.title }}
+                      {{ item.title }}
                     </div>
                     <div class="image">
-                      <img :src="item.miniprogram.pic_url">
+                      <img :src="item.pic_url">
                     </div>
                     <div class="applets-logo">
-                      <img src="https://www.hualigs.cn/image/607ea04022f74.jpg">
                       小程序
                     </div>
                   </div>
@@ -140,7 +139,7 @@
             <a @click="detailsRow(record)">群详情</a>
           </div>
           <div slot="operate" slot-scope="text,record">
-            <a @click="remindBtn(record)">提醒发送</a>
+            <a @click="remindBtn(record)" v-if="record.status===0">提醒发送</a>
             <a-divider type="vertical" />
             <a @click="groupSendDetails(record)">群发详情</a>
           </div>
@@ -301,9 +300,8 @@ export default {
     }
   },
   mounted () {
-    this.batchId = this.$route.query.id
+    this.batchId = this.$route.query.batchId
     this.tableAskData.batchId = this.batchId
-    // this.sendAskData.batchId = this.batchId
     this.getDetailsData(this.batchId)
     this.getStaffData()
     this.clientAccept()
@@ -457,7 +455,7 @@ export default {
 }
 .col_right {
 .child_module{
-  height:440px;
+  height:307px;
 }
 }
 .child_module {

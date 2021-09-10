@@ -90,7 +90,6 @@ export default {
     getPersonalSop (id) {
       console.log(id)
       getSopInfoApi({ id }).then((res) => {
-        console.log(res.data)
         this.contactSopData = res.data
       })
     },
@@ -105,7 +104,6 @@ export default {
       inputElement.value = value
       inputElement.select()
       document.execCommand('Copy')
-      // this.$message.success('复制成功')
     }
   }
 }

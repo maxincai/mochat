@@ -788,18 +788,22 @@ class WorkContactEmployeeService extends AbstractService implements WorkContactE
         $addTimeEnd      = $filterParams['addTimeEnd'] ?? null;
         $tags            = $filterParams['tags'] ?? [];
         $excludeContacts = $filterParams['excludeContacts'] ?? [];
-        $res = $this->model::from($this->model::query()->getModel()->getTable() . ' as work_contact_employee')
-            ->join(WorkContact::query()->getModel()->getTable() . ' as work_contact', 'work_contact_employee.contact_id', 'work_contact.id')
-            ->join(WorkContactTagPivot::query()->getModel()->getTable() . ' as work_contact_tag_pivot', 'work_contact_employee.contact_id', 'work_contact_tag_pivot.contact_id')
-            ->join(WorkContactRoom::query()->getModel()->getTable() . ' as work_contact_room', 'work_contact_employee.contact_id', 'work_contact_room.contact_id')
-            ->where('work_contact_employee.employee_id', $employeeId)
-            ->when(is_numeric($gender), function (Builder $query) use ($gender) {
+        $query = $this->model::from($this->model::query()->getModel()->getTable() . ' as work_contact_employee')
+            ->join(WorkContact::query()->getModel()->getTable() . ' as work_contact', 'work_contact_employee.contact_id', 'work_contact.id');
+
+        if (!empty($tags) || !empty($excludeContacts)) {
+            $query = $query->join(WorkContactTagPivot::query()->getModel()->getTable() . ' as work_contact_tag_pivot', 'work_contact_employee.contact_id', 'work_contact_tag_pivot.contact_id');
+        }
+
+        $res = $query->where('work_contact_employee.employee_id', $employeeId)
+            ->when(is_numeric($gender) && $gender < 3, function (Builder $query) use ($gender) {
                 return $query->where('work_contact.gender', '=', $gender);
             })
             ->when(! empty($addTimeStart), function (Builder $query) use ($addTimeStart, $addTimeEnd) {
-                return $query->whereBetween('work_contact.created_at', [$addTimeStart, $addTimeEnd]);
+                return $query->whereBetween('work_contact.created_at', [$addTimeStart . ' 00:00:00', $addTimeEnd . ' 23:59:59']);
             })
             ->when(! empty($rooms), function (Builder $query) use ($rooms) {
+                $query->join(WorkContactRoom::query()->getModel()->getTable() . ' as work_contact_room', 'work_contact_employee.contact_id', 'work_contact_room.contact_id');
                 return $query->whereIn('work_contact_room.room_id', $rooms);
             })
             ->when(! empty($tags), function (Builder $query) use ($tags) {
@@ -816,5 +820,4 @@ class WorkContactEmployeeService extends AbstractService implements WorkContactE
         $res || $res = collect([]);
         return $res->toArray();
     }
-
 }

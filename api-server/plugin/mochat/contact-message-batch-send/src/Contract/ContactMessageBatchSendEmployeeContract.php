@@ -107,4 +107,11 @@ interface ContactMessageBatchSendEmployeeContract
      * 获取成员统计
      */
     public function getContactMessageBatchSendEmployeeCount(array $where): int;
+
+    /**
+     * 查询最近一周的群发消息
+     *
+     * @return array
+     */
+    public function getContactMessageBatchSendEmployeeIdsByLastWeek(): array;
 }

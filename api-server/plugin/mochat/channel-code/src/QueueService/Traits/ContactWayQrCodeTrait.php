@@ -84,6 +84,13 @@ trait ContactWayQrCodeTrait
      */
     public function uploadQrCode(array $wxQrCode): array
     {
+        $this->respondData['data'] = [
+            'qrCodePath' => $wxQrCode['qr_code'],
+            'wxConfigId' => $wxQrCode['config_id'],
+        ];
+        return $this->respondData;
+        // 直接使用地址，不再上传二维码
+        /**
         $filesystem   = make(Filesystem::class);
         $pathFileName = 'ContactWayClient/QrCode/' . time() . '.png';
         $stream       = file_get_contents($wxQrCode['qr_code'], true);
@@ -101,5 +108,6 @@ trait ContactWayQrCodeTrait
             $this->respondData['code'] = 1;
         }
         return $this->respondData;
+        */
     }
 }

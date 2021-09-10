@@ -87,18 +87,24 @@ class IndexLogic
         return $data;
     }
 
-    protected function handleData($data):array
+    protected function handleData($data): array
     {
-        foreach ($data as $k=>$v){
-            if (!empty($v['content'])){
-                if ($v['content'][0]['msgType'] === 'image'){
-                    $data[$k]['content'][0]['image']['pic_url'] = file_full_url($v['content'][0]['image']['pic_url']);
-                }
-                if ($v['content'][0]['msgType'] === 'link'){
-                    $data[$k]['content'][0]['link']['pic_url'] = file_full_url($v['content'][0]['link']['pic_url']);
-                }
-                if ($v['content'][0]['msgType'] === 'miniprogram'){
-                    $data[$k]['content'][0]['miniprogram']['pic_url'] = file_full_url($v['content'][0]['miniprogram']['pic_url']);
+        foreach ($data as $k => $v) {
+            if (!empty($v['content'])) {
+
+                foreach ($v['content'] as $key => $content) {
+                    if (!isset($content['msgType'])) {
+                        continue;
+                    }
+                    if ($content['msgType'] === 'image') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
+                    if ($content['msgType'] === 'link') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
+                    if ($content['msgType'] === 'miniprogram') {
+                        $data[$k]['content'][$key]['pic_url'] = file_full_url($content['pic_url']);
+                    }
                 }
             }
         }

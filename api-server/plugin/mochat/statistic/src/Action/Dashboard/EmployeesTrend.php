@@ -62,7 +62,7 @@ class EmployeesTrend extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @RequestMapping(path="/dashboard/count/employeesTrend", methods="GET")
+     * @RequestMapping(path="/dashboard/statistic/employeesTrend", methods="GET")
      */
     public function handle(): array
     {

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `mc_contact_message_batch_send` (
   `corp_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '企业表ID （mc_corp.id）',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID【mc_user.id】',
   `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名称【mc_user.name】',
+  `employee_ids` json NOT NULL COMMENT '员工ids',
   `filter_params` json DEFAULT NULL COMMENT '筛选客户参数',
   `filter_params_detail` json DEFAULT NULL COMMENT '筛选客户参数显示详情',
   `content` json NOT NULL COMMENT '群发消息内容',
@@ -94,13 +95,13 @@ CREATE TABLE IF NOT EXISTS `mc_contact_message_batch_send_employee` (
   `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
   `wx_user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信userId （mc_work_employee.wx_user_id)',
   `send_contact_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送客户数量',
-  `content` json NOT NULL COMMENT '群发消息内容',
   `err_code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '返回码',
   `err_msg` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '对返回码的文本描述内容',
   `msg_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业群发消息的id，可用于获取群发消息发送结果',
   `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
   `last_sync_time` timestamp NULL DEFAULT NULL COMMENT '最后一次同步结果时间',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送, 2-发送失败）',
+  `receive_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '接收状态(0-未接收，1-已接收，2-接收失败)',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -125,6 +126,7 @@ CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send` (
   `corp_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '企业表ID （mc_corp.id）',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID【mc_user.id】',
   `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名称【mc_user.name】',
+  `employee_ids` json NOT NULL COMMENT '员工ids',
   `batch_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '群发名称',
   `content` json NOT NULL COMMENT '群发消息内容',
   `send_way` tinyint(4) NOT NULL DEFAULT '1' COMMENT '发送方式（1-立即发送，2-定时发送）',
@@ -149,13 +151,13 @@ CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send_employee` (
   `employee_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '员工id （mc_work_employee.id)',
   `wx_user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '微信userId （mc_work_employee.wx_user_id)',
   `send_room_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送群数量',
-  `content` json NOT NULL COMMENT '群发消息内容',
   `err_code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '返回码',
   `err_msg` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '对返回码的文本描述内容',
   `msg_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '企业群发消息的id，可用于获取群发消息发送结果',
   `send_time` timestamp NULL DEFAULT NULL COMMENT '发送时间',
   `last_sync_time` timestamp NULL DEFAULT NULL COMMENT '最后一次同步结果时间',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态（0-未发送，1-已发送, 2-发送失败）',
+  `receive_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '接收状态(0-未接收，1-已接收，2-接收失败)',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -177,6 +179,7 @@ CREATE TABLE IF NOT EXISTS `mc_room_message_batch_send_result` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户群消息群发结果表';
+
 
 INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('387','279','按关键词搜索地址','4','#1#-#2#-#279#-#387#','','1','1','2','/dashboard/shopCode/addressKeyWordList#get','1','0','','99',null,'2021-09-03 00:29:39',null);
 INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('388','279','批量打标签','4','#1#-#2#-#279#-#388#','','1','1','2','/dashboard/shopCode/batchContactTags#put','1','0','','99',null,'2021-09-03 00:29:39',null);
@@ -366,4 +369,10 @@ INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, 
 INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('572','335','公众号授权预授权接口','4','#1#-#95#-#335#-#572#','','1','1','2','/dashboard/officialAccount/getPreAuthUrl#get','1','0','系统','99','2021-09-07 01:06:53','2021-09-07 01:06:53',null);
 INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('573','335','公众号授权设置接口','4','#1#-#95#-#335#-#573#','','1','1','2','/dashboard/officialAccount/set#get','1','0','系统','99','2021-09-07 01:06:53','2021-09-07 01:06:53',null);
 INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('574','276','群打卡删除接口','4','#1#-#330#-#276#-#574#','','1','1','2','/dashboard/roomClockIn/destroy#delete','1','0','系统','99','2021-09-07 01:09:48','2021-09-07 01:09:48',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('576','99','用户重置密码','4','#94#-#95#-#99#-#576#','','1','1','2','/dashboard/user/passwordReset#put','1','0','系统','99','2021-09-07 01:57:56','2021-09-10 07:29:09',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('579','286','统计列表接口','4','#1#-#285#-#286#-#579#','','1','1','2','/dashboard/statistic/index#get','1','0','系统','99','2021-09-10 15:45:09','2021-09-10 15:45:09',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('580','286','客户数量前十排行榜接口','4','#1#-#285#-#286#-#580#','','1','1','2','/dashboard/statistic/topList#get','1','0','系统','99','2021-09-10 15:45:09','2021-09-10 15:45:09',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('581','287','成员统计分页接口','4','#1#-#285#-#287#-#581#','','1','1','2','/dashboard/statistic/employeeCounts#get','1','0','系统','99','2021-09-10 15:45:09','2021-09-10 15:45:09',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('582','287','成员统计列表接口','4','#1#-#285#-#287#-#582#','','1','1','2','/dashboard/statistic/employees#get','1','0','系统','99','2021-09-10 15:45:09','2021-09-10 15:45:09',null);
+INSERT INTO `mc_rbac_menu` (`id`, `parent_id`, `name`, `level`, `path`, `icon`, `status`, `link_type`, `is_page_menu`, `link_url`, `data_permission`, `operate_id`, `operate_name`, `sort`, `created_at`, `updated_at`, `deleted_at`) VALUES ('583','287','成员统计联系客户接口','4','#1#-#285#-#287#-#583#','','1','1','2','/dashboard/statistic/employeesTrend#get','1','0','系统','99','2021-09-10 15:45:09','2021-09-10 15:45:09',null);
 

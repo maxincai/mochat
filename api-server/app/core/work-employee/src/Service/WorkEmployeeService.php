@@ -437,11 +437,19 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     }
 
     /**
-     * {@inheritdoc}
+     * 查询多条 - 根据手机号.
+     * @param int $corpId
+     * @param string $phone ...
+     * @param array|string[] $columns ...
+     * @return array ...
      */
-    public function getWorkEmployeesByMobile(string $phone, array $columns = ['*']): array
+    public function getWorkEmployeesByMobile(int $corpId, string $phone, array $columns = ['*']): array
     {
-        $data = $this->model::query()->where('mobile', $phone)->limit(self::MAX_LIMIT)->get($columns);
+        $data = $this->model::query()
+            ->where('corp_id', $corpId)
+            ->where('mobile', $phone)
+            ->limit(self::MAX_LIMIT)
+            ->get($columns);
 
         if (empty($data)) {
             return [];

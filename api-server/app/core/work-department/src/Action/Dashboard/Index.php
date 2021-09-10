@@ -83,7 +83,7 @@ class Index extends AbstractAction
     {
         if (! empty($params['searchKeyWords'])) {
             //部门信息
-            $department = $this->departmentService->getWorkDepartmentsByCorpIdName(user()['corpIds'][0], $params['searchKeyWords']);
+            $department = $this->departmentService->getWorkDepartmentsByCorpIdName([user()['corpIds'][0]], $params['searchKeyWords']);
         } else {
             //部门信息
             $department = $this->departmentService->getWorkDepartmentsByCorpId(user()['corpIds'][0]);

@@ -34,6 +34,16 @@ export function show (params) {
     params: params
   })
 }
+
+// 删除
+export function destroyApi (params) {
+  return request({
+    url: '/roomMessageBatchSend/destroy',
+    method: 'delete',
+    data: params
+  })
+}
+
 // 消息详情-客户群接收详情
 export function roomOwnerSendIndex (params) {
   return request({

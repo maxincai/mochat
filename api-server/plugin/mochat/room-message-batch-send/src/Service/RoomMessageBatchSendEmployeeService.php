@@ -175,4 +175,18 @@ class RoomMessageBatchSendEmployeeService extends AbstractService implements Roo
     {
         return $this->model::query()->where($where)->count();
     }
+
+    /**
+     * 查询最近一周的群发消息
+     *
+     * @return array
+     */
+    public function getContactMessageBatchSendEmployeeIdsByLastWeek(): array
+    {
+        return $this->model::query()
+            ->where('receive_status', 1)
+            ->where('created_at', '>=', date('Y-m-d', time() - 60 * 60 * 24 * 7) . ' 00:00:00')
+            ->pluck('id')
+            ->toArray();
+    }
 }

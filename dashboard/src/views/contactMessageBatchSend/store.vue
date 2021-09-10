@@ -22,10 +22,10 @@
             <a-row v-show="form.type == 2" class="client_module">
               <a-form-model-item required :label-col="childLabelCol" :wrapper-col="wrapperCol" label="性别">
                 <a-radio-group v-model="form.filterParams.gender">
-                  <a-radio :value="1">全部性别</a-radio>
-                  <a-radio :value="2">仅男性粉丝</a-radio>
-                  <a-radio :value="3">仅女性粉丝</a-radio>
-                  <a-radio :value="4">未知性别</a-radio>
+                  <a-radio :value="3">全部性别</a-radio>
+                  <a-radio :value="1">仅男性粉丝</a-radio>
+                  <a-radio :value="2">仅女性粉丝</a-radio>
+                  <a-radio :value="0">未知性别</a-radio>
                 </a-radio-group>
               </a-form-model-item>
               <a-form-model-item :label-col="childLabelCol" :wrapper-col="wrapperCol" label="所在群聊">
@@ -191,7 +191,7 @@ export default {
         type: 1,
         filterParams: {
           //  性别
-          gender: 1,
+          gender: 3,
           // 群聊
           rooms: [],
           addTimeStart: '',
@@ -302,8 +302,9 @@ export default {
     },
     onSubmit () {
       const dataJSon = JSON.parse(JSON.stringify(this.form))
-      const msgArray = {}
-      if (this.form.employeeIds.length == 0) {
+      let msgArray = {}
+      const contentJSon = []
+      if (this.form.employeeIds.length === 0) {
         this.$message.warning('请选择群发账号')
         return
       }
@@ -340,96 +341,91 @@ export default {
         }
         dataJSon.filterParams = JSON.stringify(dataJSon.filterParams)
       }
+
+      if (this.form.textContent !== '') {
+        msgArray = {
+          msgType: 'text',
+          content: this.form.textContent
+        }
+        contentJSon.push(msgArray)
+      }
+
       if (this.msgType === '1') {
         delete dataJSon.content.image
         delete dataJSon.content.miniprogram
-        if (this.form.content.image.pic_url == '') {
+        if (this.form.textContent === '' && this.form.content.image.pic_url === '') {
           this.$message.warning('请上传图片')
           return
         }
-        // msgArray.push({
-        //   msgType: 'image',
-        //   media_id: new Date().getTime(),
-        //   pic_url: this.form.content.image.pic_url
-        // })
-        msgArray.msgType = 'image'
-        msgArray.image = {
-          msgType: 'image',
-          media_id: new Date().getTime(),
-          pic_url: this.form.content.image.pic_url
+
+        if (this.form.content.image.pic_url !== '') {
+          msgArray = {
+            msgType: 'image',
+            media_id: new Date().getTime(),
+            pic_url: this.form.content.image.pic_url
+          }
+          contentJSon.push(msgArray)
         }
       } else if (this.msgType === '2') {
         if (
-          this.form.content.link.url.indexOf('http://') == -1 &&
-          this.form.content.link.url.indexOf('https://') == -1
+          this.form.textContent === '' &&
+          this.form.content.link.url.indexOf('http://') === -1 &&
+          this.form.content.link.url.indexOf('https://') === -1
         ) {
           this.$message.warning('链接地址输入不正确')
           return
         }
-        // msgArray.push({
-        //   msgType: 'link',
-        //   title: this.form.content.link.title,
-        //   pic_url: this.form.content.link.picture,
-        //   desc: this.form.content.link.desc,
-        //   url: this.form.content.link.url
-        // })
-        msgArray.msgType = 'link'
-        msgArray.link = {
-          msgType: 'link',
-          title: this.form.content.link.title,
-          pic_url: this.form.content.link.picture,
-          desc: this.form.content.link.desc,
-          url: this.form.content.link.url
+
+        if (this.form.content.link.url !== '') {
+          msgArray = {
+            msgType: 'link',
+            title: this.form.content.link.title,
+            pic_url: this.form.content.link.picture,
+            desc: this.form.content.link.desc,
+            url: this.form.content.link.url
+          }
+          contentJSon.push(msgArray)
         }
       } else if (this.msgType === '3') {
-        if (this.form.content.miniprogram.pic_media_id == '') {
-          this.$message.warning('请选择封面')
-          return
+        if (this.form.textContent === '') {
+          if (this.form.content.miniprogram.pic_media_id === '') {
+            this.$message.warning('请选择封面')
+            return
+          }
+          if (this.form.content.miniprogram.title === '') {
+            this.$message.warning('请填写标题')
+            return
+          }
+          if (this.form.content.miniprogram.appid === '') {
+            this.$message.warning('请输入appId')
+            return
+          }
+          if (this.form.content.miniprogram.page === '') {
+            this.$message.warning('请输入小程序路径')
+            return
+          }
         }
-        if (this.form.content.miniprogram.title == '') {
-          this.$message.warning('请填写标题')
-          return
-        }
-        if (this.form.content.miniprogram.appid == '') {
-          this.$message.warning('请输入appId')
-          return
-        }
-        if (this.form.content.miniprogram.page == '') {
-          this.$message.warning('请输入小程序路径')
-          return
-        }
-        // msgArray.push({
-        //   msgType: 'miniprogram',
-        //   title: this.form.content.miniprogram.title,
-        //   pic_media_id: this.form.content.miniprogram.pic_media_id,
-        //   appid: this.form.content.miniprogram.appid,
-        //   page: this.form.content.miniprogram.page
-        // })
-        msgArray.msgType = 'miniprogram'
-        msgArray.miniprogram = {
-          msgType: 'miniprogram',
-          title: this.form.content.miniprogram.title,
-          pic_media_id: this.form.content.miniprogram.pic_media_id,
-          appid: this.form.content.miniprogram.appid,
-          page: this.form.content.miniprogram.page
+        if (this.form.content.miniprogram.page !== '') {
+          msgArray = {
+            msgType: 'miniprogram',
+            title: this.form.content.miniprogram.title,
+            pic_media_id: this.form.content.miniprogram.pic_media_id,
+            appid: this.form.content.miniprogram.appid,
+            page: this.form.content.miniprogram.page
+          }
+          contentJSon.push(msgArray)
         }
       }
+
       if (this.form.sendWay == 2) {
-        if (this.form.definiteTime == '') {
+        if (this.form.definiteTime === '') {
           this.$message.warning('请选择时间')
           return
         }
       } else {
         dataJSon.definiteTime = this.getDateTime()
       }
-      if (this.form.textContent != '') {
-        msgArray.text = {
-          msgType: 'text',
-          content: this.form.textContent
-        }
-      }
-      const contentJSon = []
-      contentJSon.push(msgArray)
+
       dataJSon.content = JSON.stringify(contentJSon)
       storeApi(dataJSon).then((res) => {
         this.$message.success('创建成功')

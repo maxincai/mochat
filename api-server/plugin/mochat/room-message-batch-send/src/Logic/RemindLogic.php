@@ -69,7 +69,7 @@ class RemindLogic
     protected function sendMessage($sendTime, $corpId, $wxUserId)
     {
         $text = "【任务提醒】有新的任务啦！\n" .
-            "任务类型：群发任务\n" .
+            "任务类型：客户群群发任务\n" .
             "创建时间：{$sendTime}\n" .
             "可前往【客户群】中确认发送，记得及时完成哦\n";
         $messageRemind = make(MessageRemind::class);

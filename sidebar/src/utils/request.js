@@ -1,6 +1,5 @@
 import { Toast } from 'vant'
 import axios from 'axios'
-import router from '@/router'
 import { getCookie } from '@/utils'
 
 // 创建 axios 实例
@@ -19,8 +18,6 @@ const errorHandler = (error) => {
     const status = error.response.status
     if (status === 401) {
       errorMessage(data.msg)
-      const agentId = getCookie('agentId')
-      router.push({ path: '/auth', query: { agentId, pageFlag: 'contact' } })
     } else {
       errorMessage(`${status || ''}  ${data.msg || 'error'}`)
     }

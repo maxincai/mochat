@@ -1,9 +1,18 @@
 import request from '@/utils/request'
 
+// 客户统计
+export function contactInfo (params) {
+  return request({
+    url: '/statistic/index',
+    method: 'get',
+    params
+  })
+}
+
 // 联系客户数据
 export function employeesInfo (params) {
   return request({
-    url: '/count/employees',
+    url: '/statistic/employees',
     method: 'get',
     params
   })
@@ -12,7 +21,7 @@ export function employeesInfo (params) {
 // 趋势图/列表数据
 export function employeesTrendInfo (params) {
   return request({
-    url: '/count/employeesTrend',
+    url: '/statistic/employeesTrend',
     method: 'get',
     params
   })
@@ -21,7 +30,7 @@ export function employeesTrendInfo (params) {
 // 排行榜前十数据
 export function topList (params) {
   return request({
-    url: '/count/topList',
+    url: '/statistic/topList',
     method: 'get',
     params
   })
@@ -30,7 +39,7 @@ export function topList (params) {
 // 按员工查看
 export function getEmployeeCounts (params) {
   return request({
-    url: '/count/employeeCounts',
+    url: '/statistic/employeeCounts',
     method: 'get',
     params
   })

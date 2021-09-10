@@ -13,6 +13,9 @@ namespace MoChat\App\User\Action\Dashboard;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\Middleware;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use Hyperf\Utils\ApplicationContext;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
@@ -36,6 +39,9 @@ class Logout extends AbstractAction
 
     /**
      * @RequestMapping(path="/dashboard/user/logout", methods="put")
+     * @Middlewares({
+     *     @Middleware(DashboardAuthMiddleware::class)
+     * })
      * @return array 返回数组
      */
     public function handle(): array

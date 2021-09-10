@@ -10,8 +10,10 @@ declare(strict_types=1);
  */
 namespace MoChat\Plugin\ChannelCode\Task;
 
+use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Crontab\Annotation\Crontab;
 use MoChat\Plugin\ChannelCode\Logic\ChannelCodeLogic;
+use Hyperf\Di\Annotation\Inject;
 
 /**
  * @Crontab(name="channelCode", rule="*\/30 * * * * *", callback="execute", enable="isEnable", singleton=true, memo="渠道码-更新客户联系我方式")
@@ -19,12 +21,19 @@ use MoChat\Plugin\ChannelCode\Logic\ChannelCodeLogic;
 class ChannelCode
 {
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @Inject()
+     * @var StdoutLoggerInterface
      */
+    private $logger;
+
     public function execute(): void
     {
-        (new ChannelCodeLogic())->handle();
+        try {
+            (new ChannelCodeLogic())->handle();
+        } catch (\Throwable $e) {
+            $this->logger->error(sprintf('%s [%s] %s', '渠道码-更新客户联系我方式任务失败', date('Y-m-d H:i:s'), $e->getMessage()));
+            $this->logger->error($e->getTraceAsString());
+        }
     }
 
     public function isEnable(): bool

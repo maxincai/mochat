@@ -9,7 +9,8 @@ const app = {
     navShow: false,
     // userInfo: {},
     contactInfo: {},
-    contactWxUserId: ''
+    contactWxUserId: '',
+    initAgentConfig: false
   },
   mutations: {
     SET_NAV_SHOW: (state, data) => {
@@ -24,6 +25,9 @@ const app = {
     SET_CUSTOMER_WX_USER_ID: (state, data) => {
       state.contactWxUserId = data
       setStorage('contactWxUserId', data)
+    },
+    SET_INIT_AGENT_CONFIG: (state, data) => {
+      state.initAgentConfig = data
     }
   },
   actions: {

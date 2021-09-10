@@ -45,6 +45,11 @@ class QrCodeUpdateApply
         // @AsyncQueueMessage(pool="contact")
         ## 获取企业微信授信信息
         $corp = make(CorpContract::class)->getCorpById($corpId, ['id', 'wx_corpid']);
+
+        if (empty($corp)) {
+            return;
+        }
+
         ## 配置客户联系「联系我」方式
         ## 自定义state,区分客户添加渠道 此为渠道码
         $state = 'channelCode-' . $channelCodeId;

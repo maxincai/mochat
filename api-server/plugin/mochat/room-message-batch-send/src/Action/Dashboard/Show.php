@@ -44,10 +44,10 @@ class Show extends AbstractAction
      */
     public function handle(): array
     {
-        ## 参数验证
+        // 参数验证
         $this->validated($this->request->all());
         $batchId = $this->request->input('batchId');
-        ## 接收参数
+        // 接收参数
         $params = [
             'batchId' => $batchId,
         ];

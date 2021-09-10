@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\OfficialAccount\Action\Dashboard;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -66,7 +67,7 @@ class Index extends AbstractAction
 
     public function __construct(RequestInterface $request, ContainerInterface $container)
     {
-        $this->request   = $request;
+        $this->request = $request;
         $this->container = $container;
     }
 
@@ -80,35 +81,35 @@ class Index extends AbstractAction
     public function handle(): array
     {
         $user = user();
-        ## 判断用户绑定企业信息
-        if (! isset($user['corpIds']) || count($user['corpIds']) !== 1) {
+        // 判断用户绑定企业信息
+        if (!isset($user['corpIds']) || count($user['corpIds']) !== 1) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未选择登录企业，不可操作');
         }
         $param = $this->request->all();
-        ## 查询全部
+        // 查询全部
         if (empty($param['type'])) {
             return $this->getOfficialAccount($user['corpIds'][0]);
         }
-        ## 模块查询
-        $set = $this->officialAccountSetService->getOfficialAccountSetByCorpIdType($user['corpIds'][0], (int) $param['type'], ['official_account_id']);
-        if (! empty($set)) {
-            $info           = $this->officialAccountService->getOfficialAccountById($set['officialAccountId'], ['id', 'nickname', 'avatar']);
-            $info['avatar'] = file_full_url($info['avatar']);
+        // 模块查询
+        $set = $this->officialAccountSetService->getOfficialAccountSetByCorpIdType($user['corpIds'][0], (int)$param['type'], ['official_account_id']);
+        if (!empty($set)) {
+            $info = $this->officialAccountService->getOfficialAccountById($set['officialAccountId'], ['id', 'nickname', 'avatar']);
+            $info['avatar'] = !empty($info['avatar']) ? file_full_url($info['avatar']) : '';
             return $info;
         }
-        ## 模块查询 不存在 创建
+        // 模块查询 不存在 创建
         if (empty($set)) {
             $officialAccount = $this->officialAccountService->getOfficialAccountByCorpId($user['corpIds'][0], ['id', 'nickname', 'avatar']);
             if (empty($officialAccount)) {
                 return [];
             }
             $data = [
-                'type'                => (int) $param['type'],
+                'type' => (int)$param['type'],
                 'official_account_id' => $officialAccount['id'],
-                'corp_id'             => $user['corpIds'][0],
-                'tenant_id'           => 0,
-                'create_user_id'      => $user['id'],
-                'created_at'          => date('Y-m-d H:i:s'),
+                'corp_id' => $user['corpIds'][0],
+                'tenant_id' => 0,
+                'create_user_id' => $user['id'],
+                'created_at' => date('Y-m-d H:i:s'),
             ];
             $this->officialAccountSetService->createOfficialAccountSet($data);
             $officialAccount['avatar'] = file_full_url($officialAccount['avatar']);

@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
+
 namespace MoChat\App\User\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -67,7 +68,7 @@ class StoreLogic
     {
         ## 验证手机号
         $phoneUser = $this->userService->getUsersByPhone([$params['phone']], ['id']);
-        if (! empty($phoneUser)) {
+        if (!empty($phoneUser)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '手机号已存在，不可重复创建');
         }
         ## 处理数据
@@ -87,8 +88,8 @@ class StoreLogic
         ## 生成初始密码
         $guard = $this->authManager->guard('jwt');
         /** @var JWTManager $jwt */
-        $jwt                  = $guard->getJwtManager();
-        $params['password']   = $jwt->getEncrypter()->signature($params['password']);
+        $jwt = $guard->getJwtManager();
+        $params['password'] = $jwt->getEncrypter()->signature($params['password']);
         $params['created_at'] = date('Y-m-d H:i:s');
 
         return $params;
@@ -103,8 +104,9 @@ class StoreLogic
         ## 角色信息
         $roleId = $params['roleId'];
         unset($params['roleId']);
+        $corpId = (int)$user['corpIds'][0];
         ## 根据手机号
-        $employeeData = $this->employeeService->getWorkEmployeesByMobile($params['phone'], ['id']);
+        $employeeData = $this->employeeService->getWorkEmployeesByMobile($corpId, $params['phone'], ['id']);
         ## 数据操作
         Db::beginTransaction();
         try {
@@ -117,8 +119,8 @@ class StoreLogic
             }, $employeeData));
             ## 插入用户角色
             empty($roleId) || $this->rbacUserRoleService->createRbacUserRole([
-                'user_id'    => $userId,
-                'role_id'    => $roleId,
+                'user_id' => $userId,
+                'role_id' => $roleId,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 

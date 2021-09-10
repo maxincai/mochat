@@ -47,7 +47,7 @@ class Index extends AbstractAction
     public function handle()
     {
         //校验参数
-        $corpId = user()['corpIds'][0];
+        $corpId = user()['corpId'];
         $list = $this->contactProcess->getContactProcessesByCorpId($corpId, ['id', 'name']);
         if (!empty($list)) {
             return $list;

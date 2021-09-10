@@ -110,7 +110,7 @@ class Update extends AbstractAction
             'employee_id' => user()['workEmployeeId'],
             'contact_id' => $contactId,
             'content' => $content,
-            'corp_id' => user()['corpIds'][0],
+            'corp_id' => user()['corpId'],
             'event' => Event::PROCESS_STATUS,
         ];
 
