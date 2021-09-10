@@ -17,7 +17,7 @@ use Hyperf\DbConnection\Db;
 use Psr\Container\ContainerInterface;
 
 /**
- * @Command()
+ * @Command
  */
 class MenuCreateCommand extends HyperfCommand
 {
@@ -43,7 +43,7 @@ class MenuCreateCommand extends HyperfCommand
         $menuData = $this->getMenuData();
 
         if (empty($menuData)) {
-            $this->error("菜单配置为空");
+            $this->error('菜单配置为空');
             return;
         }
 
@@ -52,7 +52,7 @@ class MenuCreateCommand extends HyperfCommand
             $menu['created_at'] = date('Y-m-d H:i:s');
             $table = Db::table('rbac_menu');
             $lastId = $table->insertGetId($menu);
-            $path = $menu['path'] . '-#'. $lastId . '#';
+            $path = $menu['path'] . '-#' . $lastId . '#';
             $table->where('id', $lastId)->update(['path' => $path]);
             $this->info(sprintf("菜单创建成功：%d, name: %s, url: %s\n", $lastId, $menu['name'], $menu['link_url']));
         }

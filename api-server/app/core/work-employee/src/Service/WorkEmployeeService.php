@@ -319,7 +319,7 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
     public function getWorkEmployeesByNameAlias(string $name, int $corpId, array $columns = ['*'], int $limit = 20): array
     {
         $nameStr = '%' . $name . '%';
-        $data    = $this->model::query()
+        $data = $this->model::query()
             ->where('corp_id', $corpId)
             ->where(function ($query) use ($nameStr) {
                 $query->where('name', 'LIKE', $nameStr)
@@ -438,7 +438,6 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
 
     /**
      * 查询多条 - 根据手机号.
-     * @param int $corpId
      * @param string $phone ...
      * @param array|string[] $columns ...
      * @return array ...
@@ -504,13 +503,13 @@ class WorkEmployeeService extends AbstractService implements WorkEmployeeContrac
         $userIdArr = array_column($userRole, 'userId');
 
         ## 根据用户获取成员
-        $employeeWhere            = [];
+        $employeeWhere = [];
         $employeeWhere['corp_id'] = $where['corpId'];
-        $employeeWhere[]          = ['log_user_id', 'IN', $userIdArr];
+        $employeeWhere[] = ['log_user_id', 'IN', $userIdArr];
 
         $options = [
-            'page'       => $options['page'],
-            'perPage'    => $options['perPage'],
+            'page' => $options['page'],
+            'perPage' => $options['perPage'],
             'orderByRaw' => 'id desc',
         ];
 

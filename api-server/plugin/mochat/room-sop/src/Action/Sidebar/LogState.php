@@ -12,12 +12,12 @@ namespace MoChat\Plugin\RoomSop\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Plugin\RoomSop\Logic\LogStateLogic;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * @Controller
@@ -25,7 +25,7 @@ use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 class LogState extends AbstractAction
 {
     /**
-     * @Inject()
+     * @Inject
      * @var LogStateLogic
      */
     protected $logState;

@@ -8,22 +8,21 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Medium\Action\Sidebar;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\Medium\Action\Dashboard\Traits\RequestTrait;
 use MoChat\App\Medium\Constants\Type;
 use MoChat\App\Medium\Contract\MediumContract;
 use MoChat\App\Utils\Media;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * 查询 - 列表.
@@ -35,28 +34,28 @@ class MediaIdUpdate extends AbstractAction
     use RequestTrait;
 
     /**
-     * @Inject()
-     * @var MediumContract
-     */
-    private $mediumService;
-
-    /**
-     * @Inject()
-     * @var StdoutLoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @Inject()
+     * @Inject
      * @var \League\Flysystem\Filesystem
      */
     protected $filesystem;
 
     /**
-     * @Inject()
+     * @Inject
      * @var Media
      */
     protected $media;
+
+    /**
+     * @Inject
+     * @var MediumContract
+     */
+    private $mediumService;
+
+    /**
+     * @Inject
+     * @var StdoutLoggerInterface
+     */
+    private $logger;
 
     /**
      * @Middlewares({
@@ -67,12 +66,12 @@ class MediaIdUpdate extends AbstractAction
     public function handle(): array
     {
         ## 参数验证
-        $mediumId = (int)$this->request->input('mediumId');
+        $mediumId = (int) $this->request->input('mediumId');
         $medium = $this->mediumService->getMediumById($mediumId, ['id', 'media_id', 'last_upload_time', 'type', 'content']);
 
         if (time() - $medium['lastUploadTime'] <= 60 * 60 * 24 * 3 - 60 * 60 * 2) {
             return [
-                'mediaId' => $medium['mediaId']
+                'mediaId' => $medium['mediaId'],
             ];
         }
 
@@ -81,13 +80,13 @@ class MediaIdUpdate extends AbstractAction
         $path = isset($uploadFile[$mediaType . 'Path']) ? $uploadFile[$mediaType . 'Path'] : '';
         if (empty($path)) {
             return [
-                'mediaId' => $medium['mediaId']
+                'mediaId' => $medium['mediaId'],
             ];
         }
 
-        if (!$this->filesystem->fileExists($path)) {
+        if (! $this->filesystem->fileExists($path)) {
             return [
-                'mediaId' => $medium['mediaId']
+                'mediaId' => $medium['mediaId'],
             ];
         }
 
@@ -102,7 +101,7 @@ class MediaIdUpdate extends AbstractAction
             ];
             $this->mediumService->updateMediumById($medium['id'], $dbData);
             return [
-                'mediaId' => $mediaId
+                'mediaId' => $mediaId,
             ];
         } catch (\Throwable $e) {
             ## 记录错误日志
@@ -110,7 +109,7 @@ class MediaIdUpdate extends AbstractAction
         }
 
         return [
-            'mediaId' => $medium['media_id']
+            'mediaId' => $medium['media_id'],
         ];
     }
 
@@ -142,7 +141,6 @@ class MediaIdUpdate extends AbstractAction
      * 音频转amr.
      * @param string $filePath ...
      * @param bool $isOldUnlink 是否删除原文件
-     * @return string
      */
     protected function ffmpegToAmr(string $filePath, bool $isOldUnlink = true): string
     {

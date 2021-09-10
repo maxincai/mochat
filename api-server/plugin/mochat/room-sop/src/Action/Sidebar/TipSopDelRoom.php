@@ -8,18 +8,17 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomSop\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\WorkRoom\Contract\WorkRoomContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Plugin\RoomSop\Logic\TipSopDelRoomLogic;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * h5侧边栏接口.
@@ -28,7 +27,7 @@ use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 class TipSopDelRoom extends AbstractAction
 {
     /**
-     * @Inject()
+     * @Inject
      * @var TipSopDelRoomLogic
      */
     protected $tipSopDelRoom;
@@ -48,8 +47,8 @@ class TipSopDelRoom extends AbstractAction
     public function handle(): array
     {
         $user = user();
-        $params['corpId'] = (int)$user['corpId'];
-        $params['id'] = (int)$this->request->input('id');               //sop id
+        $params['corpId'] = (int) $user['corpId'];
+        $params['id'] = (int) $this->request->input('id');               //sop id
         $roomId = $this->request->input('roomId');                      //群聊id
         $params['roomId'] = $this->workRoomService->getWorkRoomByCorpIdWxChatId($params['corpId'], $roomId, ['id'])['id'];       //群聊id
 

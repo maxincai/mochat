@@ -8,14 +8,13 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactMessageBatchSend\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\RequestMapping;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\Framework\Action\AbstractAction;
@@ -50,7 +49,7 @@ class Store extends AbstractAction
         ## 参数验证
         $params = $this->request->all();
         $this->validated($params);
-        $content = (array)json_decode($params['content'], true);
+        $content = (array) json_decode($params['content'], true);
         ## 验证消息参数
         $content = $this->validContent($content);
         ## 接收参数
@@ -124,7 +123,7 @@ class Store extends AbstractAction
                     if (empty($item['url'])) {
                         throw new CommonException(ErrorCode::INVALID_PARAMS, '链接链接不能为空');
                     }
-                    if (!empty($item['desc']) && strlen($item['desc']) > 250) {
+                    if (! empty($item['desc']) && strlen($item['desc']) > 250) {
                         throw new CommonException(ErrorCode::INVALID_PARAMS, '链接描述长度超过限制');
                     }
                     break;

@@ -23,36 +23,35 @@ class Media
     use AppTrait;
 
     /**
-     * @Inject()
-     * @var StdoutLoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @Inject()
+     * @Inject
      * @var \League\Flysystem\Filesystem
      */
     protected $filesystem;
 
     /**
-     * @Inject()
+     * @Inject
      * @var CacheInterface
      */
     protected $cache;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WeWorkFactory
      */
     protected $weWorkFactory;
 
     /**
-     * 上传临时图片媒体素材
+     * @Inject
+     * @var StdoutLoggerInterface
+     */
+    private $logger;
+
+    /**
+     * 上传临时图片媒体素材.
      *
      * @param int|string $corpId 企业id
      * @param string $path 上传路径
      *
-     * @return string
      * @throws \Throwable
      */
     public function uploadImage($corpId, string $path): string
@@ -61,12 +60,11 @@ class Media
     }
 
     /**
-     * 上传临时语音媒体素材
+     * 上传临时语音媒体素材.
      *
      * @param int|string $corpId 企业id
      * @param string $path 上传路径
      *
-     * @return string
      * @throws \Throwable
      */
     public function uploadVoice($corpId, string $path): string
@@ -75,12 +73,11 @@ class Media
     }
 
     /**
-     * 上传临时视频媒体素材
+     * 上传临时视频媒体素材.
      *
      * @param int|string $corpId 企业id
      * @param string $path 上传路径
      *
-     * @return string
      * @throws \Throwable
      */
     public function uploadVideo($corpId, string $path): string
@@ -89,12 +86,11 @@ class Media
     }
 
     /**
-     * 上传临时文件媒体素材
+     * 上传临时文件媒体素材.
      *
      * @param int|string $corpId 企业id
      * @param string $path 上传路径
      *
-     * @return string
      * @throws \Throwable
      */
     public function uploadFile($corpId, string $path): string
@@ -103,19 +99,18 @@ class Media
     }
 
     /**
-     * 上传临时媒体素材
+     * 上传临时媒体素材.
      *
      * @param int|string $corpId 企业id
      * @param string $type 上传类型
      * @param string $path 上传路径
      *
-     * @return string
      * @throws \Throwable
      */
     public function upload($corpId, string $type, string $path): string
     {
         $mediaId = $this->cache->get($this->getCacheKey($corpId, $path));
-        if (!empty($mediaId)) {
+        if (! empty($mediaId)) {
             return $mediaId;
         }
 
@@ -143,6 +138,6 @@ class Media
 
     protected function getCacheKey($corpId, string $path)
     {
-        return sprintf("mochat:mediaId:%s:%s", (string) $corpId, md5($path));
+        return sprintf('mochat:mediaId:%s:%s', (string) $corpId, md5($path));
     }
 }

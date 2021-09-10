@@ -8,15 +8,10 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\QueueService\Tag;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use MoChat\App\Corp\Utils\WeWorkFactory;
-use MoChat\App\WorkContact\Constants\Event;
-use MoChat\App\WorkContact\Contract\ContactEmployeeTrackContract;
-use MoChat\App\WorkContact\Contract\WorkContactTagPivotContract;
-use MoChat\App\WorkContact\Model\ContactEmployeeTrack;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 
 class MarkTags
@@ -30,7 +25,7 @@ class MarkTags
         $weWorkContactApp = make(WeWorkFactory::class)->getContactApp($corpId);
         $employeeService = make(WorkEmployeeContract::class);
         $logger = make(StdoutLoggerInterface::class);
-        $employee = $employeeService->getWorkEmployeeById((int)$contact['employeeId'], ['wx_user_id']);
+        $employee = $employeeService->getWorkEmployeeById((int) $contact['employeeId'], ['wx_user_id']);
 
         $tagData = [
             'userid' => $employee['wxUserId'],

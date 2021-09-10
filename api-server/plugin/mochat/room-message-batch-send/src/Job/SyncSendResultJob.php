@@ -8,21 +8,17 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomMessageBatchSend\Job;
 
-use Hyperf\AsyncQueue\Annotation\AsyncQueueMessage;
 use Hyperf\AsyncQueue\Job;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\DbConnection\Db;
-use MoChat\App\Corp\Logic\AppTrait;
 use MoChat\App\Corp\Utils\WeWorkFactory;
 use MoChat\Plugin\RoomMessageBatchSend\Constants\MessageStatus;
 use MoChat\Plugin\RoomMessageBatchSend\Constants\Status;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendContract;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendEmployeeContract;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendResultContract;
-use Psr\Container\ContainerInterface;
 
 class SyncSendResultJob extends Job
 {
@@ -38,7 +34,7 @@ class SyncSendResultJob extends Job
 
     public function handle()
     {
-        $batchEmployeeId = (int)$this->params['batchEmployeeId'];
+        $batchEmployeeId = (int) $this->params['batchEmployeeId'];
 
         $roomMessageBatchSendService = make(RoomMessageBatchSendContract::class);
         $roomMessageBatchSendEmployeeService = make(RoomMessageBatchSendEmployeeContract::class);
@@ -62,7 +58,7 @@ class SyncSendResultJob extends Job
                 return;
             }
 
-            $batchResult = $this->getGroupTask((int)$batch['corpId'], $batchEmployee['msgId']);
+            $batchResult = $this->getGroupTask((int) $batch['corpId'], $batchEmployee['msgId']);
 
             if ($batchResult['errcode'] > 0) {
                 $logger->error(sprintf('%s [%s] %s', '客户群群发消息同步结果失败', date('Y-m-d H:i:s'), $batchResult['errmsg']));
@@ -100,6 +96,25 @@ class SyncSendResultJob extends Job
         }
     }
 
+    /**
+     * 获取企业群发成员执行结果.
+     *
+     * @see https://open.work.weixin.qq.com/api/doc/90000/90135/93338
+     *
+     * @return array
+     */
+    public function getGroupSendResult(int $corpId, string $msgId, string $userId, int $limit = 500, string $cursor = '')
+    {
+        $weWorkFactory = make(WeWorkFactory::class);
+        $weWorkContactApp = $weWorkFactory->getContactApp($corpId);
+        return $weWorkContactApp->external_contact_message->httpPostJson('cgi-bin/externalcontact/get_groupmsg_send_result', [
+            'msgid' => $msgId,
+            'userid' => $userId,
+            'limit' => $limit,
+            'cursor' => $cursor,
+        ]);
+    }
+
     private function updateSendTotal(int $batchId, int $sendEmployeeTotal, int $sendRoomTotal)
     {
         $roomMessageBatchSendService = make(RoomMessageBatchSendContract::class);
@@ -128,14 +143,7 @@ class SyncSendResultJob extends Job
     }
 
     /**
-     * 获取客户发送结果
-     *
-     * @param int $corpId
-     * @param int $batchId
-     * @param string $msgId
-     * @param string $employeeUserId
-     * @param int $limit
-     * @param string $cursor
+     * 获取客户发送结果.
      */
     private function updateContactMessageSendResult(int $corpId, int $batchId, string $msgId, string $employeeUserId, int $limit = 500, string $cursor = '')
     {
@@ -155,7 +163,7 @@ class SyncSendResultJob extends Job
 
         foreach ($sendResult['send_list'] as $result) {
             $row = $roomMessageBatchSendResultService->getRoomMessageBatchSendResultByBatchRoomId($batchId, $result['chat_id'], ['id']);
-            if (!empty($row)) {
+            if (! empty($row)) {
                 // 同步结果
                 $roomMessageBatchSendResultService->updateRoomMessageBatchSendResultById($row['id'], [
                     'userId' => $result['userid'],
@@ -180,31 +188,6 @@ class SyncSendResultJob extends Job
         $weWorkContactApp = $weWorkFactory->getContactApp($corpId);
         return $weWorkContactApp->external_contact_message->httpPostJson('cgi-bin/externalcontact/get_groupmsg_task', [
             'msgid' => $msgId,
-            'limit' => $limit,
-            'cursor' => $cursor,
-        ]);
-    }
-
-    /**
-     * 获取企业群发成员执行结果.
-     *
-     * @see https://open.work.weixin.qq.com/api/doc/90000/90135/93338
-     *
-     * @param int $corpId
-     * @param string $msgId
-     * @param int $limit
-     * @param string $userId
-     * @param string $cursor
-     *
-     * @return array
-     */
-    public function getGroupSendResult(int $corpId, string $msgId, string $userId, int $limit = 500, string $cursor = '')
-    {
-        $weWorkFactory = make(WeWorkFactory::class);
-        $weWorkContactApp = $weWorkFactory->getContactApp($corpId);
-        return $weWorkContactApp->external_contact_message->httpPostJson('cgi-bin/externalcontact/get_groupmsg_send_result', [
-            'msgid' => $msgId,
-            'userid' => $userId,
             'limit' => $limit,
             'cursor' => $cursor,
         ]);

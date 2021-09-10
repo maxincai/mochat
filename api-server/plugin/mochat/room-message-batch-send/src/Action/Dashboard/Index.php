@@ -11,12 +11,12 @@ declare(strict_types=1);
 namespace MoChat\Plugin\RoomMessageBatchSend\Action\Dashboard;
 
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\RequestMapping;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\RequestMapping;
+use Hyperf\HttpServer\Contract\RequestInterface;
 use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
-use Hyperf\HttpServer\Contract\RequestInterface;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
 use MoChat\Plugin\RoomMessageBatchSend\Logic\IndexLogic;
@@ -42,7 +42,7 @@ class Index extends AbstractAction
     public function __construct(RequestInterface $request, IndexLogic $indexLogic)
     {
         $this->indexLogin = $indexLogic;
-        $this->request    = $request;
+        $this->request = $request;
     }
 
     /**
@@ -58,7 +58,7 @@ class Index extends AbstractAction
         $this->validated($this->request->all());
         ## 接收参数
         $params = [
-            'page'    => $this->request->input('page', 1),
+            'page' => $this->request->input('page', 1),
             'perPage' => $this->request->input('perPage', '10'),
         ];
 
@@ -78,7 +78,7 @@ class Index extends AbstractAction
     protected function rules(): array
     {
         return [
-            'page'    => 'integer|min:1',
+            'page' => 'integer|min:1',
             'perPage' => 'integer',
         ];
     }

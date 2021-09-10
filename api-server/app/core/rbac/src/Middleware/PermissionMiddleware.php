@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Rbac\Middleware;
 
 use Hyperf\Contract\ConfigInterface;
@@ -55,7 +54,7 @@ class PermissionMiddleware implements MiddlewareInterface
             $linkUrl = $route . '#' . strtolower($request->getMethod());
 
             ## 权限拦截
-            if ($user['isSuperAdmin'] === 0 && !$this->rbac->userCan($user['id'], $linkUrl)) {
+            if ($user['isSuperAdmin'] === 0 && ! $this->rbac->userCan($user['id'], $linkUrl)) {
                 throw new CommonException(AppErrCode::PERMISSION_DENY);
             }
 

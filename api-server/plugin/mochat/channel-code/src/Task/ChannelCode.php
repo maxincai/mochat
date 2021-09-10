@@ -12,8 +12,8 @@ namespace MoChat\Plugin\ChannelCode\Task;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Crontab\Annotation\Crontab;
-use MoChat\Plugin\ChannelCode\Logic\ChannelCodeLogic;
 use Hyperf\Di\Annotation\Inject;
+use MoChat\Plugin\ChannelCode\Logic\ChannelCodeLogic;
 
 /**
  * @Crontab(name="channelCode", rule="*\/30 * * * * *", callback="execute", enable="isEnable", singleton=true, memo="渠道码-更新客户联系我方式")
@@ -21,7 +21,7 @@ use Hyperf\Di\Annotation\Inject;
 class ChannelCode
 {
     /**
-     * @Inject()
+     * @Inject
      * @var StdoutLoggerInterface
      */
     private $logger;

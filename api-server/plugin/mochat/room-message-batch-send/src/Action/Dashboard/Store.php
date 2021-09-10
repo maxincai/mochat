@@ -12,12 +12,12 @@ namespace MoChat\Plugin\RoomMessageBatchSend\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\RequestMapping;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
-use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\App\Corp\Logic\AppTrait;
+use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
@@ -56,10 +56,10 @@ class Store extends AbstractAction
         $content = $this->validContent($content);
         ## 接收参数
         $params = [
-            'batchTitle'   => $params['batchTitle'],
-            'employeeIds'  => $params['employeeIds'],
-            'content'      => $content,
-            'sendWay'      => $params['sendWay'],
+            'batchTitle' => $params['batchTitle'],
+            'employeeIds' => $params['employeeIds'],
+            'content' => $content,
+            'sendWay' => $params['sendWay'],
             'definiteTime' => $params['definiteTime'] ?? null,
         ];
         $this->storeLogic->handle($params, user());
@@ -74,10 +74,10 @@ class Store extends AbstractAction
     protected function rules(): array
     {
         return [
-            'batchTitle'   => 'required|max:100',
-            'employeeIds'  => 'required',
-            'content'      => 'required|json',
-            'sendWay'      => 'required|in:1,2',
+            'batchTitle' => 'required|max:100',
+            'employeeIds' => 'required',
+            'content' => 'required|json',
+            'sendWay' => 'required|in:1,2',
             'definiteTime' => 'required_with:sendWay|date',
         ];
     }
@@ -89,10 +89,10 @@ class Store extends AbstractAction
     protected function messages(): array
     {
         return [
-            'batchTitle'   => '群发名称 必填',
-            'employeeIds'  => '群主 必填',
-            'content'      => '群发消息必填',
-            'sendWay'      => '群发时间 必填',
+            'batchTitle' => '群发名称 必填',
+            'employeeIds' => '群主 必填',
+            'content' => '群发消息必填',
+            'sendWay' => '群发时间 必填',
         ];
     }
 
@@ -130,7 +130,7 @@ class Store extends AbstractAction
                     if (empty($item['url'])) {
                         throw new CommonException(ErrorCode::INVALID_PARAMS, '链接链接不能为空');
                     }
-                    if (!empty($item['desc']) && strlen($item['desc']) > 250) {
+                    if (! empty($item['desc']) && strlen($item['desc']) > 250) {
                         throw new CommonException(ErrorCode::INVALID_PARAMS, '链接描述长度超过限制');
                     }
                     break;

@@ -8,17 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\QueueService;
 
-use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\AsyncQueue\Annotation\AsyncQueueMessage;
+use Hyperf\Contract\StdoutLoggerInterface;
 use MoChat\App\Corp\Utils\WeWorkFactory;
 use MoChat\App\Medium\Constants\Type as MediumType;
 use MoChat\App\Utils\Media;
 
 /**
- * 发送欢迎语
+ * 发送欢迎语.
  */
 class SendWelcome
 {
@@ -29,8 +28,6 @@ class SendWelcome
      * @param array $contact 客户信息
      * @param string $welcomeCode 发送欢迎语的凭证
      * @param array $content 欢迎语内容
-     *
-     * @return bool
      */
     public function handle($corpId, array $contact, string $welcomeCode, array $content): bool
     {
@@ -48,7 +45,7 @@ class SendWelcome
         // 微信消息体 - 文本
         empty($content['text']) || $sendWelcomeData['text']['content'] = $content['text'];
         // 微信消息体 - 媒体文件
-        if (!empty($content['medium'])) {
+        if (! empty($content['medium'])) {
             // 组织推送消息数据
             switch ($content['medium']['mediumType']) {
                 case MediumType::PICTURE:
@@ -87,16 +84,14 @@ class SendWelcome
     }
 
     /**
-     * 替换内容中的客户名称
+     * 替换内容中的客户名称.
      *
-     * @param array $content
-     * @param string $contactName
      * @return array
      */
     private function replaceContactName(array $content, string $contactName)
     {
-        if (isset($content['text']) && !empty($content['text'])) {
-            $content['text']= str_replace('##客户名称##', $contactName, $content['text']);
+        if (isset($content['text']) && ! empty($content['text'])) {
+            $content['text'] = str_replace('##客户名称##', $contactName, $content['text']);
         }
 
         return $content;

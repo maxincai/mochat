@@ -108,10 +108,10 @@ class IndexLogic
     {
         ## 组织返回数据
         $data = [
-            'where'   => [],
+            'where' => [],
             'options' => [
-                'page'       => $params['page'],
-                'perPage'    => $params['perPage'],
+                'page' => $params['page'],
+                'perPage' => $params['perPage'],
                 'orderByRaw' => 'id desc',
             ],
             'hadName' => 0,  ## 是否存在成员名称的模糊搜索
@@ -135,7 +135,7 @@ class IndexLogic
                 unset($data['where']);
             } else {
                 $data['where']['employeeIds'] = array_column($this->employeeList, 'id');
-                $data['where']['contactIds']  = array_column($this->contactList, 'id');
+                $data['where']['contactIds'] = array_column($this->contactList, 'id');
             }
         }
 
@@ -173,11 +173,11 @@ class IndexLogic
     {
         ## 组织响应数据
         $data = [
-            'memberNum'  => 0,
+            'memberNum' => 0,
             'outRoomNum' => 0,
-            'page'       => [
-                'perPage'   => $params['options']['perPage'],
-                'total'     => 0,
+            'page' => [
+                'perPage' => $params['options']['perPage'],
+                'total' => 0,
                 'totalPage' => 0,
             ],
             'list' => [],
@@ -203,16 +203,16 @@ class IndexLogic
             return $data;
         }
         ## 处理分页数据
-        $data['page']['total']     = $contactRooms['total'];
+        $data['page']['total'] = $contactRooms['total'];
         $data['page']['totalPage'] = $contactRooms['last_page'];
 
         ## 获取客户群成员的基本信息
         if ($params['hadName'] == 0) {
             ## 企业通讯录成员信息
-            $employeeList                               = $this->workEmployeeService->getWorkEmployeesById(array_filter(array_column($contactRooms['data'], 'employeeId')), ['id', 'name', 'avatar']);
+            $employeeList = $this->workEmployeeService->getWorkEmployeesById(array_filter(array_column($contactRooms['data'], 'employeeId')), ['id', 'name', 'avatar']);
             empty($employeeList) || $this->employeeList = array_column($employeeList, null, 'id');
             ## 外部联系人
-            $contactList                              = $this->workContactService->getWorkContactsById(array_filter(array_column($contactRooms['data'], 'contactId')), ['id', 'name', 'avatar']);
+            $contactList = $this->workContactService->getWorkContactsById(array_filter(array_column($contactRooms['data'], 'contactId')), ['id', 'name', 'avatar']);
             empty($contactList) || $this->contactList = array_column($contactList, null, 'id');
         }
 
@@ -228,29 +228,29 @@ class IndexLogic
             } elseif ($contactRoom['type'] == WorkContactRoomType::CONTACT) {
                 ! isset($this->contactList[$contactRoom['contactId']]) || $baseInfo = $this->contactList[$contactRoom['contactId']];
             }
-            $workContactRooms            = $this->workContactRoomService->getWorkContactRoomsByWxUserId($contactRoom['wxUserId'], ['room_id']);
-            $otherRoomIdArr              = array_diff(array_column($workContactRooms, 'roomId'), [$contactRoom['roomId']]);
-            $rooms                       = $this->workRoomService->getWorkRoomsById(array_values($otherRoomIdArr), ['name']);
+            $workContactRooms = $this->workContactRoomService->getWorkContactRoomsByWxUserId($contactRoom['wxUserId'], ['room_id']);
+            $otherRoomIdArr = array_diff(array_column($workContactRooms, 'roomId'), [$contactRoom['roomId']]);
+            $rooms = $this->workRoomService->getWorkRoomsById(array_values($otherRoomIdArr), ['name']);
             empty($rooms) || $otherRooms = array_column($rooms, 'name');
             $id = $baseInfo['id'] ?? 0;
             $contactEmployeeId = 0;
-            if ($contactRoom['type'] === 2){
-                $contactEmployee = $this->workContactEmployee->getWorkContactEmployeeByCorpIdContactId($id,user()['corpIds'][0],['employee_id']);
-                $contactEmployeeId = empty($contactEmployee) ? 0:$contactEmployee['employeeId'];
+            if ($contactRoom['type'] === 2) {
+                $contactEmployee = $this->workContactEmployee->getWorkContactEmployeeByCorpIdContactId($id, user()['corpIds'][0], ['employee_id']);
+                $contactEmployeeId = empty($contactEmployee) ? 0 : $contactEmployee['employeeId'];
             }
             $list[] = [
                 'workContactRoomId' => $contactRoom['id'],
-                'name'              => isset($baseInfo['name']) ? $baseInfo['name'] : '',
-                'avatar'            => isset($baseInfo['avatar']) ? file_full_url($baseInfo['avatar']) : '',
-                'isOwner'           => $contactRoom['employeeId'] == $room['ownerId'] ? 1 : 0,
-                'joinTime'          => $contactRoom['joinTime'],
-                'outRoomTime'       => $contactRoom['outTime'],
-                'otherRooms'        => $otherRooms,
-                'joinScene'         => $contactRoom['joinScene'],
-                'joinSceneText'     => WorkContactRoomJoinScene::getMessage($contactRoom['joinScene']),
-                'type'              => $contactRoom['type'],
-                'contactId'         => $contactRoom['type'] === 2 ? $id : 0,
-                'employeeId'        => $contactRoom['type'] === 1 ? $id : 0,
+                'name' => isset($baseInfo['name']) ? $baseInfo['name'] : '',
+                'avatar' => isset($baseInfo['avatar']) ? file_full_url($baseInfo['avatar']) : '',
+                'isOwner' => $contactRoom['employeeId'] == $room['ownerId'] ? 1 : 0,
+                'joinTime' => $contactRoom['joinTime'],
+                'outRoomTime' => $contactRoom['outTime'],
+                'otherRooms' => $otherRooms,
+                'joinScene' => $contactRoom['joinScene'],
+                'joinSceneText' => WorkContactRoomJoinScene::getMessage($contactRoom['joinScene']),
+                'type' => $contactRoom['type'],
+                'contactId' => $contactRoom['type'] === 2 ? $id : 0,
+                'employeeId' => $contactRoom['type'] === 1 ? $id : 0,
                 'contactEmployeeId' => $contactEmployeeId,
             ];
         }

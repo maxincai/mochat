@@ -147,9 +147,9 @@ class GetSopInfoLogic
 
         return [
             'creator' => $user['name'],
-            'time'    => $time,
+            'time' => $time,
             'tipTime' => $tipTime,
-            'task'    => $task,
+            'task' => $task,
             'contact' => $contact,
         ];
     }

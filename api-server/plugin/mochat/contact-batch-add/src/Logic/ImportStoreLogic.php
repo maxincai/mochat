@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -72,10 +71,14 @@ class ImportStoreLogic
         try {
             $corpId = $user['corpIds'][0];
             foreach ($contact as $k => $item) {
-                $info = $this->contactBatchAddImportService->getContactBatchAddImportByPhone($corpId,(string)$item[0]);
-                if (!empty($info)) unset($contact[$k]);
+                $info = $this->contactBatchAddImportService->getContactBatchAddImportByPhone($corpId, (string) $item[0]);
+                if (! empty($info)) {
+                    unset($contact[$k]);
+                }
             }
-            if (empty($contact)) return ['number' => 0,];
+            if (empty($contact)) {
+                return ['number' => 0];
+            }
             $contact = array_merge($contact);
             ## 创建导入记录
             $record = [
@@ -165,21 +168,22 @@ class ImportStoreLogic
         $list = $this->contactBatchAddImportService->countContactBatchAddImportByRecordId($recordId, ['employee_id', Db::raw('COUNT(0) AS `count`')]);
         $messageRemind = make(MessageRemind::class);
         $workAgentService = make(WorkAgentContract::class);
-        $agent = $workAgentService->getWorkAgentRemindByCorpId((int)$corpId, ['id']);
+        $agent = $workAgentService->getWorkAgentRemindByCorpId((int) $corpId, ['id']);
 
         foreach ($list as $item) {
             $employee = $this->workEmployee->getWorkEmployeeById($item['employeeId']);
-            $url = Url::getSidebarBaseUrl() . '/contactBatchAdd?agentId='.$agent['id'].'&batchId=' . $recordId;
+            $url = Url::getSidebarBaseUrl() . '/contactBatchAdd?agentId=' . $agent['id'] . '&batchId=' . $recordId;
             $text = "【管理员提醒】您有客户未添加哦！\n" .
                 "提醒事项：添加客户\n" .
                 "客户数量：{$item['count']}名\n" .
                 "记得及时添加哦\n" .
                 "<a href='{$url}'>点击查看详情</a>";
             $messageRemind->sendToEmployee(
-                (int)$employee['corpId'],
+                (int) $employee['corpId'],
                 $employee['wxUserId'],
                 'text',
-                $text);
+                $text
+            );
         }
     }
 }

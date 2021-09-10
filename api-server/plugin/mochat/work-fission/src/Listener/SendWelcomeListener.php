@@ -8,12 +8,11 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\WorkFission\Listener;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\Medium\Constants\Type as MediumType;
 use MoChat\App\Utils\Url;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
@@ -24,14 +23,14 @@ use MoChat\Plugin\WorkFission\Contract\WorkFissionContract;
 use MoChat\Plugin\WorkFission\Contract\WorkFissionWelcomeContract;
 
 /**
- * 发送欢迎语监听
+ * 发送欢迎语监听.
  *
  * @Listener
  */
 class SendWelcomeListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var WorkContactContract
      */
     protected $workContactService;
@@ -66,7 +65,7 @@ class SendWelcomeListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            AddContactEvent::class
+            AddContactEvent::class,
         ];
     }
 
@@ -78,7 +77,7 @@ class SendWelcomeListener implements ListenerInterface
         $contact = $event->message;
 
         // 判断是否需要发送欢迎语
-        if (!$this->isNeedSendWelcome($contact)) {
+        if (! $this->isNeedSendWelcome($contact)) {
             return;
         }
 
@@ -89,22 +88,21 @@ class SendWelcomeListener implements ListenerInterface
         }
 
         // 发送欢迎语
-        $this->workContactService->sendWelcome((int)$contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
+        $this->workContactService->sendWelcome((int) $contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
     }
 
     /**
-     * 判断是否需要发送欢迎语
+     * 判断是否需要发送欢迎语.
      *
-     * @param array $contact
      * @return bool
      */
     private function isNeedSendWelcome(array $contact)
     {
-        if (!isset($contact['state']) || empty($contact['state'])) {
+        if (! isset($contact['state']) || empty($contact['state'])) {
             return false;
         }
 
-        if (!isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
+        if (! isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
             return false;
         }
 
@@ -117,7 +115,7 @@ class SendWelcomeListener implements ListenerInterface
     }
 
     /**
-     * 获取来源名称
+     * 获取来源名称.
      *
      * @return string
      */
@@ -127,7 +125,7 @@ class SendWelcomeListener implements ListenerInterface
     }
 
     /**
-     * 获取欢迎语
+     * 获取欢迎语.
      *
      * @param array $contact 客户
      *
@@ -136,20 +134,20 @@ class SendWelcomeListener implements ListenerInterface
     private function getWelcome(array $contact): array
     {
         $stateArr = explode('-', $contact['state']);
-        $id = (int)$stateArr[1];
+        $id = (int) $stateArr[1];
 
         $data = [];
-        $fissionContact = $this->workFissionContactService->getWorkFissionContactById((int)$id, ['fission_id', 'invite_count']);
+        $fissionContact = $this->workFissionContactService->getWorkFissionContactById((int) $id, ['fission_id', 'invite_count']);
         if (empty($fissionContact)) {
             return $data;
         }
-        $fission = $this->workFissionService->getWorkFissionById((int)$fissionContact['fissionId'], ['id', 'contact_tags', 'tasks', 'end_time']);
+        $fission = $this->workFissionService->getWorkFissionById((int) $fissionContact['fissionId'], ['id', 'contact_tags', 'tasks', 'end_time']);
         if (empty($fission)) {
             return $data;
         }
-        
+
         // 欢迎语
-        $welcome = $this->workFissionWelcomeService->getWorkFissionWelcomeByFissionId((int)$contact['fissionId']);
+        $welcome = $this->workFissionWelcomeService->getWorkFissionWelcomeByFissionId((int) $contact['fissionId']);
         // 欢迎语-文本
         empty($welcome['msgText']) || $data['text'] = $welcome['msgText'];
 
@@ -157,7 +155,7 @@ class SendWelcomeListener implements ListenerInterface
         $data['medium']['mediumContent']['title'] = $welcome['linkTitle'];
         $data['medium']['mediumContent']['description'] = $welcome['linkDesc'];
         $data['medium']['mediumContent']['imagePath'] = $welcome['linkCoverUrl'];
-        $data['medium']['mediumContent']['imageLink'] = Url::getAuthRedirectUrl(7, (int)$contact['fissionId']);
+        $data['medium']['mediumContent']['imageLink'] = Url::getAuthRedirectUrl(7, (int) $contact['fissionId']);
 
         return $data;
     }

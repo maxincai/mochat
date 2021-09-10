@@ -8,21 +8,20 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\ChatTool\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\ChatTool\Constants\Status;
 use MoChat\App\ChatTool\Contract\ChatToolContract;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Utils\Url;
 use MoChat\App\WorkAgent\Contract\WorkAgentContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 
 /**
  * 聊天栏列表.
@@ -91,7 +90,7 @@ class Index extends AbstractAction
      */
     public function handle(): array
     {
-        $corpId = (int)user('corpIds')[0];
+        $corpId = (int) user('corpIds')[0];
 
         ## 应用信息
         $agents = $this->workAgentService->getWorkAgentByCorpIdClose($corpId, ['id', 'corp_id', 'name', 'square_logo_url']);
@@ -114,8 +113,8 @@ class Index extends AbstractAction
                 }
 
                 $item['pageUrl'] = $domain . "/{$item['pageFlag']}?" . http_build_query([
-                        'agentId' => $agentId
-                    ]);
+                    'agentId' => $agentId,
+                ]);
                 return $item;
             }, $chatTools);
         };

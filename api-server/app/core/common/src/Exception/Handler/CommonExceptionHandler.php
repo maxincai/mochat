@@ -8,15 +8,14 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Common\Exception\Handler;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use MoChat\App\Common\Constants\AppErrCode;
-use MoChat\Framework\Constants\ErrorCode;
 use MoChat\App\Common\Exception\CommonException;
+use MoChat\Framework\Constants\ErrorCode;
 use Throwable;
 
 /**
@@ -46,7 +45,7 @@ class CommonExceptionHandler extends ExceptionHandler
         ## 格式化输出
         $data = responseDataFormat($throwable->getCode(), $throwable->getMessage());
         $httpCode = ErrorCode::getHttpCode($data['code']);
-        if (!$httpCode && class_exists(AppErrCode::class)) {
+        if (! $httpCode && class_exists(AppErrCode::class)) {
             $httpCode = AppErrCode::getHttpCode($data['code']);
         }
         $dataStream = new SwooleStream(json_encode($data, JSON_UNESCAPED_UNICODE));

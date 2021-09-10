@@ -8,12 +8,11 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\AutoTag\Listener;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Utils\Codec\Json;
 use MoChat\App\WorkContact\Contract\WorkContactTagContract;
 use MoChat\App\WorkContact\Event\AddContactEvent;
@@ -23,14 +22,14 @@ use MoChat\Plugin\AutoTag\Service\AutoTagRecordService;
 use Psr\Container\ContainerInterface;
 
 /**
- * 新客户打标签监听
+ * 新客户打标签监听.
  *
  * @Listener
  */
 class MarkTagListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var ContainerInterface
      */
     protected $container;
@@ -53,7 +52,7 @@ class MarkTagListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            AddContactEvent::class
+            AddContactEvent::class,
         ];
     }
 
@@ -68,7 +67,7 @@ class MarkTagListener implements ListenerInterface
         $this->autoTagRecordService = $this->container->get(AutoTagRecordContract::class);
 
         // 判断是否需要打标签
-        if (!$this->isNeedMarkTag($contact)) {
+        if (! $this->isNeedMarkTag($contact)) {
             return;
         }
 
@@ -79,13 +78,12 @@ class MarkTagListener implements ListenerInterface
         }
 
         // 打标签
-        $this->workContactTagService->markTags((int)$contact['corpId'], $contact, $tags);
+        $this->workContactTagService->markTags((int) $contact['corpId'], $contact, $tags);
     }
 
     /**
-     * 判断是否需要打标签
+     * 判断是否需要打标签.
      *
-     * @param array $contact
      * @return bool
      */
     private function isNeedMarkTag(array $contact)
@@ -94,11 +92,9 @@ class MarkTagListener implements ListenerInterface
     }
 
     /**
-     * 获取打标签规则
+     * 获取打标签规则.
      *
      * @param array $contact 客户
-     *
-     * @return array
      */
     private function getMarkTagRule(array $contact): array
     {
@@ -113,11 +109,11 @@ class MarkTagListener implements ListenerInterface
         // 客户标签
         $tagIds = [];
         foreach ($autoTag as $item) {
-            if (!$this->hasCurrentEmployee($contact['employeeId'], $item['employees'])) {
+            if (! $this->hasCurrentEmployee($contact['employeeId'], $item['employees'])) {
                 continue;
             }
 
-            $currentTagIds = $this->getNeedMarkTagIds($contact, (int)$item['id'], $item['tagRule']);
+            $currentTagIds = $this->getNeedMarkTagIds($contact, (int) $item['id'], $item['tagRule']);
             if (empty($currentTagIds)) {
                 continue;
             }
@@ -143,10 +139,8 @@ class MarkTagListener implements ListenerInterface
 
     /**
      * TODO 增加选择部门支持
-     * 判断是否是当前员工的规则
+     * 判断是否是当前员工的规则.
      *
-     * @param int $employeeId
-     * @param string $employees
      * @return bool
      */
     private function hasCurrentEmployee(int $employeeId, string $employees)
@@ -158,18 +152,15 @@ class MarkTagListener implements ListenerInterface
         }
 
         $employees = array_map(function ($employee) {
-            return (int)$employee;
+            return (int) $employee;
         }, $employees);
 
         return in_array($employeeId, $employees);
     }
 
     /**
-     * 获取需要打标签的id
+     * 获取需要打标签的id.
      *
-     * @param array $contact
-     * @param int $autoTagId
-     * @param string $tagRules
      * @return array
      */
     private function getNeedMarkTagIds(array $contact, int $autoTagId, string $tagRules)
@@ -188,12 +179,12 @@ class MarkTagListener implements ListenerInterface
             }
 
             // 月
-            if ($tagRule['time_type'] === 3 && !in_array((int)date('d'), $tagRule['schedule'], true)) {
+            if ($tagRule['time_type'] === 3 && ! in_array((int) date('d'), $tagRule['schedule'], true)) {
                 continue;
             }
 
             // 周
-            if ($tagRule['time_type'] === 2 && !in_array((int)date('w'), $tagRule['schedule'], true)) {
+            if ($tagRule['time_type'] === 2 && ! in_array((int) date('w'), $tagRule['schedule'], true)) {
                 continue;
             }
 

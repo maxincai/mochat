@@ -8,17 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\Lottery\Action\Dashboard;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\App\User\Contract\UserContract;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
@@ -92,8 +91,8 @@ class Show extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @return array 返回数组
      * @throws \JsonException
+     * @return array 返回数组
      */
     public function handle(): array
     {
@@ -137,12 +136,12 @@ class Show extends AbstractAction
     private function handleData($id): array
     {
         ## 数据统计
-        $dataStatistics['total_browse_user'] = $this->lotteryContactService->countLotteryContactByLotteryId((int)$id);
-        $dataStatistics['total_draw_user'] = $this->lotteryContactService->countLotteryContactByLotteryIdDrawNum((int)$id);
-        $dataStatistics['total_win_user'] = $this->lotteryContactService->countLotteryContactByLotteryIdWinNum((int)$id);
-        $dataStatistics['today_browse_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryId((int)$id);
-        $dataStatistics['today_draw_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryIdDrawNum((int)$id);
-        $dataStatistics['today_win_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryIdWinNum((int)$id);
+        $dataStatistics['total_browse_user'] = $this->lotteryContactService->countLotteryContactByLotteryId((int) $id);
+        $dataStatistics['total_draw_user'] = $this->lotteryContactService->countLotteryContactByLotteryIdDrawNum((int) $id);
+        $dataStatistics['total_win_user'] = $this->lotteryContactService->countLotteryContactByLotteryIdWinNum((int) $id);
+        $dataStatistics['today_browse_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryId((int) $id);
+        $dataStatistics['today_draw_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryIdDrawNum((int) $id);
+        $dataStatistics['today_win_user'] = $this->lotteryContactService->countLotteryContactTodayByLotteryIdWinNum((int) $id);
 
         return [
             'lottery' => $this->lottery($id),
@@ -158,7 +157,7 @@ class Show extends AbstractAction
     private function lottery($id): array
     {
         ## 抽奖活动信息
-        $lottery = $this->lotteryService->getlotteryById((int)$id, ['id', 'name', 'description', 'start_time', 'end_time', 'time_type', 'contact_tags', 'create_user_id', 'created_at']);
+        $lottery = $this->lotteryService->getlotteryById((int) $id, ['id', 'name', 'description', 'start_time', 'end_time', 'time_type', 'contact_tags', 'create_user_id', 'created_at']);
 
         $lottery['time'] = '永久有效';
         if ($lottery['timeType'] === 2) {
@@ -182,10 +181,10 @@ class Show extends AbstractAction
         $username = $this->userService->getUserById($lottery['createUserId']);
         $lottery['nickname'] = isset($username['name']) ? $username['name'] : '';
         unset($lottery['startTime'], $lottery['endTime'], $lottery['timeType'], $lottery['createUserId']);
-        $prize = $this->lotteryPrizeService->getLotteryPrizeByLotteryId((int)$lottery['id'], ['id', 'prize_set', 'exchange_set', 'draw_set', 'win_set']);
+        $prize = $this->lotteryPrizeService->getLotteryPrizeByLotteryId((int) $lottery['id'], ['id', 'prize_set', 'exchange_set', 'draw_set', 'win_set']);
         $lottery['draw_set'] = json_decode($prize['drawSet'], true, 512, JSON_THROW_ON_ERROR);
         $lottery['win_set'] = json_decode($prize['winSet'], true, 512, JSON_THROW_ON_ERROR);
-        $lottery['prize_set'] = $this->prizeSet(json_decode($prize['prizeSet'], true, 512, JSON_THROW_ON_ERROR), json_decode($prize['exchangeSet'], true, 512, JSON_THROW_ON_ERROR), (int)$id);
+        $lottery['prize_set'] = $this->prizeSet(json_decode($prize['prizeSet'], true, 512, JSON_THROW_ON_ERROR), json_decode($prize['exchangeSet'], true, 512, JSON_THROW_ON_ERROR), (int) $id);
         return $lottery;
     }
 
@@ -195,8 +194,8 @@ class Show extends AbstractAction
     private function prizeSet(array $prizeSet, array $exchangeSet, int $lotteryId): array
     {
         foreach ($prizeSet as $key => $val) {
-            $prizeSet[$key]['win_num'] = $this->lotteryContactRecordService->countLotteryContactRecordByLotteryIdPrizeName((int)$lotteryId, $val['name']);
-            $prizeSet[$key]['differ_num'] = (int)$val['num'] - (int)$prizeSet[$key]['win_num'];
+            $prizeSet[$key]['win_num'] = $this->lotteryContactRecordService->countLotteryContactRecordByLotteryIdPrizeName((int) $lotteryId, $val['name']);
+            $prizeSet[$key]['differ_num'] = (int) $val['num'] - (int) $prizeSet[$key]['win_num'];
             if ($val['name'] === '谢谢参与') {
                 $prizeSet[$key]['num'] = '-';
                 $prizeSet[$key]['differ_num'] = '-';

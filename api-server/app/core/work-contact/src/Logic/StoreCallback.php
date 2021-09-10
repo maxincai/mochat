@@ -13,7 +13,6 @@ namespace MoChat\App\WorkContact\Logic;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
-use League\Flysystem\Filesystem;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Corp\Logic\AppTrait;
 use MoChat\App\Medium\Constants\Type as MediumType;
@@ -25,6 +24,7 @@ use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkContact\Contract\WorkContactEmployeeContract;
 use MoChat\App\WorkContact\Contract\WorkContactTagContract;
 use MoChat\App\WorkContact\Contract\WorkContactTagPivotContract;
+use MoChat\App\WorkContact\Event\AddContactEvent;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Plugin\AutoTag\Logic\ContactCallBackLogic as AutoTagLogic;
 use MoChat\Plugin\ChannelCode\Logic\ContactCallBackLogic as ChannelCodeLogic;
@@ -33,7 +33,6 @@ use MoChat\Plugin\RoomAutoPull\Logic\ContactCallBackLogic as AutoPullLogic;
 use MoChat\Plugin\RoomSop\Service\RoomSopService;
 use MoChat\Plugin\WorkFission\Logic\ContactCallBackLogic as FissionLogic;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use MoChat\App\WorkContact\Event\AddContactEvent;
 
 /**
  * 添加客户 - 回调.
@@ -64,6 +63,12 @@ class StoreCallback
      * @var AutoTagLogic
      */
     protected $autoTagLogic;
+
+    /**
+     * @Inject
+     * @var Media
+     */
+    protected $media;
 
     /**
      * 自动拉群业务.
@@ -119,12 +124,6 @@ class StoreCallback
     private $eventDispatcher;
 
     /**
-     * @Inject()
-     * @var Media
-     */
-    protected $media;
-
-    /**
      * @param array $wxData 微信回调数据
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -139,7 +138,7 @@ class StoreCallback
             return;
         }
         ## 校验 - 系统数据
-        $corp     = make(CorpContract::class)->getCorpsByWxCorpId($wxData['ToUserName'], ['id']);
+        $corp = make(CorpContract::class)->getCorpsByWxCorpId($wxData['ToUserName'], ['id']);
         $employee = make(WorkEmployeeContract::class)->getWorkEmployeeByWxUserId($wxData['UserID'], ['id', 'name', 'wx_user_id']);
         if (empty($corp) || empty($employee)) {
             return;
@@ -147,17 +146,17 @@ class StoreCallback
 
         ## 拉取微信客户详情
         $this->contactService = $this->wxApp($wxData['ToUserName'], 'contact')->external_contact;
-        $wxContact            = $this->contactService->get($wxData['ExternalUserID']);
+        $wxContact = $this->contactService->get($wxData['ExternalUserID']);
         if ($wxContact['errcode'] !== 0) {
             $this->logger->error(sprintf('%s [%s] 请求数据：%s 响应结果：%s', '请求企业微信客户群详情错误', date('Y-m-d H:i:s'), $wxData['ExternalUserID'], json_encode($wxContact)));
         }
 
         ## 跟进员工筛选
-        $followUser     = [];
+        $followUser = [];
         $followUserTags = [];
         foreach ($wxContact['follow_user'] as $follow) {
             if ($follow['userid'] == $wxData['UserID']) {
-                $followUser                                     = $follow;
+                $followUser = $follow;
                 ! isset($followUser['tags']) || $followUserTags = $followUser['tags'];
             }
         }
@@ -166,19 +165,19 @@ class StoreCallback
             $stateArr = explode('-', $wxData['State']);
             switch ($stateArr[0]) {
                 case 'workRoomAutoPullId': ## 自动拉群
-                    $drainageInfo                                           = $this->autoPullLogic->getWorkRoomAutoPull((int) $stateArr[1]);
+                    $drainageInfo = $this->autoPullLogic->getWorkRoomAutoPull((int) $stateArr[1]);
                     isset($followUser['add_way']) && $followUser['add_way'] = AddWay::AUTO_GROUP;
                     break;
                 case 'channelCode': ## 渠道码
-                    $drainageInfo                                           = $this->channelCodeLogic->getChannelCode((int) $stateArr[1]);
+                    $drainageInfo = $this->channelCodeLogic->getChannelCode((int) $stateArr[1]);
                     isset($followUser['add_way']) && $followUser['add_way'] = AddWay::CHANNEL_CODE;
                     break;
                 case 'fission':## 企微任务宝 裂变
-                    $drainageInfo                                           = $this->fissionLogic->getFission((int) $stateArr[1]);
+                    $drainageInfo = $this->fissionLogic->getFission((int) $stateArr[1]);
                     isset($followUser['add_way']) && $followUser['add_way'] = AddWay::FISSION_DRAINAGE;
                     break;
                 default:
-                    $params       = ['contactWxExternalUserid' => $wxData['ExternalUserID'], 'wxUserId' => $wxData['UserID'], 'corpId' => (int) $corp['id']];
+                    $params = ['contactWxExternalUserid' => $wxData['ExternalUserID'], 'wxUserId' => $wxData['UserID'], 'corpId' => (int) $corp['id']];
                     $drainageInfo = $this->autoTagLogic->getAutoTag($params);
             }
         } else {
@@ -187,8 +186,8 @@ class StoreCallback
         }
         ## 请求微信 - 客户打标签
         $drainageTags = $drainageInfo['tags'];
-        $wxTags       = empty($followUserTags) ? $drainageTags : array_diff($drainageTags, array_column($followUserTags, 'tag_id'));
-        $tagRes       = $this->applyWxAddContactTags($wxData, $wxTags);
+        $wxTags = empty($followUserTags) ? $drainageTags : array_diff($drainageTags, array_column($followUserTags, 'tag_id'));
+        $tagRes = $this->applyWxAddContactTags($wxData, $wxTags);
         ## 请求微信 - 发送欢迎语
         $this->applyWxSendContactMessage($wxData, $wxContact, $drainageInfo['content']);
         ## 客户信息添加
@@ -220,9 +219,9 @@ class StoreCallback
             return $data;
         }
         $tagData = [
-            'userid'          => $wxResponse['UserID'],
+            'userid' => $wxResponse['UserID'],
             'external_userid' => $wxResponse['ExternalUserID'],
-            'add_tag'         => $wxTags,
+            'add_tag' => $wxTags,
         ];
         $wxTagRes = $this->contactService->markTags($tagData);
         if ($wxTagRes['errcode'] != 0) {
@@ -252,20 +251,20 @@ class StoreCallback
                     break;
                 case MediumType::PICTURE_TEXT:
                     $sendWelcomeData['link'] = [
-                        'title'  => $content['medium']['mediumContent']['title'],
+                        'title' => $content['medium']['mediumContent']['title'],
                         'picurl' => file_full_url($content['medium']['mediumContent']['imagePath']),
-                        'desc'   => $content['medium']['mediumContent']['description'],
-                        'url'    => $content['medium']['mediumContent']['imageLink'],
+                        'desc' => $content['medium']['mediumContent']['description'],
+                        'url' => $content['medium']['mediumContent']['imageLink'],
                     ];
                     break;
                 case MediumType::MINI_PROGRAM:
                     ## 上传临时素材
                     $mediaId = $this->media->uploadImage($wxResponse['ToUserName'], $content['medium']['mediumContent']['imagePath']);
                     $sendWelcomeData['miniprogram'] = [
-                        'title'        => $content['medium']['mediumContent']['title'],
+                        'title' => $content['medium']['mediumContent']['title'],
                         'pic_media_id' => $mediaId,
-                        'appid'        => $content['medium']['mediumContent']['appid'],
-                        'page'         => $content['medium']['mediumContent']['page'],
+                        'appid' => $content['medium']['mediumContent']['appid'],
+                        'page' => $content['medium']['mediumContent']['page'],
                     ];
                     break;
             }
@@ -309,73 +308,73 @@ class StoreCallback
                 ## 组织客户表入表数据
                 $isNewContact = 1;
                 $createContractData = [
-                    'corp_id'            => $corpId,
+                    'corp_id' => $corpId,
                     'wx_external_userid' => $wxResponse['ExternalUserID'],
-                    'name'               => $wxContact['name'],
-                    'avatar'             => ! empty($wxContact['avatar']) ? $wxContact['avatar'] : '',
-                    'type'               => $wxContact['type'],
-                    'gender'             => $wxContact['gender'],
-                    'unionid'            => isset($wxContact['unionid']) ? $wxContact['unionid'] : '',
-                    'position'           => isset($wxContact['position']) ? $wxContact['position'] : '',
-                    'corp_name'          => isset($wxContact['corp_name']) ? $wxContact['corp_name'] : '',
-                    'corp_full_name'     => isset($wxContact['corp_full_name']) ? $wxContact['corp_full_name'] : '',
-                    'external_profile'   => isset($wxContact['external_profile']) ? json_encode($wxContact['external_profile']) : json_encode([]),
-                    'business_no'        => isset($wxContact['business_no']) ? $wxContact['business_no'] : '',
-                    'created_at'         => date('Y-m-d H:i:s'),
-                    'updated_at'         => date('Y-m-d H:i:s'),
+                    'name' => $wxContact['name'],
+                    'avatar' => ! empty($wxContact['avatar']) ? $wxContact['avatar'] : '',
+                    'type' => $wxContact['type'],
+                    'gender' => $wxContact['gender'],
+                    'unionid' => isset($wxContact['unionid']) ? $wxContact['unionid'] : '',
+                    'position' => isset($wxContact['position']) ? $wxContact['position'] : '',
+                    'corp_name' => isset($wxContact['corp_name']) ? $wxContact['corp_name'] : '',
+                    'corp_full_name' => isset($wxContact['corp_full_name']) ? $wxContact['corp_full_name'] : '',
+                    'external_profile' => isset($wxContact['external_profile']) ? json_encode($wxContact['external_profile']) : json_encode([]),
+                    'business_no' => isset($wxContact['business_no']) ? $wxContact['business_no'] : '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ];
                 $contactId = $this->workContactService->createWorkContact($createContractData);
             }
-            
+
             // 触发添加客户事件
             $state = isset($wxResponse['State']) ? $wxResponse['State'] : '';
             $welcomeCode = isset($wxResponse['WelcomeCode']) ? $wxResponse['WelcomeCode'] : '';
-            $this->triggerAddContactEvent((int) $contactId, (int)$employeeId, (string)$state, $isNewContact, $welcomeCode);
-            
+            $this->triggerAddContactEvent((int) $contactId, (int) $employeeId, (string) $state, $isNewContact, $welcomeCode);
+
             ## 查询当前用户与客户是否存在关联信息
             $workContactEmployee = $workContactEmployeeService->findWorkContactEmployeeByOtherIds($employeeId, $contactId, ['id']);
             if (empty($workContactEmployee)) {
                 ## 组织客户与企业用户关联表信息
                 $createContractEmployeeData = [
-                    'employee_id'      => $employeeId,
-                    'contact_id'       => $contactId,
-                    'remark'           => isset($followUser['remark']) ? $followUser['remark'] : '',
-                    'description'      => isset($followUser['description']) ? $followUser['description'] : '',
+                    'employee_id' => $employeeId,
+                    'contact_id' => $contactId,
+                    'remark' => isset($followUser['remark']) ? $followUser['remark'] : '',
+                    'description' => isset($followUser['description']) ? $followUser['description'] : '',
                     'remark_corp_name' => isset($followUser['remark_corp_name']) ? $followUser['remark_corp_name'] : '',
-                    'remark_mobiles'   => isset($followUser['remark_mobiles']) ? json_encode($followUser['remark_mobiles']) : json_encode([]),
-                    'add_way'          => isset($followUser['add_way']) ? $followUser['add_way'] : 0,
-                    'oper_userid'      => isset($followUser['oper_userid']) ? $followUser['oper_userid'] : '',
-                    'state'            => isset($followUser['state']) ? $followUser['state'] : '',
-                    'corp_id'          => $corpId,
-                    'status'           => 1, // 正常
-                    'create_time'      => isset($followUser['createtime']) ? date('Y-m-d H:i:', $followUser['createtime']) : '',
-                    'created_at'       => date('Y-m-d H:i:s'),
-                    'updated_at'       => date('Y-m-d H:i:s'),
+                    'remark_mobiles' => isset($followUser['remark_mobiles']) ? json_encode($followUser['remark_mobiles']) : json_encode([]),
+                    'add_way' => isset($followUser['add_way']) ? $followUser['add_way'] : 0,
+                    'oper_userid' => isset($followUser['oper_userid']) ? $followUser['oper_userid'] : '',
+                    'state' => isset($followUser['state']) ? $followUser['state'] : '',
+                    'corp_id' => $corpId,
+                    'status' => 1, // 正常
+                    'create_time' => isset($followUser['createtime']) ? date('Y-m-d H:i:', $followUser['createtime']) : '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ];
                 $workContactEmployeeService->createWorkContactEmployee($createContractEmployeeData);
                 ## 创建客户事件
                 $contactEmployeeTrackData[] = [
                     'employee_id' => $employeeId,
-                    'contact_id'  => $contactId,
-                    'event'       => Event::CREATE,
-                    'content'     => sprintf('客户通过%s添加企业成员【%s】', AddWay::getMessage((int) $followUser['add_way']), $employee['name']),
-                    'corp_id'     => $corpId,
-                    'created_at'  => date('Y-m-d H:i:s'),
-                    'updated_at'  => date('Y-m-d H:i:s'),
+                    'contact_id' => $contactId,
+                    'event' => Event::CREATE,
+                    'content' => sprintf('客户通过%s添加企业成员【%s】', AddWay::getMessage((int) $followUser['add_way']), $employee['name']),
+                    'corp_id' => $corpId,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ];
             }
             ## 客户标签
             $followUserTags = (empty($newAddTags) || $tagRes['errcode'] != 0) ? $followUserTags : array_merge($followUserTags, array_map(function ($newTag) {
                 return [
                     'tag_id' => $newTag,
-                    'type'   => 1, // 标签类型:1-企业设置
+                    'type' => 1, // 标签类型:1-企业设置
                 ];
             }, $newAddTags));
             if (! empty($followUserTags)) {
                 ## 获取客户标签信息
                 $tagList = $this->workContactTagService->getWorkContactTagsByCorpIdWxTagId([$corpId], array_column($followUserTags, 'tag_id'), ['id', 'wx_contact_tag_id', 'name']);
                 ## 查询当前客户已存在的标签
-                $exitTagList                    = make(WorkContactTagPivotContract::class)->getWorkContactTagPivotsByOtherId((int) $contactId, (int) $employeeId, ['contact_tag_id']);
+                $exitTagList = make(WorkContactTagPivotContract::class)->getWorkContactTagPivotsByOtherId((int) $contactId, (int) $employeeId, ['contact_tag_id']);
                 empty($exitTagList) || $tagList = array_filter($tagList, function ($tag) use ($exitTagList) {
                     if (in_array($tag['id'], array_column($exitTagList, 'contactTagId'))) {
                         return false;
@@ -384,13 +383,13 @@ class StoreCallback
                 });
                 if (! empty($tagList)) {
                     $followUserTags = array_column($followUserTags, null, 'tag_id');
-                    $addContactTag  = array_map(function ($tag) use ($contactId, $employeeId, $followUserTags) {
+                    $addContactTag = array_map(function ($tag) use ($contactId, $employeeId, $followUserTags) {
                         return [
-                            'contact_id'     => $contactId,
-                            'employee_id'    => $employeeId,
+                            'contact_id' => $contactId,
+                            'employee_id' => $employeeId,
                             'contact_tag_id' => $tag['id'],
-                            'type'           => $followUserTags[$tag['wxContactTagId']]['type'],
-                            'created_at'     => date('Y-m-d H:i:s'),
+                            'type' => $followUserTags[$tag['wxContactTagId']]['type'],
+                            'created_at' => date('Y-m-d H:i:s'),
                         ];
                     }, $tagList);
                     make(WorkContactTagPivotContract::class)->createWorkContactTagPivots($addContactTag);
@@ -402,12 +401,12 @@ class StoreCallback
                     ## 给客户打标签事件
                     $contactEmployeeTrackData[] = [
                         'employee_id' => $employeeId,
-                        'contact_id'  => $contactId,
-                        'event'       => Event::TAG,
-                        'content'     => sprintf('系统对该客户打标签%s', rtrim(implode('、', $newAddTagNames), '、')),
-                        'corp_id'     => $corpId,
-                        'created_at'  => date('Y-m-d H:i:s'),
-                        'updated_at'  => date('Y-m-d H:i:s'),
+                        'contact_id' => $contactId,
+                        'event' => Event::TAG,
+                        'content' => sprintf('系统对该客户打标签%s', rtrim(implode('、', $newAddTagNames), '、')),
+                        'corp_id' => $corpId,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
                     ];
                 }
             }
@@ -426,7 +425,7 @@ class StoreCallback
     private function triggerAddContactEvent(int $contactId, int $employeeId, string $state, int $isNewContact, string $welcomeCode)
     {
         $contact = $this->workContactService->getWorkContactById($contactId);
-        if (!empty($contact)) {
+        if (! empty($contact)) {
             $contact['employeeId'] = $employeeId;
             $contact['state'] = $state;
             $contact['isNew'] = $isNewContact;

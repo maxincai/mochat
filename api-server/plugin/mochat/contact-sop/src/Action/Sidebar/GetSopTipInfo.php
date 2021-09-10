@@ -8,20 +8,19 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactSop\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Plugin\ContactSop\Logic\GetSopTipInfoLogic;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * h5侧边栏提示接口.
@@ -68,10 +67,10 @@ class GetSopTipInfo extends AbstractAction
      */
     public function handle(): array
     {
-        $params['corpId'] = (int)user()['corpId']; //企业id
+        $params['corpId'] = (int) user()['corpId']; //企业id
         #修改
-        $employeeId = (int)user()['id'];   //客服WxId
-        $contactId = (int)$this->request->input('contactId');     //客户WxId
+        $employeeId = (int) user()['id'];   //客服WxId
+        $contactId = (int) $this->request->input('contactId');     //客户WxId
         $employee = $this->workEmployeeService->getWorkEmployeeById($employeeId, ['wx_user_id']);
         if (empty($employee)) {
             return [];

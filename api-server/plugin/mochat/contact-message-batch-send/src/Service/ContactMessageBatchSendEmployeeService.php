@@ -93,11 +93,11 @@ class ContactMessageBatchSendEmployeeService extends AbstractService implements 
      */
     public function getContactMessageBatchSendEmployeesBySearch(array $params): array
     {
-        $batchId    = $params['batchId'];
+        $batchId = $params['batchId'];
         $sendStatus = $params['sendStatus'];
-        $keyWords   = $params['keyWords'];
-        $page       = (int) $params['page'];
-        $perPage    = (int) $params['perPage'];
+        $keyWords = $params['keyWords'];
+        $page = (int) $params['page'];
+        $perPage = (int) $params['perPage'];
 
         $data = $this->model::from($this->model::query()->getModel()->getTable() . ' as a')
             ->join(WorkEmployee::query()->getModel()->getTable() . ' as e', 'a.employee_id', 'e.id')
@@ -177,9 +177,7 @@ class ContactMessageBatchSendEmployeeService extends AbstractService implements 
     }
 
     /**
-     * 查询最近一周的群发消息
-     *
-     * @return array
+     * 查询最近一周的群发消息.
      */
     public function getContactMessageBatchSendEmployeeIdsByLastWeek(): array
     {

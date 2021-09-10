@@ -8,16 +8,15 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use League\Flysystem\Filesystem;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
@@ -93,10 +92,10 @@ class ImportStore extends AbstractAction
     protected function rules(): array
     {
         return [
-            'tags'          => 'array',
-            'title'         => 'required',
+            'tags' => 'array',
+            'title' => 'required',
             'allotEmployee' => 'required|array|min:1',
-            'file'          => 'required|file',
+            'file' => 'required|file',
         ];
     }
 
@@ -124,8 +123,8 @@ class ImportStore extends AbstractAction
         }
         array_shift($data); ## 去掉表头
         foreach ($data as $key => $item) {
-            $phoneLen = mb_strlen((string)$item[0]);
-            $remarkLen = isset($item[1]) ? mb_strlen((string)$item[1]) : 0;
+            $phoneLen = mb_strlen((string) $item[0]);
+            $remarkLen = isset($item[1]) ? mb_strlen((string) $item[1]) : 0;
             if ($phoneLen < 5 || $phoneLen > 255) {
                 throw new CommonException(ErrorCode::SERVER_ERROR, '表格内容错误:客户号码错误，行数' . ($key + 2));
             }

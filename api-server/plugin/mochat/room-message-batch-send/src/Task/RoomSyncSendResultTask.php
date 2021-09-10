@@ -8,36 +8,35 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomMessageBatchSend\Task;
 
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Crontab\Annotation\Crontab;
 use Hyperf\Di\Annotation\Inject;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendEmployeeContract;
-use Hyperf\Crontab\Annotation\Crontab;
 use MoChat\Plugin\RoomMessageBatchSend\Queue\RoomMessageBatchSendQueue;
 
 /**
- * 同步客户群发结果任务(每小时同步一次，仅同步最近一周内的)
+ * 同步客户群发结果任务(每小时同步一次，仅同步最近一周内的).
  *
  * @Crontab(name="RoomSyncSendResultTask", rule="0 * * * *", callback="execute", memo="同步客户群群发结果任务")
  */
 class RoomSyncSendResultTask
 {
     /**
-     * @Inject()
+     * @Inject
      * @var RoomMessageBatchSendQueue
      */
     private $roomMessageBatchSendQueue;
 
     /**
-     * @Inject()
+     * @Inject
      * @var RoomMessageBatchSendEmployeeContract
      */
     private $roomMessageBatchSendEmployeeService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var StdoutLoggerInterface
      */
     private $logger;

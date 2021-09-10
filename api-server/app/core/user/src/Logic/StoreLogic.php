@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\User\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -68,7 +67,7 @@ class StoreLogic
     {
         ## 验证手机号
         $phoneUser = $this->userService->getUsersByPhone([$params['phone']], ['id']);
-        if (!empty($phoneUser)) {
+        if (! empty($phoneUser)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '手机号已存在，不可重复创建');
         }
         ## 处理数据
@@ -104,7 +103,7 @@ class StoreLogic
         ## 角色信息
         $roleId = $params['roleId'];
         unset($params['roleId']);
-        $corpId = (int)$user['corpIds'][0];
+        $corpId = (int) $user['corpIds'][0];
         ## 根据手机号
         $employeeData = $this->employeeService->getWorkEmployeesByMobile($corpId, $params['phone'], ['id']);
         ## 数据操作

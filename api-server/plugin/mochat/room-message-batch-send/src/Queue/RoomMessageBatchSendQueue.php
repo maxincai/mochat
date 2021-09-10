@@ -28,12 +28,10 @@ class RoomMessageBatchSendQueue
     }
 
     /**
-     * 客户群发异步队列，可以延时执行
+     * 客户群发异步队列，可以延时执行.
      *
      * @param array $params 数据
      * @param int $delay 延时时间 单位秒
-     *
-     * @return bool
      */
     public function push(array $params, int $delay = 0): bool
     {
@@ -41,12 +39,10 @@ class RoomMessageBatchSendQueue
     }
 
     /**
-     * 客户群发异步队列，可以延时执行
+     * 客户群发异步队列，可以延时执行.
      *
      * @param array $params 数据
      * @param int $delay 延时时间 单位秒
-     *
-     * @return bool
      */
     public function syncSendResult(array $params, int $delay = 0): bool
     {

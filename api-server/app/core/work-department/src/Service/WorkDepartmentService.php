@@ -17,6 +17,7 @@ use MoChat\Framework\Service\AbstractService;
 class WorkDepartmentService extends AbstractService implements WorkDepartmentContract
 {
     private const MAX_LIMIT = 1000;
+
     private const BATCH_MAX_SIZE = 100;
 
     /**
@@ -83,7 +84,7 @@ class WorkDepartmentService extends AbstractService implements WorkDepartmentCon
         $chunkData = array_chunk($data, $maxSize);
         $flag = true;
         foreach ($chunkData as $newData) {
-            if (!$this->model->createAll($newData)) {
+            if (! $this->model->createAll($newData)) {
                 $flag = false;
             }
         }

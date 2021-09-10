@@ -27,7 +27,7 @@ class WorkEmployeeStatistic
     private $employeeStatisticsApply;
 
     /**
-     * @Inject()
+     * @Inject
      * @var StdoutLoggerInterface
      */
     private $logger;

@@ -20,7 +20,6 @@ use MoChat\Framework\Exception\CommonException;
 use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendContract;
 use MoChat\Plugin\ContactMessageBatchSend\Queue\ContactMessageBatchSendQueue;
 
-
 class StoreLogic
 {
     /**
@@ -30,7 +29,7 @@ class StoreLogic
     private $contactMessageBatchSend;
 
     /**
-     * @Inject()
+     * @Inject
      * @var ContactMessageBatchSendQueue
      */
     private $contactMessageBatchSendQueue;
@@ -56,13 +55,11 @@ class StoreLogic
     /**
      * @param array $params 请求参数
      * @param array $user 当前用户信息
-     *
-     * @return bool
      */
     public function handle(array $params, array $user): bool
     {
         $corpId = $user['corpIds'][0];
-        $filterParams = empty($params['filterParams']) ? [] : (array)$params['filterParams'];
+        $filterParams = empty($params['filterParams']) ? [] : (array) $params['filterParams'];
 
         $filterParamsDetail = [
             'gender' => $filterParams['gender'] ?? '',
@@ -77,7 +74,7 @@ class StoreLogic
             $filterParamsDetail['gender'] = $filterParams['gender'];
         }
 
-        if (!empty($filterParams['addTimeStart'])) {
+        if (! empty($filterParams['addTimeStart'])) {
             $filterParamsDetail['addTimeStart'] = $filterParams['addTimeStart'];
         }
 
@@ -85,11 +82,11 @@ class StoreLogic
             $filterParamsDetail['addTimeEnd'] = $filterParams['addTimeEnd'];
         }
 
-        if (!empty($filterParams['rooms'])) {
+        if (! empty($filterParams['rooms'])) {
             $filterParamsDetail['rooms'] = $this->workRoomService->getWorkRoomsById($filterParams['rooms'], ['id', 'name']);
         }
 
-        if (!empty($filterParams['tags'])) {
+        if (! empty($filterParams['tags'])) {
             $filterParamsDetail['tags'] = $this->workContactTagService->getWorkContactTagsById($filterParams['tags'], ['id', 'name']);
         }
 
@@ -97,7 +94,7 @@ class StoreLogic
         Db::beginTransaction();
         try {
             $batchContent = $params['content'];
-            $employeeIds = !empty($params['employeeIds']) ? json_encode($params['employeeIds'], JSON_UNESCAPED_UNICODE): '[]';
+            $employeeIds = ! empty($params['employeeIds']) ? json_encode($params['employeeIds'], JSON_UNESCAPED_UNICODE) : '[]';
             $batchId = $this->contactMessageBatchSend->createContactMessageBatchSend([
                 'corp_id' => $corpId,
                 'user_id' => $user['id'],
@@ -112,7 +109,7 @@ class StoreLogic
             ]);
 
             $delay = 0;
-            if ((int)$params['sendWay'] === 2) {
+            if ((int) $params['sendWay'] === 2) {
                 $delay = strtotime($params['definiteTime']) - time();
                 $delay = $delay < 0 ? 0 : $delay;
             }

@@ -8,12 +8,14 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkAgent\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Utils\Url;
 use MoChat\App\WorkAgent\Contract\WorkAgentContract;
@@ -21,9 +23,6 @@ use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
 use MoChat\Framework\WeWork\WeWork;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * @Controller
@@ -83,9 +82,9 @@ class JssdkConfig extends AbstractAction
     public function handle(): array
     {
         $corpId = (int) user()['corpId'];
-        $agentId = (int)$this->request->query('agentId', 0);
+        $agentId = (int) $this->request->query('agentId', 0);
 
-        if (!$corpId) {
+        if (! $corpId) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '企业ID必须');
         }
 

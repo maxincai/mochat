@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomMessageBatchSend\Job;
 
 use Hyperf\AsyncQueue\Job;
@@ -38,7 +37,7 @@ class SendJob extends Job
 
     public function handle()
     {
-        $batchId = (int)$this->params['batchId'];
+        $batchId = (int) $this->params['batchId'];
         $roomMessageBatchSendService = make(RoomMessageBatchSendContract::class);
         $roomMessageBatchSendEmployeeService = make(RoomMessageBatchSendEmployeeContract::class);
         $weWorkFactory = make(WeWorkFactory::class);
@@ -53,10 +52,10 @@ class SendJob extends Job
             }
 
             $this->createSendTaskByParams($batch);
-            $weWorkContactApp = $weWorkFactory->getContactApp((int)$batch['corpId']);
+            $weWorkContactApp = $weWorkFactory->getContactApp((int) $batch['corpId']);
 
             $batchEmployees = $roomMessageBatchSendEmployeeService->getRoomMessageBatchSendEmployeesByBatchId($batchId, [], ['id', 'employee_id', 'wx_user_id']);
-            $content = $this->formatContent((int)$batch['corpId'], $batch['content']);
+            $content = $this->formatContent((int) $batch['corpId'], $batch['content']);
 
             foreach ($batchEmployees as $employee) {
                 $content['sender'] = $employee['wxUserId'];
@@ -86,8 +85,6 @@ class SendJob extends Job
 
     /**
      * 根据参数创建发送任务
-     *
-     * @param array $sendData
      */
     private function createSendTaskByParams(array $sendData)
     {
@@ -99,7 +96,7 @@ class SendJob extends Job
         $workContactRoomService = make(WorkContactRoomContract::class);
 
         $corpId = (int) $sendData['corpId'];
-        $employeeIds = (array)$sendData['employeeIds'];
+        $employeeIds = (array) $sendData['employeeIds'];
         $batchId = (int) $sendData['id'];
 
         // 获取用户成员
@@ -134,7 +131,6 @@ class SendJob extends Job
                 'created_at' => date('Y-m-d H:i:s'),
                 'last_sync_time' => date('Y-m-d H:i:s'),
             ]);
-
         }
         $roomMessageBatchSendService->updateRoomMessageBatchSendById($batchId, [
             'sendEmployeeTotal' => $employeeTotal,
@@ -171,27 +167,27 @@ class SendJob extends Job
                         'msgtype' => $item['msgType'],
                         $item['msgType'] => [
                             'media_id' => $mediaId,
-                        ]
+                        ],
                     ];
                     break;
                 case 'link':
-                    if (!empty($item['pic_url'])) {
+                    if (! empty($item['pic_url'])) {
                         $item['picurl'] = $item['pic_url'];
                         unset($item['pic_url']);
                     }
                     unset($item['msgType']);
                     $newContent['attachments'][] = [
                         'msgtype' => $item['msgType'],
-                        $item['msgType'] => $item
+                        $item['msgType'] => $item,
                     ];
                     break;
                 case 'miniprogram':
                     $item['pic_media_id'] = $media->uploadImage($corpId, $item['pic_url']);
-                    unset($item['msgType']);
-                    unset($item['pic_url']);
+                    unset($item['msgType'], $item['pic_url']);
+
                     $newContent['attachments'][] = [
                         'msgtype' => $item['msgType'],
-                        $item['msgType'] => $item
+                        $item['msgType'] => $item,
                     ];
                     break;
             }

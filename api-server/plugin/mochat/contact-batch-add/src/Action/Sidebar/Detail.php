@@ -8,15 +8,14 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
@@ -53,9 +52,9 @@ class Detail extends AbstractAction
     public function handle(): array
     {
         //接收参数
-        $params['employeeId'] = (int)user()['id'];
-        $params['batchId'] = (int)$this->request->input('batchId');
-        $params['status'] = (int)$this->request->input('status', 4);
+        $params['employeeId'] = (int) user()['id'];
+        $params['batchId'] = (int) $this->request->input('batchId');
+        $params['status'] = (int) $this->request->input('status', 4);
         //校验参数
         $this->validated($params);
         $employee = $this->workEmployeeContract->getWorkEmployeeById($params['employeeId']);
@@ -85,7 +84,7 @@ class Detail extends AbstractAction
     {
         return [
             'batchId.required' => '批次号 必传',
-            'employeeId.required' => '员工id 必填'
+            'employeeId.required' => '员工id 必填',
         ];
     }
 }

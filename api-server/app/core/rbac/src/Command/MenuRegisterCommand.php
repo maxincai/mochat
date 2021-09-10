@@ -22,7 +22,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @Command()
+ * @Command
  */
 class MenuRegisterCommand extends HyperfCommand
 {
@@ -106,10 +106,10 @@ class MenuRegisterCommand extends HyperfCommand
         $data = array_values($data);
         $newData = [];
         foreach ($data as $val) {
-            if (false === strpos($val['uri'], 'dashboard')) {
+            if (strpos($val['uri'], 'dashboard') === false) {
                 continue;
             }
-            $newData[] = sprintf("%s#%s", $val['uri'], strtolower($val['method'][0]));
+            $newData[] = sprintf('%s#%s', $val['uri'], strtolower($val['method'][0]));
         }
 
         sort($newData);

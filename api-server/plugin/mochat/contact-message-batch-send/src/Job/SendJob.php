@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactMessageBatchSend\Job;
 
 use Hyperf\AsyncQueue\Job;
@@ -16,12 +15,12 @@ use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\DbConnection\Db;
 use MoChat\App\Corp\Utils\WeWorkFactory;
 use MoChat\App\Utils\Media;
+use MoChat\App\WorkContact\Contract\WorkContactEmployeeContract;
+use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Plugin\ContactMessageBatchSend\Constants\Status;
 use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendContract;
 use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendEmployeeContract;
 use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendResultContract;
-use MoChat\App\WorkContact\Contract\WorkContactEmployeeContract;
-use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 
 class SendJob extends Job
 {
@@ -34,13 +33,13 @@ class SendJob extends Job
 
     public function handle()
     {
-        $batchId = (int)$this->params['batchId'];
+        $batchId = (int) $this->params['batchId'];
         $contactMessageBatchSendService = make(ContactMessageBatchSendContract::class);
         $contactMessageBatchSendEmployeeService = make(ContactMessageBatchSendEmployeeContract::class);
         $contactMessageBatchSendResultService = make(ContactMessageBatchSendResultContract::class);
         $weWorkFactory = make(WeWorkFactory::class);
         $logger = make(StdoutLoggerInterface::class);
-        
+
         Db::beginTransaction();
         try {
             $batch = $contactMessageBatchSendService->getContactMessageBatchSendLockById($batchId);
@@ -51,9 +50,9 @@ class SendJob extends Job
 
             $this->createSendTaskByParams($batch);
 
-            $weWorkContactApp = $weWorkFactory->getContactApp((int)$batch['corpId']);
+            $weWorkContactApp = $weWorkFactory->getContactApp((int) $batch['corpId']);
             $batchEmployees = $contactMessageBatchSendEmployeeService->getContactMessageBatchSendEmployeesByBatchId($batchId, [], ['id', 'employee_id', 'wx_user_id']);
-            $content = $this->formatContent((int)$batch['corpId'], $batch['content']);
+            $content = $this->formatContent((int) $batch['corpId'], $batch['content']);
 
             foreach ($batchEmployees as $employee) {
                 $content['sender'] = $employee['wxUserId'];
@@ -93,8 +92,6 @@ class SendJob extends Job
 
     /**
      * 根据参数创建发送任务
-     *
-     * @param array $sendData
      */
     private function createSendTaskByParams(array $sendData)
     {
@@ -106,7 +103,7 @@ class SendJob extends Job
 
         $filterParams = $sendData['filterParams'];
         $corpId = (int) $sendData['corpId'];
-        $employeeIds = (array)$sendData['employeeIds'];
+        $employeeIds = (array) $sendData['employeeIds'];
         $batchId = (int) $sendData['id'];
 
         // 获取用户成员
@@ -177,27 +174,27 @@ class SendJob extends Job
                         'msgtype' => $item['msgType'],
                         $item['msgType'] => [
                             'media_id' => $mediaId,
-                        ]
+                        ],
                     ];
                     break;
                 case 'link':
-                    if (!empty($item['pic_url'])) {
+                    if (! empty($item['pic_url'])) {
                         $item['picurl'] = $item['pic_url'];
                         unset($item['pic_url']);
                     }
                     unset($item['msgType']);
                     $newContent['attachments'][] = [
                         'msgtype' => $item['msgType'],
-                        $item['msgType'] => $item
+                        $item['msgType'] => $item,
                     ];
                     break;
                 case 'miniprogram':
                     $item['pic_media_id'] = $media->uploadImage($corpId, $item['pic_url']);
-                    unset($item['msgType']);
-                    unset($item['pic_url']);
+                    unset($item['msgType'], $item['pic_url']);
+
                     $newContent['attachments'][] = [
                         'msgtype' => $item['msgType'],
-                        $item['msgType'] => $item
+                        $item['msgType'] => $item,
                     ];
                     break;
             }

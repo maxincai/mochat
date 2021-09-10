@@ -13,7 +13,10 @@ namespace MoChat\App\User\Action\Dashboard;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\User\Contract\UserContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
@@ -21,9 +24,6 @@ use MoChat\Framework\Exception\CommonException;
 use MoChat\Framework\Request\ValidateSceneTrait;
 use Qbhy\HyperfAuth\AuthManager;
 use Qbhy\SimpleJwt\JWTManager;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 
 /**
  * 子账户管理- 管理员重置密码
@@ -78,7 +78,7 @@ class PasswordReset extends AbstractAction
         ## 生成新密码
         $guard = $this->authManager->guard('jwt');
         /** @var JWTManager $jwt */
-        $jwt      = $guard->getJwtManager();
+        $jwt = $guard->getJwtManager();
         $newPassword = $jwt->getEncrypter()->signature($newPassword);
 
         try {
@@ -100,8 +100,8 @@ class PasswordReset extends AbstractAction
     protected function rules(): array
     {
         return [
-            'id'      => 'required|min:1',
-            'newPassword'      => 'required|min:1|alpha_num|bail',
+            'id' => 'required|min:1',
+            'newPassword' => 'required|min:1|alpha_num|bail',
         ];
     }
 
@@ -112,10 +112,10 @@ class PasswordReset extends AbstractAction
     protected function messages(): array
     {
         return [
-            'id.required'      => '用户id 必填',
-            'newPassword.required'      => '新密码 必填',
-            'newPassword.min'           => '新密码 不可为空',
-            'newPassword.alpha_num'     => '新密码 组成必须是字母或数字',
+            'id.required' => '用户id 必填',
+            'newPassword.required' => '新密码 必填',
+            'newPassword.min' => '新密码 不可为空',
+            'newPassword.alpha_num' => '新密码 组成必须是字母或数字',
         ];
     }
 }

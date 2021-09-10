@@ -109,9 +109,7 @@ interface RoomMessageBatchSendEmployeeContract
     public function getRoomMessageBatchSendEmployeeCount(array $where): int;
 
     /**
-     * 查询最近一周的群发消息
-     *
-     * @return array
+     * 查询最近一周的群发消息.
      */
     public function getContactMessageBatchSendEmployeeIdsByLastWeek(): array;
 }

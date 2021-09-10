@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Contract;
 
 interface ContactBatchAddImportContract
@@ -112,10 +111,6 @@ interface ContactBatchAddImportContract
 
     /**
      * 查询多条
-     * @param int $recordId
-     * @param int $status
-     * @param array $columns
-     * @return array
      */
     public function getContactBatchAddImportByRecordId(int $recordId, int $status, array $columns = ['*']): array;
 
@@ -129,8 +124,6 @@ interface ContactBatchAddImportContract
 
     /**
      * 查询数量 - 根据status.
-     * @param int $corpId
-     * @param int $status
      * @param array|string[] $columns 查询字段
      * @return int 数组
      */
@@ -138,27 +131,18 @@ interface ContactBatchAddImportContract
 
     /**
      * 查询多条
-     * @param int $recordId
      * @param array|string[] $columns
-     * @return array
      */
     public function countContactBatchAddImportByRecordId(int $recordId, array $columns = ['*']): array;
 
     /**
-     * 查询数量
-     * @param int $recordId
-     * @param int $employee
-     * @return int
+     * 查询数量.
      */
     public function countContactBatchAddImportByRecordIdEmployee(int $recordId, int $employee): int;
 
     /**
      * 查询多条
-     * @param int $recordId
-     * @param int $employeeId
-     * @param int $status
      * @param array|string[] $columns
-     * @return array
      */
     public function getContactBatchAddImportByRecordIdEmployeeId(int $recordId, int $employeeId, int $status, array $columns = ['*']): array;
 }

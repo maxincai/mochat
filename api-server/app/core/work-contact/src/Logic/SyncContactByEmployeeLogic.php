@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -25,18 +24,18 @@ use MoChat\App\WorkContact\Logic\Tag\SyncTagByContactLogic;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 
 /**
- * 根据员工同步客户
+ * 根据员工同步客户.
  */
 class SyncContactByEmployeeLogic
 {
     /**
-     * @Inject()
+     * @Inject
      * @var CorpContract
      */
     private $corpService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WorkEmployeeContract
      */
     private $workEmployeeService;
@@ -55,7 +54,7 @@ class SyncContactByEmployeeLogic
     private $contactEmployeeTrackService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WorkContactEmployeeContract
      */
     private $workContactEmployeeService;
@@ -67,13 +66,13 @@ class SyncContactByEmployeeLogic
     private $logger;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WeWorkFactory
      */
     private $weWorkFactory;
 
     /**
-     * @Inject()
+     * @Inject
      * @var SyncTagByContactLogic
      */
     private $syncTagByContactLogic;
@@ -82,8 +81,6 @@ class SyncContactByEmployeeLogic
      * @param int|string $corpId 企业授权ID
      * @param int|string $employeeId 跟进员工wxid
      * @param string $contactWxExternalUserId 客户wxid
-     *
-     * @return array
      */
     public function handle($corpId, $employeeId, string $contactWxExternalUserId): array
     {
@@ -99,7 +96,7 @@ class SyncContactByEmployeeLogic
             $corp = $checkRes[0];
             $corpId = (int) $corp['id'];
             $employee = $checkRes[1];
-            $employeeId = (int)$employee['id'];
+            $employeeId = (int) $employee['id'];
             $employeeWxUserId = $employee['wxUserId'];
             [$contactId, $isNewContact, $followEmployee] = $this->getContact($corpId, $contactWxExternalUserId, $employeeWxUserId);
 
@@ -134,11 +131,10 @@ class SyncContactByEmployeeLogic
         }
 
         if (is_string($employeeId)) {
-            $employee = $this->workEmployeeService->getWorkEmployeeByWxUserIdCorpId($employeeId, (int)$corp['id'] , ['id', 'name', 'wx_user_id']);
+            $employee = $this->workEmployeeService->getWorkEmployeeByWxUserIdCorpId($employeeId, (int) $corp['id'], ['id', 'name', 'wx_user_id']);
         } else {
             $employee = $this->workEmployeeService->getWorkEmployeeById($employeeId, ['id', 'name', 'wx_user_id']);
         }
-
 
         if (empty($employee)) {
             return false;
@@ -148,11 +144,7 @@ class SyncContactByEmployeeLogic
     }
 
     /**
-     * 根据企业微信联系人id获取客户id
-     *
-     * @param int $corpId
-     * @param string $contactWxExternalUserId
-     * @param string $employeeWxUserId
+     * 根据企业微信联系人id获取客户id.
      *
      * @return array
      */
@@ -163,29 +155,27 @@ class SyncContactByEmployeeLogic
         $contact = $this->workContactService->getWorkContactByCorpIdWxExternalUserId($corpId, $contactWxExternalUserId, ['id']);
 
         if (empty($contact)) {
-            return [0, (int)$contact['id'], $followEmployee];
+            return [0, (int) $contact['id'], $followEmployee];
         }
 
         $wxContactRes = $this->weWorkFactory->getContactApp($corpId)->external_contact->get($contactWxExternalUserId);
 
         if ($wxContactRes['errcode'] !== 0) {
             $this->logger->error(sprintf('%s [%s] 请求数据：%s 响应结果：%s', '请求企业微信客户群详情错误', date('Y-m-d H:i:s'), $contactWxExternalUserId, json_encode($wxContactRes)));
-            return[0, 0, $followEmployee];
+            return [0, 0, $followEmployee];
         }
 
         $wxContact = $wxContactRes['external_contact'];
         $isNewContact = 1;
-        $contactId = (int)$this->createContact($corpId, $wxContact);
+        $contactId = (int) $this->createContact($corpId, $wxContact);
         $followEmployee = $this->getFollowEmployee($wxContact['follow_user'], $employeeWxUserId);
 
         return [$contactId, $isNewContact, $followEmployee];
     }
 
     /**
-     * 创建客户
+     * 创建客户.
      *
-     * @param int $corpId
-     * @param array $wxContact
      * @return int
      */
     private function createContact(int $corpId, array $wxContact)
@@ -194,7 +184,7 @@ class SyncContactByEmployeeLogic
             'corp_id' => $corpId,
             'wx_external_userid' => $wxContact['external_userid'],
             'name' => $wxContact['name'],
-            'avatar' => !empty($wxContact['avatar']) ? $wxContact['avatar'] : '',
+            'avatar' => ! empty($wxContact['avatar']) ? $wxContact['avatar'] : '',
             'type' => $wxContact['type'],
             'gender' => $wxContact['gender'],
             'unionid' => isset($wxContact['unionid']) ? $wxContact['unionid'] : '',
@@ -211,11 +201,6 @@ class SyncContactByEmployeeLogic
     }
 
     /**
-     *
-     *
-     * @param array $followUser
-     * @param string $employeeWxUserId
-     *
      * @return array|mixed
      */
     private function getFollowEmployee(array $followUser, string $employeeWxUserId)
@@ -230,12 +215,7 @@ class SyncContactByEmployeeLogic
     }
 
     /**
-     * 创建跟进员工中间表信息
-     *
-     * @param int $corpId
-     * @param int $contactId
-     * @param int $employeeId
-     * @param array $followEmployee
+     * 创建跟进员工中间表信息.
      */
     private function createContactEmployee(int $corpId, int $contactId, int $employeeId, string $employeeName, array $followEmployee)
     {
@@ -269,13 +249,7 @@ class SyncContactByEmployeeLogic
     }
 
     /**
-     * 创建客户轨迹
-     *
-     * @param int $corpId
-     * @param int $contactId
-     * @param int $employeeId
-     * @param string $employeeName
-     * @param int $addWay
+     * 创建客户轨迹.
      */
     private function createContactTrack(int $corpId, int $contactId, int $employeeId, string $employeeName, int $addWay)
     {

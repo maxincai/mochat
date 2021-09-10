@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Contract;
 
 interface ContactProcessContract
@@ -75,8 +74,7 @@ interface ContactProcessContract
     public function deleteContactProcesses(array $ids): int;
 
     /**
-     * 查询多条-根据企业ID
-     * @param int $corpId
+     * 查询多条-根据企业ID.
      * @param array|string[] $columns
      * @return mixed
      */

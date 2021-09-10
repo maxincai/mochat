@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Logic;
 
 use Hyperf\DbConnection\Db;
@@ -88,7 +87,7 @@ class AllotLogic
         $updateContact = []; ## 客户重新分配员工数据
 
         foreach ($allotArr as $item) {
-            $info = $this->contactBatchAddImportService->getContactBatchAddImportById($item['id'], ['employee_id','allot_num']);
+            $info = $this->contactBatchAddImportService->getContactBatchAddImportById($item['id'], ['employee_id', 'allot_num']);
             $allot[] = [
                 'import_id' => $item['id'],
                 'employee_id' => $employeeId,
@@ -96,12 +95,12 @@ class AllotLogic
                 'operate_id' => $user['id'],
                 'created_at' => date('Y-m-d H:i:s'),
             ];
-            $allotNum = $info['employeeId'] === $employeeId ? $info['allotNum'] : $info['allotNum']+1;
+            $allotNum = $info['employeeId'] === $employeeId ? $info['allotNum'] : $info['allotNum'] + 1;
             $updateContact[] = [
                 'id' => $item['id'],
                 'status' => 1,
                 'employee_id' => $employeeId,
-                'allot_num' => $allotNum,//DB::raw('allot_num+ 1'),
+                'allot_num' => $allotNum, //DB::raw('allot_num+ 1'),
             ];
         }
         ## $group['2']; ## 申请中拒绝操作

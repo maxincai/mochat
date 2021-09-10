@@ -12,24 +12,24 @@ namespace MoChat\App\WorkContact\Listener;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkContact\Event\AddContactEvent;
+use MoChat\App\WorkContact\Event\AddContactRawEvent;
 use MoChat\App\WorkContact\Logic\SyncContactByEmployeeLogic;
 use Psr\Container\ContainerInterface;
-use MoChat\App\WorkContact\Event\AddContactRawEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * 添加企业客户事件
+ * 添加企业客户事件.
  *
  * @Listener(priority=9999)
  */
 class AddContactRawListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var ContainerInterface
      */
     protected $container;
@@ -52,7 +52,7 @@ class AddContactRawListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            AddContactRawEvent::class
+            AddContactRawEvent::class,
         ];
     }
 
@@ -83,22 +83,16 @@ class AddContactRawListener implements ListenerInterface
         // 触发添加客户事件
         $state = isset($message['State']) ? $message['State'] : '';
         $welcomeCode = isset($message['WelcomeCode']) ? $message['WelcomeCode'] : '';
-        $this->triggerAddContactEvent($contactId, (int)$employee['id'], (string)$state, $isNewContact, $welcomeCode);
+        $this->triggerAddContactEvent($contactId, (int) $employee['id'], (string) $state, $isNewContact, $welcomeCode);
     }
 
     /**
-     * 触发添加客户事件
-     *
-     * @param int $contactId
-     * @param int $employeeId
-     * @param string $state
-     * @param int $isNewContact
-     * @param string $welcomeCode
+     * 触发添加客户事件.
      */
     private function triggerAddContactEvent(int $contactId, int $employeeId, string $state, int $isNewContact, string $welcomeCode)
     {
         $contact = $this->workContactService->getWorkContactById($contactId);
-        if (!empty($contact)) {
+        if (! empty($contact)) {
             $contact['employeeId'] = $employeeId;
             $contact['state'] = $state;
             $contact['isNew'] = $isNewContact;

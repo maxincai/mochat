@@ -8,17 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\OfficialAccount\Action\Dashboard;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\OfficialAccount\Contract\OfficialAccountContract;
 use MoChat\App\OfficialAccount\Contract\OfficialAccountSetContract;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
@@ -82,7 +81,7 @@ class Index extends AbstractAction
     {
         $user = user();
         // 判断用户绑定企业信息
-        if (!isset($user['corpIds']) || count($user['corpIds']) !== 1) {
+        if (! isset($user['corpIds']) || count($user['corpIds']) !== 1) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未选择登录企业，不可操作');
         }
         $param = $this->request->all();
@@ -91,10 +90,10 @@ class Index extends AbstractAction
             return $this->getOfficialAccount($user['corpIds'][0]);
         }
         // 模块查询
-        $set = $this->officialAccountSetService->getOfficialAccountSetByCorpIdType($user['corpIds'][0], (int)$param['type'], ['official_account_id']);
-        if (!empty($set)) {
+        $set = $this->officialAccountSetService->getOfficialAccountSetByCorpIdType($user['corpIds'][0], (int) $param['type'], ['official_account_id']);
+        if (! empty($set)) {
             $info = $this->officialAccountService->getOfficialAccountById($set['officialAccountId'], ['id', 'nickname', 'avatar']);
-            $info['avatar'] = !empty($info['avatar']) ? file_full_url($info['avatar']) : '';
+            $info['avatar'] = ! empty($info['avatar']) ? file_full_url($info['avatar']) : '';
             return $info;
         }
         // 模块查询 不存在 创建
@@ -104,7 +103,7 @@ class Index extends AbstractAction
                 return [];
             }
             $data = [
-                'type' => (int)$param['type'],
+                'type' => (int) $param['type'],
                 'official_account_id' => $officialAccount['id'],
                 'corp_id' => $user['corpIds'][0],
                 'tenant_id' => 0,

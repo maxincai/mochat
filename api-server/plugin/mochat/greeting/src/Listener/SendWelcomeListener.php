@@ -8,12 +8,11 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\Greeting\Listener;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\Medium\Contract\MediumContract;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkContact\Event\AddContactEvent;
@@ -22,14 +21,14 @@ use MoChat\Plugin\Greeting\Constants\RangeType;
 use MoChat\Plugin\Greeting\Contract\GreetingContract;
 
 /**
- * 添加企业客户事件
+ * 添加企业客户事件.
  *
  * @Listener
  */
 class SendWelcomeListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var WorkContactContract
      */
     protected $workContactService;
@@ -52,11 +51,10 @@ class SendWelcomeListener implements ListenerInterface
      */
     private $mediumService;
 
-
     public function listen(): array
     {
         return [
-            AddContactEvent::class
+            AddContactEvent::class,
         ];
     }
 
@@ -68,33 +66,32 @@ class SendWelcomeListener implements ListenerInterface
         $contact = $event->message;
 
         // 判断是否需要发送欢迎语
-        if (!$this->isNeedSendWelcome($contact)) {
+        if (! $this->isNeedSendWelcome($contact)) {
             return;
         }
 
         // 获取欢迎语
-        $welcomeContent = $this->getWelcome($contact['employeeId'], (int)$contact['corpId']);
+        $welcomeContent = $this->getWelcome($contact['employeeId'], (int) $contact['corpId']);
         if (empty($welcomeContent)) {
             return;
         }
 
         // 发送欢迎语
-        $this->workContactService->sendWelcome((int)$contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
+        $this->workContactService->sendWelcome((int) $contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
     }
 
     /**
-     * 判断是否需要发送欢迎语
+     * 判断是否需要发送欢迎语.
      *
-     * @param array $contact
      * @return bool
      */
     private function isNeedSendWelcome(array $contact)
     {
-        if (isset($contact['state']) && !empty($contact['state'])) {
+        if (isset($contact['state']) && ! empty($contact['state'])) {
             return false;
         }
 
-        if (!isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
+        if (! isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
             return false;
         }
 
@@ -102,7 +99,7 @@ class SendWelcomeListener implements ListenerInterface
     }
 
     /**
-     * 获取欢迎语
+     * 获取欢迎语.
      *
      * @param array $contact 客户
      *
@@ -131,7 +128,7 @@ class SendWelcomeListener implements ListenerInterface
             ];
             // 检索指定成员欢迎语
             $employees = empty($greeting['employees']) ? [] : json_decode($greeting['employees'], true);
-            if (!in_array($employeeId, $employees)) {
+            if (! in_array($employeeId, $employees)) {
                 continue;
             }
             $data = [
@@ -139,11 +136,11 @@ class SendWelcomeListener implements ListenerInterface
                 'mediumId' => $greeting['mediumId'],
             ];
         }
-        if (empty($data) && !empty($commonGreeting)) {
+        if (empty($data) && ! empty($commonGreeting)) {
             $data = $commonGreeting;
         }
         if (isset($data['mediumId'])) {
-            $data['medium'] = $this->getMedium((int)$data['mediumId']);
+            $data['medium'] = $this->getMedium((int) $data['mediumId']);
             unset($data['mediumId']);
         }
 //        $params       = ['contactWxExternalUserid' => $externalUserID, 'wxUserId' => $wxUserId, 'corpId' => (int) $corpId];

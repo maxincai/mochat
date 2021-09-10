@@ -8,16 +8,15 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkAgent\Action\Sidebar;
 
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\WorkAgent\Logic\AuthLogic;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
 use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
-use Hyperf\Di\Annotation\Inject;
 
 /**
  * 企业微信侧边栏授权跳转.
@@ -28,7 +27,7 @@ class Auth extends AbstractAction
     use ValidateSceneTrait;
 
     /**
-     * @Inject()
+     * @Inject
      * @var AuthLogic
      */
     private $authLogic;
@@ -40,16 +39,6 @@ class Auth extends AbstractAction
     {
         $this->validated($this->request->all());
         return $this->execute();
-    }
-
-    private function execute(): Psr7ResponseInterface
-    {
-        $target = (string) $this->request->input('target');
-        $code = (string) $this->request->input('code');
-        $agentId = (int) $this->request->input('agentId');
-
-        $redirectUri = $this->authLogic->handle($code, $agentId, $target);
-        return $this->response->redirect($redirectUri);
     }
 
     /**
@@ -75,5 +64,15 @@ class Auth extends AbstractAction
             'target.required' => '跳转地址不能为空',
             'agentId.required' => '应用Id不能为空',
         ];
+    }
+
+    private function execute(): Psr7ResponseInterface
+    {
+        $target = (string) $this->request->input('target');
+        $code = (string) $this->request->input('code');
+        $agentId = (int) $this->request->input('agentId');
+
+        $redirectUri = $this->authLogic->handle($code, $agentId, $target);
+        return $this->response->redirect($redirectUri);
     }
 }

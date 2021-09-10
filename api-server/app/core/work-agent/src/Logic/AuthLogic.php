@@ -20,9 +20,9 @@ use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
 use MoChat\Framework\WeWork\WeWork;
+use Psr\Log\LoggerInterface;
 use Qbhy\HyperfAuth\AuthManager;
 use Qbhy\SimpleJwt\JWTManager;
-use Psr\Log\LoggerInterface;
 
 class AuthLogic
 {
@@ -33,25 +33,25 @@ class AuthLogic
     private $weWorkClient;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WorkEmployeeContract
      */
     private $workEmployeeService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WorkAgentContract
      */
     private $workAgentService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var CorpContract
      */
     private $corpService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var AuthManager
      */
     private $authManager;
@@ -62,7 +62,7 @@ class AuthLogic
     private $logger;
 
     /**
-     * @Inject()
+     * @Inject
      * @var LoggerFactory
      */
     private $loggerFactory;
@@ -87,14 +87,13 @@ class AuthLogic
             }
 
             // 有code值 是授权回调
-            if (!empty($code)) {
+            if (! empty($code)) {
                 return urldecode($this->authCallback($corp, $agent, $code, $target));
             }
 
             // 跳转至授权
-            $redirectUri = Url::getApiBaseUrl() . '/sidebar/agent/auth?agentId='. $agentId .'&target='. $target;
+            $redirectUri = Url::getApiBaseUrl() . '/sidebar/agent/auth?agentId=' . $agentId . '&target=' . $target;
             return $this->getOAuthRedirectUrl($corp, $agent, $redirectUri);
-
         } catch (\Throwable $e) {
             $this->logger->error(sprintf('%s[%s] in %s', $e->getMessage(), $e->getLine(), $e->getFile()));
             $this->logger->error($e->getTraceAsString());
@@ -104,7 +103,7 @@ class AuthLogic
 
     private function getTarget($target): string
     {
-        if (false === strpos($target, 'http')) {
+        if (strpos($target, 'http') === false) {
             $target = Url::getSidebarBaseUrl() . $target;
         }
         return urlencode($target);
@@ -132,12 +131,12 @@ class AuthLogic
         $weWorkApp = $this->getWeWorkApp($corp, $agent);
         return $weWorkApp->oauth->redirect($redirectUri)->getTargetUrl();
     }
-    
+
     private function getWeWorkApp(array $corp, array $agent): Application
     {
         return $this->weWorkClient->app([
-            'corp_id'  => $corp['wxCorpid'],
-            'secret'   => $agent['wxSecret'],
+            'corp_id' => $corp['wxCorpid'],
+            'secret' => $agent['wxSecret'],
             'agent_id' => $agent['wxAgentId'],
         ]);
     }
@@ -164,8 +163,8 @@ class AuthLogic
         }
 
         // 员工信息
-        $employee = $this->workEmployeeService->getWorkEmployeeAuthByWxUserIdCorpId($wxData['userid'], (int)$corp['id']);
-        
+        $employee = $this->workEmployeeService->getWorkEmployeeAuthByWxUserIdCorpId($wxData['userid'], (int) $corp['id']);
+
         if (empty($employee)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '此员工暂未同步,请联系管理员!');
         }
@@ -175,7 +174,7 @@ class AuthLogic
         $jwt = $guard->getJwtManager();
 
         return [
-            'token'  => $guard->login($employee),
+            'token' => $guard->login($employee),
             'expire' => (int) $jwt->getTtl(),
         ];
     }

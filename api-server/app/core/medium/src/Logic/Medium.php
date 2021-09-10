@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Medium\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -24,22 +23,22 @@ class Medium
     use AppTrait;
 
     /**
-     * @Inject()
-     * @var StdoutLoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @Inject()
+     * @Inject
      * @var \League\Flysystem\Filesystem
      */
     protected $filesystem;
 
     /**
-     * @Inject()
+     * @Inject
      * @var Media
      */
     protected $media;
+
+    /**
+     * @Inject
+     * @var StdoutLoggerInterface
+     */
+    private $logger;
 
     public function getWxMediumId(array $ids, int $corpId): array
     {
@@ -67,7 +66,7 @@ class Medium
                 continue;
             }
 
-            if (!$this->filesystem->fileExists($path)) {
+            if (! $this->filesystem->fileExists($path)) {
                 continue;
             }
 
@@ -122,7 +121,6 @@ class Medium
      * 音频转amr.
      * @param string $filePath ...
      * @param bool $isOldUnlink 是否删除原文件
-     * @return string
      */
     protected function ffmpegToAmr(string $filePath, bool $isOldUnlink = true): string
     {

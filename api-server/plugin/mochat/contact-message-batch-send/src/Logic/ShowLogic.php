@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -30,8 +29,8 @@ class ShowLogic
      */
     public function handle(array $params, int $userId): array
     {
-        $batch = $this->contactMessageBatchSend->getContactMessageBatchSendById((int)$params['batchId']);
-        if (!$batch) {
+        $batch = $this->contactMessageBatchSend->getContactMessageBatchSendById((int) $params['batchId']);
+        if (! $batch) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未找到记录');
         }
         if ($batch['userId'] != $userId) {

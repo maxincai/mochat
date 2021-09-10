@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkEmployee\EventHandler;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -79,7 +78,7 @@ class EmployeeMoveHandler extends AbstractEventHandler
             $this->logger->error('EmployeeMoveHandler->process同步删除成员corp不能为空');
             return 'success';
         }
-        $employeeData = $this->workEmployeeService->getWorkEmployeeByCorpIdWxUserId((string)$corpData['id'], (string)$this->message['UserID'], ['id', 'mobile']);
+        $employeeData = $this->workEmployeeService->getWorkEmployeeByCorpIdWxUserId((string) $corpData['id'], (string) $this->message['UserID'], ['id', 'mobile']);
         if (empty($employeeData)) {
             $this->logger->error('EmployeeMoveHandler->process同步删除成员employee不能为空');
             return 'success';
@@ -110,14 +109,14 @@ class EmployeeMoveHandler extends AbstractEventHandler
             //删除成员
             $this->workEmployeeService->deleteWorkEmployee($employeeId);
             // 员工离职子账户禁用
-            foreach ($employeeData as $item){
-                if (!empty($item['mobile'])) {
+            foreach ($employeeData as $item) {
+                if (! empty($item['mobile'])) {
                     $this->userService = make(UserContract::class);
                     $this->userService->updateUserStatusByPhone($item['mobile'], 2);
                 }
             }
 
-            if (!empty($employeeDepartment)) {
+            if (! empty($employeeDepartment)) {
                 foreach ($employeeDepartment as $edk => $edv) {
                     $employeeDepartmentIds[] = $edv['id'];
                 }

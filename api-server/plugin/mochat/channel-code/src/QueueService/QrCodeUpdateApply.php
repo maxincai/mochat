@@ -56,8 +56,8 @@ class QrCodeUpdateApply
         ## 配置
         $config = [
             'skip_verify' => $skipVerify,
-            'state'       => $state,
-            'user'        => $wxUserId,
+            'state' => $state,
+            'user' => $wxUserId,
         ];
         if (empty($wxConfigId)) {
             //生成二维码上传到阿里云

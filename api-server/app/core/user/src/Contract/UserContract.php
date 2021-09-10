@@ -130,7 +130,6 @@ interface UserContract
 
     /**
      * 修改账户状态 - 根据手机号.
-     * @param string $phone
      * @param int $status 账户状态
      * @return int 修改条数
      */

@@ -8,13 +8,12 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Listener\Tag;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Corp\Logic\AppTrait;
 use MoChat\App\WorkContact\Contract\WorkContactTagContract;
@@ -26,13 +25,19 @@ use MoChat\Framework\Exception\CommonException;
 use Psr\Container\ContainerInterface;
 
 /**
- * 删除标签事件监听器
+ * 删除标签事件监听器.
  *
- * @Listener()
+ * @Listener
  */
 class DeleteTagRawListener implements ListenerInterface
 {
     use AppTrait;
+
+    /**
+     * @Inject
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * @Inject
@@ -46,16 +51,10 @@ class DeleteTagRawListener implements ListenerInterface
      */
     private $corp;
 
-    /**
-     * @Inject()
-     * @var ContainerInterface
-     */
-    protected $container;
-
     public function listen(): array
     {
         return [
-            DeleteTagRawEvent::class
+            DeleteTagRawEvent::class,
         ];
     }
 
@@ -106,21 +105,21 @@ class DeleteTagRawListener implements ListenerInterface
         $tagIds = array_column($tagInfo, 'id');
 
         //删除分组
-        $tagGroupRes = $tagGroup->deleteWorkContactTagGroup((int)$tagGroupInfo['id']);
-        if (!is_int($tagGroupRes)) {
+        $tagGroupRes = $tagGroup->deleteWorkContactTagGroup((int) $tagGroupInfo['id']);
+        if (! is_int($tagGroupRes)) {
             $this->logger->error('删除标签分组回调失败', $message);
             throw new CommonException(ErrorCode::SERVER_ERROR, '删除标签分组失败');
         }
 
         //删除分组下的标签
         $tagRes = $tag->deleteWorkContactTags($tagIds);
-        if (!is_int($tagRes)) {
+        if (! is_int($tagRes)) {
             $this->logger->error('删除标签分组回调失败', $message);
             throw new CommonException(ErrorCode::SERVER_ERROR, '删除标签失败');
         }
         //删除客户标签
         $contactTag = $contactTagPivotService->deleteWorkContactTagPivotsByTagId($tagIds);
-        if (!is_int($contactTag)) {
+        if (! is_int($contactTag)) {
             throw new CommonException(ErrorCode::SERVER_ERROR, '客户标签删除失败');
         }
     }
@@ -142,16 +141,16 @@ class DeleteTagRawListener implements ListenerInterface
         }
 
         //删除标签
-        $tagRes = $tag->deleteWorkContactTag((int)$tagInfo['id']);
+        $tagRes = $tag->deleteWorkContactTag((int) $tagInfo['id']);
 
-        if (!is_int($tagRes)) {
+        if (! is_int($tagRes)) {
             $this->logger->error('删除标签回调失败', $message);
             throw new CommonException(ErrorCode::SERVER_ERROR, '删除标签失败');
         }
 
         //删除客户标签
         $contactTag = $contactTagPivotService->deleteWorkContactTagPivotsByTagId([$tagInfo['id']]);
-        if (!is_int($contactTag)) {
+        if (! is_int($contactTag)) {
             throw new CommonException(ErrorCode::SERVER_ERROR, '客户标签删除失败');
         }
     }

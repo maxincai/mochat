@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -34,7 +33,7 @@ class IndexLogic
             ['user_id', '=', $userId],
         ];
 
-        if (isset($params['batchTitle']) && !empty($params['batchTitle'])) {
+        if (isset($params['batchTitle']) && ! empty($params['batchTitle'])) {
             $where[] = ['batch_title', 'like', '%' . $params['batchTitle'] . '%'];
         }
 
@@ -83,10 +82,9 @@ class IndexLogic
     protected function handleData($data): array
     {
         foreach ($data as $k => $v) {
-            if (!empty($v['content'])) {
-
+            if (! empty($v['content'])) {
                 foreach ($v['content'] as $key => $content) {
-                    if (!isset($content['msgType'])) {
+                    if (! isset($content['msgType'])) {
                         continue;
                     }
                     if ($content['msgType'] === 'image') {

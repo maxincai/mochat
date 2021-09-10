@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomMessageBatchSend\Logic;
 
 use Hyperf\Di\Annotation\Inject;
@@ -16,7 +15,6 @@ use MoChat\App\WorkAgent\QueueService\MessageRemind;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
-use MoChat\Plugin\ContactMessageBatchSend\Contract\ContactMessageBatchSendEmployeeContract;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendContract;
 use MoChat\Plugin\RoomMessageBatchSend\Contract\RoomMessageBatchSendEmployeeContract;
 
@@ -46,21 +44,21 @@ class RemindLogic
      */
     public function handle(array $params, int $userId): bool
     {
-        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int)$params['batchId']);
-        if (!$batch) {
+        $batch = $this->roomMessageBatchSend->getRoomMessageBatchSendById((int) $params['batchId']);
+        if (! $batch) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '未找到记录');
         }
         if ($batch['userId'] != $userId) {
             throw new CommonException(ErrorCode::ACCESS_DENIED, '无操作权限');
         }
         $sendTime = $batch['createdAt'];
-        if (!empty($params['batchEmployId'])) {
-            $employee = $this->workEmployee->getWorkEmployeeById((int)$params['batchEmployId'], ['wx_user_id']);
+        if (! empty($params['batchEmployId'])) {
+            $employee = $this->workEmployee->getWorkEmployeeById((int) $params['batchEmployId'], ['wx_user_id']);
             $this->sendMessage($sendTime, $batch['corpId'], $employee['wxUserId']);
             return true;
         }
-        $employees = $this->roomMessageBatchSendEmployee->getRoomMessageBatchSendEmployeesByBatchId((int)$params['batchId'], [], ['wx_user_id']);
-        foreach ($employees as $item){
+        $employees = $this->roomMessageBatchSendEmployee->getRoomMessageBatchSendEmployeesByBatchId((int) $params['batchId'], [], ['wx_user_id']);
+        foreach ($employees as $item) {
             $this->sendMessage($sendTime, $batch['corpId'], $item['wxUserId']);
         }
         return true;
@@ -77,6 +75,7 @@ class RemindLogic
             $corpId,
             $wxUserId,
             'text',
-            $text);
+            $text
+        );
     }
 }

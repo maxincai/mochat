@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Logic\Tag;
 
 use Hyperf\Di\Annotation\Inject;
@@ -18,7 +17,7 @@ use MoChat\App\WorkContact\Contract\WorkContactTagContract;
 use MoChat\App\WorkContact\Contract\WorkContactTagPivotContract;
 
 /**
- * 根据客户同步标签
+ * 根据客户同步标签.
  */
 class SyncTagByContactLogic
 {
@@ -37,18 +36,13 @@ class SyncTagByContactLogic
     private $contactEmployeeTrackService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var WorkContactTagPivotContract
      */
     private $workContactTagPivotService;
 
     /**
-     * 同步客户标签
-     *
-     * @param int $corpId
-     * @param int $contactId
-     * @param int $employeeId
-     * @param array $syncTags
+     * 同步客户标签.
      */
     public function handle(int $corpId, int $contactId, int $employeeId, array $syncTags)
     {
@@ -59,7 +53,7 @@ class SyncTagByContactLogic
         // 获取客户标签信息
         $tagList = $this->workContactTagService->getWorkContactTagsByCorpIdWxTagId([$corpId], array_column($syncTags, 'tag_id'), ['id', 'wx_contact_tag_id', 'name']);
         // 查询当前客户已存在的标签
-        $exitTagList = $this->workContactTagPivotService->getWorkContactTagPivotsByOtherId((int)$contactId, (int)$employeeId, ['contact_tag_id']);
+        $exitTagList = $this->workContactTagPivotService->getWorkContactTagPivotsByOtherId((int) $contactId, (int) $employeeId, ['contact_tag_id']);
         empty($exitTagList) || $tagList = array_filter($tagList, function ($tag) use ($exitTagList) {
             if (in_array($tag['id'], array_column($exitTagList, 'contactTagId'))) {
                 return false;
@@ -76,12 +70,7 @@ class SyncTagByContactLogic
     }
 
     /**
-     * 创建标签中间表
-     *
-     * @param int $contactId
-     * @param int $employeeId
-     * @param array $syncTags
-     * @param array $tagList
+     * 创建标签中间表.
      */
     private function createContactTagPivot(int $contactId, int $employeeId, array $syncTags, array $tagList)
     {
@@ -99,12 +88,7 @@ class SyncTagByContactLogic
     }
 
     /**
-     * 创建客户轨迹
-     *
-     * @param int $corpId
-     * @param int $contactId
-     * @param int $employeeId
-     * @param array $tagList
+     * 创建客户轨迹.
      */
     private function createContactTagTrack(int $corpId, int $contactId, int $employeeId, array $tagList)
     {

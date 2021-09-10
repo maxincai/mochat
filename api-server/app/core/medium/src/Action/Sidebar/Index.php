@@ -8,11 +8,13 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Medium\Action\Sidebar;
 
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\Medium\Action\Dashboard\Traits\RequestTrait;
 use MoChat\App\Medium\Constants\IsSync;
 use MoChat\App\Medium\Constants\Type;
@@ -20,9 +22,6 @@ use MoChat\App\Medium\Contract\MediumContract;
 use MoChat\App\Medium\Contract\MediumGroupContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * 查询 - 列表.

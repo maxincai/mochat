@@ -52,13 +52,13 @@ class RemindLogic
             throw new CommonException(ErrorCode::ACCESS_DENIED, '无操作权限');
         }
         $sendTime = $batch['createdAt'];
-        if (!empty($params['batchEmployId'])) {
-            $employee = $this->workEmployee->getWorkEmployeeById((int)$params['batchEmployId'], ['wx_user_id']);
+        if (! empty($params['batchEmployId'])) {
+            $employee = $this->workEmployee->getWorkEmployeeById((int) $params['batchEmployId'], ['wx_user_id']);
             $this->sendMessage($sendTime, $batch['corpId'], $employee['wxUserId']);
             return true;
         }
-        $employees = $this->contactMessageBatchSendEmployee->getContactMessageBatchSendEmployeesByBatchId((int)$params['batchId'], [], ['wx_user_id']);
-        foreach ($employees as $item){
+        $employees = $this->contactMessageBatchSendEmployee->getContactMessageBatchSendEmployeesByBatchId((int) $params['batchId'], [], ['wx_user_id']);
+        foreach ($employees as $item) {
             $this->sendMessage($sendTime, $batch['corpId'], $item['wxUserId']);
         }
         return true;
@@ -75,6 +75,7 @@ class RemindLogic
             $corpId,
             $wxUserId,
             'text',
-            $text);
+            $text
+        );
     }
 }

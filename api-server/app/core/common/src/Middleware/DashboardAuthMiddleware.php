@@ -35,7 +35,7 @@ class DashboardAuthMiddleware extends AuthMiddleware
 
     public function __construct(ContainerInterface $container, ConfigInterface $config)
     {
-        $this->auth            = $container->get(AuthManager::class); // 父auth莫名无法注入成功
+        $this->auth = $container->get(AuthManager::class); // 父auth莫名无法注入成功
         $this->authWhiteRoutes = $config->get('framework.auth_white_routes', []);
     }
 

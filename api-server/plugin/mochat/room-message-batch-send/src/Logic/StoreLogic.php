@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomMessageBatchSend\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -41,7 +40,7 @@ class StoreLogic
     private $logger;
 
     /**
-     * @Inject()
+     * @Inject
      * @var RoomMessageBatchSendQueue
      */
     private $roomMessageBatchSendQueue;
@@ -49,7 +48,7 @@ class StoreLogic
     public function handle(array $params, array $user): bool
     {
         $corpId = $user['corpIds'][0];
-        $employeeIds = (array)$params['employeeIds'];
+        $employeeIds = (array) $params['employeeIds'];
 
         // 获取用户成员
         $employees = $this->workEmployee->getWorkEmployeesByIdCorpIdStatus($corpId, $employeeIds, 1, ['id', 'wx_user_id']);
@@ -60,7 +59,7 @@ class StoreLogic
         // 入库
         Db::beginTransaction();
         try {
-            $employeeIds = !empty($params['employeeIds']) ? json_encode($params['employeeIds'], JSON_UNESCAPED_UNICODE): '[]';
+            $employeeIds = ! empty($params['employeeIds']) ? json_encode($params['employeeIds'], JSON_UNESCAPED_UNICODE) : '[]';
             $batchId = $this->roomMessageBatchSend->createRoomMessageBatchSend([
                 'corp_id' => $corpId,
                 'user_id' => $user['id'],
@@ -74,7 +73,7 @@ class StoreLogic
             ]);
 
             $delay = 0;
-            if ((int)$params['sendWay'] === 2) {
+            if ((int) $params['sendWay'] === 2) {
                 $delay = strtotime($params['definiteTime']) - time();
                 $delay = $delay < 0 ? 0 : $delay;
             }
@@ -87,7 +86,7 @@ class StoreLogic
             $this->logger->error($e->getTraceAsString());
             throw new CommonException(ErrorCode::SERVER_ERROR, '客户群消息群发创建失败');
         }
-        
+
         return true;
     }
 }

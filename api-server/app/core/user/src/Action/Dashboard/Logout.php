@@ -12,11 +12,11 @@ namespace MoChat\App\User\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\RequestMapping;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\Utils\ApplicationContext;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
 use Qbhy\HyperfAuth\AuthManager;
@@ -48,7 +48,7 @@ class Logout extends AbstractAction
     {
         // 清除缓存（用户绑定信息）
         $container = ApplicationContext::getContainer();
-        $redis     = $container->get(\Hyperf\Redis\Redis::class);
+        $redis = $container->get(\Hyperf\Redis\Redis::class);
         $redis->del('mc:user.' . user()['id']);
 
         // 退出登录

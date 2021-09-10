@@ -91,7 +91,7 @@ class ContactBatchAddConfigService extends AbstractService implements ContactBat
     public function updateContactBatchAddConfigByCorpId(int $corpId, array $values = []): bool
     {
         $attributes['corp_id'] = $corpId;
-        $model                 = $this->model::query();
+        $model = $this->model::query();
         if (! $model->where($attributes)->exists()) {
             $values['created_at'] = date('Y-m-d H:i:s'); ## 创建加入创建时间
             return $model->insert(array_merge($attributes, $values));

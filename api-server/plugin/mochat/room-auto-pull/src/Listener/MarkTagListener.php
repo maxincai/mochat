@@ -8,26 +8,25 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomAutoPull\Listener;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\WorkContact\Contract\WorkContactTagContract;
 use MoChat\App\WorkContact\Event\AddContactEvent;
 use MoChat\Plugin\RoomAutoPull\Contract\WorkRoomAutoPullContract;
 use Psr\Container\ContainerInterface;
 
 /**
- * 新客户打标签监听
+ * 新客户打标签监听.
  *
  * @Listener
  */
 class MarkTagListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var ContainerInterface
      */
     protected $container;
@@ -45,7 +44,7 @@ class MarkTagListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            AddContactEvent::class
+            AddContactEvent::class,
         ];
     }
 
@@ -59,7 +58,7 @@ class MarkTagListener implements ListenerInterface
         $this->workContactTagService = $this->container->get(WorkContactTagContract::class);
 
         // 判断是否需要打标签
-        if (!$this->isNeedMarkTag($contact)) {
+        if (! $this->isNeedMarkTag($contact)) {
             return;
         }
 
@@ -70,18 +69,17 @@ class MarkTagListener implements ListenerInterface
         }
 
         // 打标签
-        $this->workContactTagService->markTags((int)$contact['corpId'], $contact, $tags);
+        $this->workContactTagService->markTags((int) $contact['corpId'], $contact, $tags);
     }
 
     /**
-     * 判断是否需要打标签
+     * 判断是否需要打标签.
      *
-     * @param array $contact
      * @return bool
      */
     private function isNeedMarkTag(array $contact)
     {
-        if (!isset($contact['state']) || empty($contact['state'])) {
+        if (! isset($contact['state']) || empty($contact['state'])) {
             return false;
         }
 
@@ -94,7 +92,7 @@ class MarkTagListener implements ListenerInterface
     }
 
     /**
-     * 获取来源名称
+     * 获取来源名称.
      *
      * @return string
      */
@@ -104,7 +102,7 @@ class MarkTagListener implements ListenerInterface
     }
 
     /**
-     * 获取打标签规则
+     * 获取打标签规则.
      *
      * @param array $contact 客户
      *
@@ -113,7 +111,7 @@ class MarkTagListener implements ListenerInterface
     private function getMarkTagRule(array $contact): array
     {
         $stateArr = explode('-', $contact['state']);
-        $workRoomAutoPullId = (int)$stateArr[1];
+        $workRoomAutoPullId = (int) $stateArr[1];
 
         $data = [];
 

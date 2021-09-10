@@ -8,14 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkRoom\Action\Sidebar;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\WorkRoom\Contract\WorkRoomContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
@@ -25,9 +27,6 @@ use MoChat\Plugin\RoomCalendar\Contract\RoomCalendarContract;
 use MoChat\Plugin\RoomQuality\Contract\RoomQualityContract;
 use MoChat\Plugin\RoomSop\Contract\RoomSopContract;
 use Psr\Container\ContainerInterface;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * 企业微信-侧边栏-群管理.
@@ -87,13 +86,13 @@ class RoomManage extends AbstractAction
      */
     public function handle()
     {
-        $params['corpId'] = (int)user()['corpId'];  //企业 id
+        $params['corpId'] = (int) user()['corpId'];  //企业 id
         $params['roomId'] = $this->request->input('roomId');       //群聊 id
         // 验证接受参数
         $this->validated($params);
         // 群sop
         $room = $this->workRoomService->getWorkRoomByCorpIdWxChatId($params['corpId'], $params['roomId'], ['id']);
-        
+
         if (empty($room)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '群不存在');
         }

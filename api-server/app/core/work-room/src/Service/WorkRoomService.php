@@ -238,7 +238,7 @@ class WorkRoomService extends AbstractService implements WorkRoomContract
     {
         $res = $this->model::query()->whereIn('corp_id', $corpId);
         if (! empty($params)) {
-            ! isset($params['name']) || $res          = $res->where('name', 'like', "%{$params['name']}%");
+            ! isset($params['name']) || $res = $res->where('name', 'like', "%{$params['name']}%");
             ! isset($params['room_group_id']) || $res = $res->where('room_group_id', $params['room_group_id']);
         }
         $res = $res->get($columns);

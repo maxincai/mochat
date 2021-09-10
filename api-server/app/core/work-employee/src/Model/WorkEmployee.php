@@ -76,7 +76,6 @@ class WorkEmployee extends AbstractModel implements Authenticatable
 
     public static function retrieveById($key): ?Authenticatable
     {
-        $model = self::query()->find($key);
-        return $model;
+        return self::query()->find($key);
     }
 }

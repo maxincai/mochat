@@ -14,12 +14,12 @@ use Hyperf\Command\Annotation\Command;
 use Hyperf\Command\Command as HyperfCommand;
 
 /**
- * @Command()
+ * @Command
  */
 class VersionCommand extends HyperfCommand
 {
     /**
-     * MoChat 版本号
+     * MoChat 版本号.
      *
      * @var string
      */
@@ -33,7 +33,7 @@ class VersionCommand extends HyperfCommand
     public function handle()
     {
         $this->info(sprintf("MoChat Version: %s\n", self::VERSION));
-        $this->info(sprintf("MoChat Github: %s", 'https://github.com/mochat-cloud/mochat'));
+        $this->info(sprintf('MoChat Github: %s', 'https://github.com/mochat-cloud/mochat'));
     }
 
     protected function configure()

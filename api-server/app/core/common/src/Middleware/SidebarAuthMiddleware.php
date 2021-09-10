@@ -8,16 +8,15 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\Common\Middleware;
 
+use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Qbhy\HyperfAuth\Authenticatable;
 use Qbhy\HyperfAuth\AuthMiddleware;
 use Qbhy\HyperfAuth\Exception\UnauthorizedException;
-use Hyperf\Utils\Context;
 
 class SidebarAuthMiddleware extends AuthMiddleware
 {

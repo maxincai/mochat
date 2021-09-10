@@ -8,12 +8,11 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ChannelCode\Listener;
 
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\Medium\Contract\MediumContract;
 use MoChat\App\WorkContact\Contract\WorkContactContract;
 use MoChat\App\WorkContact\Event\AddContactEvent;
@@ -22,14 +21,14 @@ use MoChat\Plugin\ChannelCode\Constants\WelcomeType;
 use MoChat\Plugin\ChannelCode\Contract\ChannelCodeContract;
 
 /**
- * 发送欢迎语监听
+ * 发送欢迎语监听.
  *
  * @Listener
  */
 class SendWelcomeListener implements ListenerInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var WorkContactContract
      */
     protected $workContactService;
@@ -47,11 +46,10 @@ class SendWelcomeListener implements ListenerInterface
      */
     private $mediumService;
 
-
     public function listen(): array
     {
         return [
-            AddContactEvent::class
+            AddContactEvent::class,
         ];
     }
 
@@ -63,7 +61,7 @@ class SendWelcomeListener implements ListenerInterface
         $contact = $event->message;
 
         // 判断是否需要发送欢迎语
-        if (!$this->isNeedSendWelcome($contact)) {
+        if (! $this->isNeedSendWelcome($contact)) {
             return;
         }
 
@@ -74,22 +72,21 @@ class SendWelcomeListener implements ListenerInterface
         }
 
         // 发送欢迎语
-        $this->workContactService->sendWelcome((int)$contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
+        $this->workContactService->sendWelcome((int) $contact['corpId'], $contact, $contact['welcomeCode'], $welcomeContent);
     }
 
     /**
-     * 判断是否需要发送欢迎语
+     * 判断是否需要发送欢迎语.
      *
-     * @param array $contact
      * @return bool
      */
     private function isNeedSendWelcome(array $contact)
     {
-        if (!isset($contact['state']) || empty($contact['state'])) {
+        if (! isset($contact['state']) || empty($contact['state'])) {
             return false;
         }
 
-        if (!isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
+        if (! isset($contact['welcomeCode']) || empty($contact['welcomeCode'])) {
             return false;
         }
 
@@ -102,7 +99,7 @@ class SendWelcomeListener implements ListenerInterface
     }
 
     /**
-     * 获取来源名称
+     * 获取来源名称.
      *
      * @return string
      */
@@ -112,7 +109,7 @@ class SendWelcomeListener implements ListenerInterface
     }
 
     /**
-     * 获取欢迎语
+     * 获取欢迎语.
      *
      * @param array $contact 客户
      *
@@ -121,7 +118,7 @@ class SendWelcomeListener implements ListenerInterface
     private function getWelcome(array $contact): array
     {
         $stateArr = explode('-', $contact['state']);
-        $channelCodeId = (int)$stateArr[1];
+        $channelCodeId = (int) $stateArr[1];
 
         $data = [];
         $channelCode = $this->channelCodeService->getChannelCodeById($channelCodeId, ['id', 'welcome_message']);
@@ -130,14 +127,14 @@ class SendWelcomeListener implements ListenerInterface
         }
 
         // 欢迎语
-        if (!empty($channelCode['welcomeMessage'])) {
+        if (! empty($channelCode['welcomeMessage'])) {
             $welcomeMessage = json_decode($channelCode['welcomeMessage'], true);
-            if ($welcomeMessage['scanCodePush'] == ChannelCodeStatus::OPEN && !empty($welcomeMessage['messageDetail'])) {
+            if ($welcomeMessage['scanCodePush'] == ChannelCodeStatus::OPEN && ! empty($welcomeMessage['messageDetail'])) {
                 $data['content'] = $this->handleMessageDetail($welcomeMessage['messageDetail']);
             }
         }
         if (isset($data['content']['mediumId'])) {
-            $data['content']['medium'] = $this->getMedium((int)$data['content']['mediumId']);
+            $data['content']['medium'] = $this->getMedium((int) $data['content']['mediumId']);
             unset($data['content']['mediumId']);
         }
 
@@ -154,7 +151,7 @@ class SendWelcomeListener implements ListenerInterface
         $messageDetail = array_column($messageDetail, null, 'type');
         // 特殊欢迎语
         if (isset($messageDetail[WelcomeType::SPECIAL_PERIOD])
-            && !empty($messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'])
+            && ! empty($messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'])
             && $messageDetail[WelcomeType::SPECIAL_PERIOD]['status'] == ChannelCodeStatus::OPEN
         ) {
             $detail = $messageDetail[WelcomeType::SPECIAL_PERIOD]['detail'];
@@ -176,7 +173,7 @@ class SendWelcomeListener implements ListenerInterface
                             $cycleCommon = $v;
                         }
                     }
-                    if (!empty($cycleCommon)) {
+                    if (! empty($cycleCommon)) {
                         empty($cycleCommon['welcomeContent']) || $data['text'] = $cycleCommon['welcomeContent'];
                         empty($cycleCommon['mediumId']) || $data['mediumId'] = $cycleCommon['mediumId'];
                         return $data;
@@ -187,13 +184,13 @@ class SendWelcomeListener implements ListenerInterface
 
         // 周期欢迎语
         if (isset($messageDetail[WelcomeType::PERIODIC])
-            && !empty($messageDetail[WelcomeType::PERIODIC]['detail'])
+            && ! empty($messageDetail[WelcomeType::PERIODIC]['detail'])
             && $messageDetail[WelcomeType::PERIODIC]['status'] == ChannelCodeStatus::OPEN
         ) {
             $detail = $messageDetail[WelcomeType::PERIODIC]['detail'];
             $currentWeek = date('w', time());
             foreach ($detail as $val) {
-                if (empty($val['timeSlot']) || !in_array($currentWeek, $val['chooseCycle'])) {
+                if (empty($val['timeSlot']) || ! in_array($currentWeek, $val['chooseCycle'])) {
                     continue;
                 }
                 // 00:00 - 00:00 欢迎语
@@ -208,7 +205,7 @@ class SendWelcomeListener implements ListenerInterface
                         $specialCommon = $v;
                     }
                 }
-                if (!empty($specialCommon)) {
+                if (! empty($specialCommon)) {
                     empty($specialCommon['welcomeContent']) || $data['text'] = $specialCommon['welcomeContent'];
                     empty($specialCommon['mediumId']) || $data['mediumId'] = $specialCommon['mediumId'];
                     return $data;

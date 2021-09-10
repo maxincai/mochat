@@ -93,11 +93,11 @@ class RoomMessageBatchSendEmployeeService extends AbstractService implements Roo
      */
     public function getRoomMessageBatchSendEmployeesBySearch(array $params): array
     {
-        $batchId     = $params['batchId'];
+        $batchId = $params['batchId'];
         $employeeIds = $params['employeeIds'] ?? null;
-        $sendStatus  = $params['sendStatus'] ?? null;
-        $page        = (int) $params['page'];
-        $perPage     = (int) $params['perPage'];
+        $sendStatus = $params['sendStatus'] ?? null;
+        $page = (int) $params['page'];
+        $perPage = (int) $params['perPage'];
 
         $data = $this->model::from($this->model::query()->getModel()->getTable() . ' as a')
             ->join(WorkEmployee::query()->getModel()->getTable() . ' as e', 'a.employee_id', 'e.id')
@@ -177,9 +177,7 @@ class RoomMessageBatchSendEmployeeService extends AbstractService implements Roo
     }
 
     /**
-     * 查询最近一周的群发消息
-     *
-     * @return array
+     * 查询最近一周的群发消息.
      */
     public function getContactMessageBatchSendEmployeeIdsByLastWeek(): array
     {

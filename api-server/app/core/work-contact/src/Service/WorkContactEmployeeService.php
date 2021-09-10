@@ -482,7 +482,7 @@ class WorkContactEmployeeService extends AbstractService implements WorkContactE
             }
         }
 
-        $res         = $model->paginate($perPage, $columns, 'page', $page);
+        $res = $model->paginate($perPage, $columns, 'page', $page);
         $res || $res = collect([]);
 
         if (empty($res)) {
@@ -533,12 +533,12 @@ class WorkContactEmployeeService extends AbstractService implements WorkContactE
             $employeeTemp = $this->countWorkContactEmployeesByEmployee([$employee->id]);
             if (! count($employeeTemp)) {
                 $result[] = [
-                    'name'  => $employee->name,
+                    'name' => $employee->name,
                     'total' => 0,
                 ];
             } else {
                 $result[] = [
-                    'name'  => $employee->name,
+                    'name' => $employee->name,
                     'total' => $this->countWorkContactEmployeesByEmployee([$employee->id])[0]->total,
                 ];
             }
@@ -776,22 +776,19 @@ class WorkContactEmployeeService extends AbstractService implements WorkContactE
 
     /**
      * 查询多条
-     * @param int $employeeId
-     * @param array $filterParams
-     * @return array
      */
-    public function getWorkContactsByEmployeeIdFilterParams(int $employeeId, array $filterParams):array
+    public function getWorkContactsByEmployeeIdFilterParams(int $employeeId, array $filterParams): array
     {
-        $gender          = $filterParams['gender'] ?? null;
-        $rooms           = $filterParams['rooms'] ?? [];
-        $addTimeStart    = $filterParams['addTimeStart'] ?? null;
-        $addTimeEnd      = $filterParams['addTimeEnd'] ?? null;
-        $tags            = $filterParams['tags'] ?? [];
+        $gender = $filterParams['gender'] ?? null;
+        $rooms = $filterParams['rooms'] ?? [];
+        $addTimeStart = $filterParams['addTimeStart'] ?? null;
+        $addTimeEnd = $filterParams['addTimeEnd'] ?? null;
+        $tags = $filterParams['tags'] ?? [];
         $excludeContacts = $filterParams['excludeContacts'] ?? [];
         $query = $this->model::from($this->model::query()->getModel()->getTable() . ' as work_contact_employee')
             ->join(WorkContact::query()->getModel()->getTable() . ' as work_contact', 'work_contact_employee.contact_id', 'work_contact.id');
 
-        if (!empty($tags) || !empty($excludeContacts)) {
+        if (! empty($tags) || ! empty($excludeContacts)) {
             $query = $query->join(WorkContactTagPivot::query()->getModel()->getTable() . ' as work_contact_tag_pivot', 'work_contact_employee.contact_id', 'work_contact_tag_pivot.contact_id');
         }
 

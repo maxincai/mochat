@@ -310,9 +310,6 @@ interface WorkContactEmployeeContract
 
     /**
      * 查询多条
-     * @param int $employeeId
-     * @param array $filterParams
-     * @return array
      */
-    public function getWorkContactsByEmployeeIdFilterParams(int $employeeId, array $filterParams):array;
+    public function getWorkContactsByEmployeeIdFilterParams(int $employeeId, array $filterParams): array;
 }

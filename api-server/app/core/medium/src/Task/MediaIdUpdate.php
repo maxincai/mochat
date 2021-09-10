@@ -22,7 +22,7 @@ use MoChat\App\Medium\Queue\MediaIdUpdateQueue;
 class MediaIdUpdate
 {
     /**
-     * @Inject()
+     * @Inject
      * @var CorpContract
      */
     private $corpService;
@@ -34,7 +34,7 @@ class MediaIdUpdate
     private $mediaService;
 
     /**
-     * @Inject()
+     * @Inject
      * @var MediaIdUpdateQueue
      */
     private $mediaIdUpdateQueue;

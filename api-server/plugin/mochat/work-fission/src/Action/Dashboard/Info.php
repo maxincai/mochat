@@ -8,17 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\WorkFission\Action\Dashboard;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Laminas\Stdlib\RequestInterface;
+use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
@@ -96,8 +95,8 @@ class Info extends AbstractAction
      *     @Middleware(DashboardAuthMiddleware::class),
      *     @Middleware(PermissionMiddleware::class)
      * })
-     * @return array 返回数组
      * @throws \JsonException
+     * @return array 返回数组
      */
     public function handle(): array
     {
@@ -141,11 +140,11 @@ class Info extends AbstractAction
     private function handleDate($id): array
     {
         $res = [];
-        $fission = $this->workFissionService->getWorkFissionById((int)$id);
-        $poster = $this->workFissionPosterService->getWorkFissionPosterByFissionId((int)$id);
-        $welcome = $this->workFissionWelcomeService->getWorkFissionWelcomeByFissionId((int)$id);
-        $push = $this->workFissionPushService->getWorkFissionPushByFissionId((int)$id);
-        $invite = $this->workFissionInviteService->getWorkFissionInviteByFissionId((int)$id);
+        $fission = $this->workFissionService->getWorkFissionById((int) $id);
+        $poster = $this->workFissionPosterService->getWorkFissionPosterByFissionId((int) $id);
+        $welcome = $this->workFissionWelcomeService->getWorkFissionWelcomeByFissionId((int) $id);
+        $push = $this->workFissionPushService->getWorkFissionPushByFissionId((int) $id);
+        $invite = $this->workFissionInviteService->getWorkFissionInviteByFissionId((int) $id);
         $res['fission'] = [
             'id' => $fission['id'],
             'active_name' => $fission['activeName'],
@@ -188,8 +187,8 @@ class Info extends AbstractAction
         ];
         $msgComplex = '';
         if (! empty($push['msgComplex'])) {
-            $msgComplex          = json_decode($push['msgComplex'], true, 512, JSON_THROW_ON_ERROR);
-            if (!empty($msgComplex)) {
+            $msgComplex = json_decode($push['msgComplex'], true, 512, JSON_THROW_ON_ERROR);
+            if (! empty($msgComplex)) {
                 $msgComplex['image'] = file_full_url($msgComplex['image']);
             }
         }

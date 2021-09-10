@@ -37,9 +37,9 @@ use MoChat\Framework\Model\AbstractModel;
  * @property \Carbon\Carbon $updatedAt
  * @property string $deletedAt
  * @property ContactMessageBatchSendEmployee[]|\Hyperf\Database\Model\Collection $employees
- * @property  $content
- * @property  $filter_params
- * @property  $filter_params_detail
+ * @property $content
+ * @property $filter_params
+ * @property $filter_params_detail
  * @property ContactMessageBatchSendResult[]|\Hyperf\Database\Model\Collection $results
  */
 class ContactMessageBatchSend extends AbstractModel

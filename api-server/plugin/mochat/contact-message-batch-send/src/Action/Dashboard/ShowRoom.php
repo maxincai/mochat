@@ -8,14 +8,13 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactMessageBatchSend\Action\Dashboard;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\RequestMapping;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
+use Hyperf\HttpServer\Annotation\RequestMapping;
 use MoChat\App\Common\Middleware\DashboardAuthMiddleware;
 use MoChat\App\Rbac\Middleware\PermissionMiddleware;
 use MoChat\App\WorkContact\Contract\WorkContactRoomContract;
@@ -68,15 +67,15 @@ class ShowRoom extends AbstractAction
     {
         ## 参数验证
         $this->validated($this->request->all());
-        $workRoomId = (int)$this->request->input('workRoomId');
+        $workRoomId = (int) $this->request->input('workRoomId');
         $room = $this->workRoomContract->getWorkRoomById($workRoomId, ['name', 'owner_id']);
         $owner = $this->workEmployeeContract->getWorkEmployeeById($room['ownerId'], ['name', 'avatar']);
         $room['ownerName'] = $owner['name'];
         $room['ownerAvatar'] = empty($owner['avatar']) ? '' : file_full_url($owner['avatar']);
         $room['total'] = $this->workContactRoomContract->countWorkContactRoomByRoomId($workRoomId);
         $room['totalContact'] = $this->workContactRoomContract->countWorkContactRoomByRoomId($workRoomId, 0, 0, 1);
-        $room['todayInsert'] = $this->workContactRoomContract->countAddWorkContactRoomsByRoomIdTime([$workRoomId], date("Y-m-d"), date("Y-m-d", strtotime("+1 day")));
-        $room['todayLoss'] = $this->workContactRoomContract->countQuitWorkContactRoomsByRoomIdTime([$workRoomId], date("Y-m-d"), date("Y-m-d", strtotime("+1 day")));
+        $room['todayInsert'] = $this->workContactRoomContract->countAddWorkContactRoomsByRoomIdTime([$workRoomId], date('Y-m-d'), date('Y-m-d', strtotime('+1 day')));
+        $room['todayLoss'] = $this->workContactRoomContract->countQuitWorkContactRoomsByRoomIdTime([$workRoomId], date('Y-m-d'), date('Y-m-d', strtotime('+1 day')));
         return $room;
     }
 

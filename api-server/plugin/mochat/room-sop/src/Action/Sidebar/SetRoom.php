@@ -8,15 +8,14 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomSop\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
@@ -29,7 +28,7 @@ use MoChat\Plugin\RoomSop\Logic\SetRoomLogic;
 class SetRoom extends AbstractAction
 {
     /**
-     * @Inject()
+     * @Inject
      * @var SetRoomLogic
      */
     protected $setRoomLogic;
@@ -47,7 +46,7 @@ class SetRoom extends AbstractAction
         $params['employees'] = $this->request->input('rooms'); //成员id json
 
         $user = user();
-        $params['corpId'] = (int)$user['corpId'];
+        $params['corpId'] = (int) $user['corpId'];
 
         $res = $this->setRoomLogic->handle($params);
         if ($res) {

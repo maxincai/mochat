@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Logic;
 
 use Hyperf\DbConnection\Db;
@@ -16,7 +15,6 @@ use Hyperf\Di\Annotation\Inject;
 use MoChat\App\WorkEmployee\Contract\WorkEmployeeContract;
 use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddAllotContract;
 use MoChat\Plugin\ContactBatchAdd\Contract\ContactBatchAddImportContract;
-use function Composer\Autoload\includeFile;
 
 /**
  * 导入客户-统计数据.
@@ -67,9 +65,9 @@ class DataStatisticLogic
         ], ['employee_id', 'status'], [
             'employee_id', 'status', Db::raw('count(1) as num'),
         ]);
-        if (!empty($params['startTime'])) {
+        if (! empty($params['startTime'])) {
             $data = $this->contactBatchAddImportService->getContactBatchAddImportOptionWhereGroup([
-                ['employee_id', 'in', $employeeIds],['created_at', '>',$params['startTime']], ['created_at', '<', $params['endTime']],
+                ['employee_id', 'in', $employeeIds], ['created_at', '>', $params['startTime']], ['created_at', '<', $params['endTime']],
             ], ['employee_id', 'status'], [
                 'employee_id', 'status', Db::raw('count(1) as num'),
             ]);

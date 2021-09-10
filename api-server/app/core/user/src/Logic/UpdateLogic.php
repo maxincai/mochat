@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\User\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -59,13 +58,13 @@ class UpdateLogic
     public function handle(array $params, array $user): array
     {
         ## 验证userId的有效性
-        $userInfo = $this->userService->getUserById((int)$params['userId'], ['id']);
+        $userInfo = $this->userService->getUserById((int) $params['userId'], ['id']);
         if (empty($userInfo)) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '当前账户不存在，不可操作');
         }
         ## 判断手机号是否重复
         $phoneUser = $this->userService->getUsersByPhone([$params['phone']], ['id']);
-        if (!empty($phoneUser) && (count($phoneUser) >= 2 || $phoneUser[0]['id'] != $params['userId'])) {
+        if (! empty($phoneUser) && (count($phoneUser) >= 2 || $phoneUser[0]['id'] != $params['userId'])) {
             throw new CommonException(ErrorCode::INVALID_PARAMS, '手机号已存在，不可重复创建');
         }
         ## 创建入表数据
@@ -85,13 +84,13 @@ class UpdateLogic
     private function createSalData(array $params, array $user): array
     {
         $data = [];
-        $userId = (int)$params['userId'];
+        $userId = (int) $params['userId'];
         ## 角色信息
         $oldRoleInfo = $this->findOldRoleInfo($userId);
         if (isset($oldRoleInfo['id'])) {
             if ($oldRoleInfo['id'] != $params['roleId']) {
                 $data['deleteRole'] = [
-                    'roleId' => (int)$oldRoleInfo['id'],
+                    'roleId' => (int) $oldRoleInfo['id'],
                 ];
                 empty($params['roleId']) || $data['addRole'] = [
                     'user_id' => $userId,
@@ -127,13 +126,12 @@ class UpdateLogic
 
     /**
      * @param array $params 请求参数
-     * @param array $user
      * @param array $sqlData 入表数据
      */
     private function insertData(array $params, array $user, array $sqlData)
     {
         $userId = $sqlData['updateUser']['where']['id'];
-        $corpId = (int)$user['corpIds'][0];
+        $corpId = (int) $user['corpIds'][0];
         $employeeData = $this->employeeService->getWorkEmployeesByMobile($corpId, $params['phone'], ['id']);
         ## 数据操作
         Db::beginTransaction();

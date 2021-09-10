@@ -14,14 +14,12 @@ use Hyperf\AsyncQueue\Annotation\AsyncQueueMessage;
 use MoChat\App\Medium\Logic\Medium;
 
 /**
- * 媒体id更新
+ * 媒体id更新.
  */
 class MediaIdUpdateQueue
 {
     /**
      * @AsyncQueueMessage(pool="file")
-     * @param int $corpId
-     * @param array $mediumIds
      */
     public function handle(int $corpId, array $mediumIds): void
     {

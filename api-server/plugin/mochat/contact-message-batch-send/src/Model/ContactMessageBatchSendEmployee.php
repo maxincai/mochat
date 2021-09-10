@@ -27,7 +27,7 @@ use MoChat\Framework\Model\AbstractModel;
  * @property int $status 状态（0-未发送，1-已发送）
  * @property \Carbon\Carbon $createdAt
  * @property \Carbon\Carbon $updatedAt
- * @property  $content
+ * @property $content
  */
 class ContactMessageBatchSendEmployee extends AbstractModel
 {

@@ -8,17 +8,16 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\RoomSop\Action\Sidebar;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Plugin\RoomSop\Logic\TipSopListLogic;
-use Hyperf\HttpServer\Annotation\Middlewares;
-use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 
 /**
  * h5侧边栏接口.
@@ -27,7 +26,7 @@ use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 class TipSopList extends AbstractAction
 {
     /**
-     * @Inject()
+     * @Inject
      * @var TipSopListLogic
      */
     protected $tipSopList;
@@ -41,7 +40,7 @@ class TipSopList extends AbstractAction
     public function handle(): array
     {
         $user = user();
-        $params['corpId'] = (int)$user['corpId']; //企业id
+        $params['corpId'] = (int) $user['corpId']; //企业id
 
         return $this->tipSopList->handle($params);
     }

@@ -8,7 +8,6 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\Plugin\ContactBatchAdd\Logic;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -60,10 +59,10 @@ class IndexLogic
      */
     public function handle(array $params): array
     {
-        $corpId = (int)$params['corpId'];
-        $status = ($params['status'] === null || $params['status'] === '') ? null : (int)$params['status'];
+        $corpId = (int) $params['corpId'];
+        $status = ($params['status'] === null || $params['status'] === '') ? null : (int) $params['status'];
         $searchKey = $params['searchKey'];
-        $recordId = (int)$params['recordId'];
+        $recordId = (int) $params['recordId'];
         return $this->handleContact(
             $corpId,
             $status,
@@ -94,7 +93,7 @@ class IndexLogic
             $searchEmployee = $this->searchEmployee($searchKey, $corpId); ## 搜索员工
 
             if (count(array_merge($searchPhone, $searchRemark, $searchEmployee)) == 0) { ## 有检索关键字的情况下 任何相关都搜索不到 直接返回空
-                return ['data'=>[]];
+                return ['data' => []];
             }
         }
         $where = [];

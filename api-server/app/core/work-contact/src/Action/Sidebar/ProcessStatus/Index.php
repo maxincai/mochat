@@ -8,16 +8,14 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Action\Sidebar\ProcessStatus;
 
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\Middleware;
-use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
+use Hyperf\HttpServer\Annotation\Middlewares;
 use Hyperf\HttpServer\Annotation\RequestMapping;
-use MoChat\App\Rbac\Middleware\PermissionMiddleware;
+use MoChat\App\Common\Middleware\SidebarAuthMiddleware;
 use MoChat\App\WorkContact\Contract\ContactProcessContract;
 use MoChat\Framework\Action\AbstractAction;
 use MoChat\Framework\Request\ValidateSceneTrait;
@@ -49,11 +47,11 @@ class Index extends AbstractAction
         //校验参数
         $corpId = user()['corpId'];
         $list = $this->contactProcess->getContactProcessesByCorpId($corpId, ['id', 'name']);
-        if (!empty($list)) {
+        if (! empty($list)) {
             return $list;
         }
         //无跟进状态，创建默认项
-        $createAt = date("Y-m-d H:i:s");
+        $createAt = date('Y-m-d H:i:s');
         $data = [['corp_id' => $corpId, 'name' => '新客户', 'order' => 1, 'created_at' => $createAt], ['corp_id' => $corpId, 'name' => '初步沟通', 'order' => 2, 'created_at' => $createAt], ['corp_id' => $corpId, 'name' => '意向客户', 'order' => 3, 'created_at' => $createAt], ['corp_id' => $corpId, 'name' => '付款客户', 'order' => 4, 'created_at' => $createAt], ['corp_id' => $corpId, 'name' => '无意向客户', 'order' => 5, 'created_at' => $createAt]];
         $this->contactProcess->createContactProcesses($data);
         return $this->contactProcess->getContactProcessesByCorpId($corpId, ['id', 'name']);

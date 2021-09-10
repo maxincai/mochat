@@ -8,13 +8,12 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-
 namespace MoChat\App\WorkContact\Listener\Tag;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use MoChat\App\Corp\Contract\CorpContract;
 use MoChat\App\Corp\Logic\AppTrait;
 use MoChat\App\WorkContact\Contract\WorkContactTagContract;
@@ -25,13 +24,19 @@ use MoChat\Framework\Exception\CommonException;
 use Psr\Container\ContainerInterface;
 
 /**
- * 更新标签事件监听器
+ * 更新标签事件监听器.
  *
- * @Listener()
+ * @Listener
  */
 class UpdateTagRawListener implements ListenerInterface
 {
     use AppTrait;
+
+    /**
+     * @Inject
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * @Inject
@@ -45,16 +50,10 @@ class UpdateTagRawListener implements ListenerInterface
      */
     private $corp;
 
-    /**
-     * @Inject()
-     * @var ContainerInterface
-     */
-    protected $container;
-
     public function listen(): array
     {
         return [
-            UpdateTagRawEvent::class
+            UpdateTagRawEvent::class,
         ];
     }
 
@@ -126,7 +125,7 @@ class UpdateTagRawListener implements ListenerInterface
         //修改标签
         $updateTagRes = $tag->updateWorkContactTagByWxTagId($tagDetail['tag'][0]['id'], $data);
 
-        if (!is_int($updateTagRes)) {
+        if (! is_int($updateTagRes)) {
             $this->logger->error('修改标签回调失败', $tagDetail);
             throw new CommonException(ErrorCode::SERVER_ERROR, '修改标签失败');
         }
@@ -162,9 +161,9 @@ class UpdateTagRawListener implements ListenerInterface
         unset($val);
 
         //更新标签分组
-        if (!empty($updateTagGroup)) {
+        if (! empty($updateTagGroup)) {
             $updateGroup = $tagGroup->updateWorkContactTagGroup($updateTagGroup);
-            if (!is_int($updateGroup)) {
+            if (! is_int($updateGroup)) {
                 $this->logger->error('修改标签分组回调失败', $res);
                 throw new CommonException(ErrorCode::SERVER_ERROR, '修改标签分组失败');
             }
