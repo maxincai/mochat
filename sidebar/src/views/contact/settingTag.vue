@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'contactId',
+      'contactId'
     ])
   },
   created () {
@@ -108,7 +108,7 @@ export default {
     submit () {
       editWorkContactInfo({
         contactId: this.contactId,
-        tag: this.selectedId,
+        tag: this.selectedId
       }).then(res => {
         this.$router.go(-1)
       })

@@ -230,7 +230,7 @@ export function navigateToAddCustomer () {
   return new Promise((resolve, reject) => {
     wx.invoke('navigateToAddCustomer',
       {},
-      function(res) {
+      function (res) {
       }
     )
   })

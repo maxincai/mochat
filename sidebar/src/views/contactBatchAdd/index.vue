@@ -111,7 +111,7 @@ export default {
     switchGroup () {
       this.getTableData()
     },
-    navigateToAddContact() {
+    navigateToAddContact () {
       navigateToAddCustomer()
     }
   }

@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'contactId',
+      'contactId'
     ])
   },
   created () {
@@ -59,7 +59,7 @@ export default {
       }
       editWorkContactInfo({
         contactId: this.contactId,
-        remark: this.remark,
+        remark: this.remark
       }).then(res => {
         this.$router.go(-1)
       })

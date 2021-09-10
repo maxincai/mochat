@@ -203,7 +203,7 @@ export default {
       trackList: [],
       detail: [],
       editPivotDis: false,
-      showContact: false,
+      showContact: false
     }
   },
   async created () {
@@ -232,7 +232,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'contactId',
+      'contactId'
     ])
   },
   methods: {
@@ -243,7 +243,7 @@ export default {
     },
     getInfo () {
       const params = {
-        contactId: this.contactId,
+        contactId: this.contactId
       }
       getWorkContactInfo(params).then(res => {
         this.infoDetail = res.data

@@ -23,4 +23,3 @@ export function getJssdkConfig (params) {
     params: params
   })
 }
-
